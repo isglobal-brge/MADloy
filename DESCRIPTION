@@ -1,0 +1,31 @@
+Package: MADloy
+Type: Package
+Title: Package to detect individuals with LOY in SNP array and sequence data
+Version: 0.9.5-25
+Date: 2015-09-14
+Author: Marcos Lopez-Sanchez and Juan R Gonzalez
+Maintainer: Juan R Gonzalez <jrgonzalez@creal.cat>
+Depends: 
+    BiocStyle,
+    data.table,
+    R (>= 3.2.0),
+Imports: 
+    BiocGenerics,
+    ecolitk,
+    GenomeInfoDb,
+    GenomicRanges,
+    IRanges,
+    mixtools,
+    parallel,
+    plotrix,
+    Rsamtools,
+    TEQC
+Description: This packages implements a method to detect loss of Y events using
+    .bam files from exome sequencing or microarray data.It compares the
+    coverage in the chromosome Y, a region of interest in chrY:7000000-30000000
+    and a given chromosome in UCSC format.
+License: GPL (>= 2)
+URL: http://www.creal.cat/brge and http://www.creal.cat/jrgonzalez/software.htm
+VignetteBuilder: knitr
+Suggests: BiocStyle, knitr, rmarkdown
+LazyData: TRUE

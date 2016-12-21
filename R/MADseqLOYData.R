@@ -1,0 +1,13 @@
+#' Median chr21, chr22 and chrY:7000000-30000000 coverage values for probe regions of one Exome sequencing sample.
+#'
+#' A dataset containing the median coverage values for the whole chromosome 21, whole chromosome 22 and chromosome Y from position 7,000,000 to 30,000,000 of 1 sample in the target regions of the Exome sequencing experiment.
+#'
+#' @format A MADseqLOY-class object with:
+#' \describe{
+#'   \item{Target}{Coverage per position for the target region and median coverage for all the region}
+#'   \item{Ref.region.1}{Coverage per position for the reference region 1 and median coverage for all the region}
+#'   \item{Ref.region.2}{Coverage per position for the reference region 2 and median coverage for all the region}
+#'   \item{par}{parameters specifying the regions analyzed and the exome target regions}
+#'   ...
+#' }
+"MADseqLOYData"
