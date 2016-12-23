@@ -31,8 +31,8 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' MADseqLOY(files=bamFile, reference=targetFile, skip=0)}
-MADseqLOY <- function(files, exomeTargets, target.region = "chrY:7000000-30000000", 
+#' madseqloy(files=bamFile, reference=targetFile, skip=0)}
+madseqloy <- function(files, exomeTargets, target.region = "chrY:7000000-30000000", 
   ref.region.1 = "chr21", ref.region.2 = "chr22", mc.cores, quiet = FALSE, skip = 2, 
   ...) {
   

@@ -29,8 +29,8 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' MADloy(filepath, mc.cores=2)}
-MADloy <- function(files, target.region = "chrY:7000000-30000000", ref.region.1 = "chr21", ref.region.2 = "chr22",
+#' madloy(filepath, mc.cores=2)}
+madloy <- function(files, target.region = "chrY:7000000-30000000", ref.region.1 = "chr21", ref.region.2 = "chr22",
   rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.cores, quiet = FALSE, ...) {
   
   # Check target and reference regions -----------------------------------------
