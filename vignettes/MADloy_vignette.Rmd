@@ -1,8 +1,8 @@
 ---
 title: "`MADloy`: Detecting mosaic loss of Y events on SNP and NGS data"
-subtitle: "Marcos López-Sánchez, Juan R. González"
+subtitle: "Marcos Lopez-Sanchez, Juan R. Gonzalez"
 author: |
-  | Center for Research in Environmental Epidemiology (CREAL), Barcelona, Spain
+  | Institute for Global Health (ISGlobal), Barcelona, Spain
   | Bioinformatics Research Group in Epidemiolgy (BRGE)
   | (<http://www.creal.cat/brge.htm>)
 date: "`r format(Sys.Date(), '%d %B %Y')`"
@@ -15,52 +15,59 @@ output:
     fig_height: 3
     fig_width: 4
 vignette: >
-  %\VignetteIndexEntry{`MADloy`: Detecting mosaic loss of Y events on SNP and NGS data}
+  %\VignetteIndexEntry{`MADloy`: Detecting mosaic loss of Y events (LOY) on SNP and NGS data}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 # Introduction
 
-`MADloy` is a package to detect mosaic loss of chromosome Y (LOY) events from NGS and SNP data. It implements a method that compares the median values of a chromosome Y region versus two reference chromosomes across several samples in order to detect those samples with altered values from the main population. The measures compared are different depending the type of data analyzed, and corresponds to depth of coverage for NGS data (exome sequencing data) and log R ratio(LRR) for SNP data.
+`MADloy` is a package to detect mosaic loss of chromosome Y (LOY) events from NGS and SNP data. It uses a bivariate mixture model which uses values in a target region of chromosome Y and in two reference chromosomes across several samples in order to detect those samples with altered values (LOY or GAIN) from the main population. The measures compared are different depending the type of data analyzed. Depth coverage is used for NGS data (exome sequencing data) and log R ratio (LRR) for SNP array data.
 
-By default, the region of interest is a chromosome Y region that avoids the PAR1 and PAR2 regions shared with chromosome X. The reference regions used to be compared with the Y region are the whole chromosome 21 and the chromosome 22, but those regions can be set manually. Regarding the LRR values, those are obtained for the probes in the analyzed regions and a median value for each region is computed and used by the method. Regarding the coverage values, those are obtained for all the positions sequenced in the analyzed regions, and the median coverage values for each region is used as representative for the region in the individual.
+By default, the region used to detect LOY is a region in chromosome Y region that avoids the PAR1 and PAR2 regions shared with chromosome X (mLRR-Y). In order to take into consideration the variability of coverage or LRR in a given sample, the method clusters individuals into LOY, normal and GAIN categories by using a bivariate vector having data at mLRR-Y region and whole chromosome 22 
+**MArcos, no se si poner las dos es muycho lio, es decir el 21 y el 22**. Nonetheless, the reference region can be set manually. The package summarizes the coverage (median) **Marcos, a lo mejor podemos poner una funcion que queramos usar para resumir ,,  la media, la trimmed-mean, asi podemos comparar** in all positions sequenced in the analyzed region when having NGS data, and the median LRR in the probes contained in the SNP array. These bivariate observations are computed for each individual and a bivariate mixture model is fitted in order to: 1st) decide how many cluster are in the data (2: LOY and Normal or 3: LOY, Normal and GAIN) and 2nd) call individuals.
 
-The method to detect the altered values is different for each type of data. (...) 
+
+The method to detect the altered values is different for each type of data. **Marcos, esto no se a que te refieres**
 
 
-You can install `MADloy` from [CREAL_installer](source("http://www.creal.cat/media/upload/arxius/jr/CREAL_install/install.R")) if you want to install the latest version:
+You can install `MADloy` from Github by typing 
 
 ```{r eval=FALSE}
-source("http://www.creal.cat/media/upload/arxius/jr/CREAL_install/install.R")
-creal.install("MADloy")
+devtools::install_github("isglobal-brge/MADloy")
 ```
 
 ```{r, message = FALSE}
 library(MADloy)
 ```
 
-# Loading data and computing medians
+# Loading data and summarizing data
 
-In this package there are one function for each possible type of data to be processed. `MADloy` function shares the name of the package and is designed to process SNP data, while `MADseqLOY` function is designed to process Exome Sequencing data. The following guide will show you to use these functions with practical examples.
+`MADloy` contains a different function to pre-process your data depending on the technology. `madloy` processes SNP array data, while `madseqloy` deals with Exome Sequencing data. Next, we illustrate how to preform  this step in both situations.
 
-## Processing SNP data with `MADloy`
+## Processing SNP data with `madloy`
 
-To evaluate the LOY events in SNP data, the first step is obtain the median LRR values in the desired regions for the samples. If you are analyzing Illumina samples you can obtain those values from the reports generated with BeadStudio tool, as explained in `MAD` package documentation. If you have affymetrix data from GenomeWide, Axiom or CytoScan platforms, you can use the `affy2sv` package as explained in the package documentation. 
-Once the files are ready, you will have a folder with the samples, in this example called "rawData", similar to the one in the extdata folder included in the `MADloy` package:
+Detecting LOY events in SNP arrays requires to get summarized data from LRR files. If your data has been obtained from Illumina arrays, LRR can be obtained from the reports generated with BeadStudio tool (see for instance `MAD` package documentation) **Marcos, hay que poner un link a esto - tambi�n hay que citar otros paquetes de BioC que puedan hacer esto ... preguntale a Carles**. If your data has been generated from any Affymetrix chip (e.g. GenomeWide, Axiom or CytoScan) you can use the either Affymetrix Power Tools (APT) or `affy2sv` package **Marcos un link**. Files having LRR of each sample must be included in a folder called "rawData" **Marcos, si rawDataPath ya es el rawData, no tiene sentido que digamos que tiene que tener una carpeta que se llame asi**. The function requires a path indicanting were those files are located. `MADloy` package contains some files having the LRR of 3 samples. The folder can be get by writting:
+
+
 ```{r, MADloy_1}
 rawDataPath <- system.file("extdata", "rawData", package = "MADloy")
 rawDataPath
-res <- MADloy(rawDataPath)
+dir(rawDataPath)
+```
+Then, data can be summarized by executing:
+```{r, MADloy_1_b}
+res <- madloy(rawDataPath)
 res
 ```
-Otherwise, a path to the files can be used instead of the folder path to select those samples to be analyzed
+Otherwise, a path to the files can be used instead of the folder path to select those samples to be analyzed **ESTO NO SE ENTIENDE NADAAAAA**
 ```{r, MADloy_2}
 files <- list.files(rawDataPath, full.names=T)
 files
-res <- MADloy(files[1])
+res <- madloy(files[1])
 res
 ```
-Results of this initial processing can be visualized by plotting the MADloy object. As a example youcan use the result of processing 23 CEU HapMap 3 male samples by loading the `MADloyDataAll` object included in the package. **Take into account the gender of the samples analyzed, because female samples are going to have large negative LRR values in chromosome Y**.
+## Visualization
+Results of this initial processing can be visualized by plotting the {\tt MADloy} object. Let's us image that we have analyzed 89 CEU HapMap 3 male samples. This preprocess data can be loaded in to your ``R`` session from the `MADloyDataAll` object that is included in the package. **Take into account the gender of the samples analyzed, because female samples are going to have large negative LRR values in chromosome Y**.
 
 ```{r, MADloy_3}
 data(MADloyDataAll)
@@ -81,7 +88,7 @@ MADloyDataMale
 plot(MADloyDataMale, ylim=c(-0.3, 0.3))
 ```
 
-## Processing NGS Exome-seq data with `MADseqLOY`
+## Processing NGS Exome-seq data with `madseqloy`
 
 To evaluate the LOY events for NGS data, the procedure is almost the same used for SNP data, but having into account that is necessary to input the file path to the targets file when analyzing exome-seq data. The next code downloads and analyzes a Exome-seq data sample from HapMap 3 project. This code is not executed due to the large size of Exome-seq data files, but you can try to run it. It is required that .bam files are indexed, in other words, that the .bai index file is in the same folder and with the same filename in order to proceed (b.e., test.bam and test.bai). If you don't have an index file, you can create with the function `indexBam` from `Rsamtools` package considering that the .bam file is sorted. Otherwise, you will need to sort it beforehand with the function `sortBam` from the same package.
 
@@ -95,14 +102,14 @@ download.file(url = "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG0023
 The targets file for HapMap analyzed samples is "SureSelect Human All Exon V2". It must be downloaded from Agilent webpage [https://earray.chem.agilent.com/suredesign/search.htm](https://earray.chem.agilent.com/suredesign/search.htm) with the Design ID S0293689, but registration is required. To follow the tutorial, it is considered that the targets file is decompressed and inside the /tmp folder.
 
 ```{r, MADseqLOY_1, eval = FALSE}
-res <- MADseqLOY(files = "/tmp/HG00236.mapped.ILLUMINA.bwa.GBR.exome.20121211.bam", exomeTargets = "/tmp/20130108.exome.targets.bed")
+res <- madseqloy(files = "/tmp/HG00236.mapped.ILLUMINA.bwa.GBR.exome.20121211.bam", exomeTargets = "/tmp/20130108.exome.targets.bed")
 ```
-As with the `MADloy` function, you can use the folder path instead of each file path to select which samples should be analyzed. The function search for all .bam files in the inputted path recursively, so you can put a path that stores a large number of .bam files, but you still are required to input the exomeTargets path.
+As with the `madloy` function, you can use the folder path instead of each file path to select which samples should be analyzed. The function search for all .bam files in the inputted path recursively, so you can put a path that stores a large number of .bam files, but you still are required to input the exomeTargets path.
 
 ```{r, MADseqLOY_2, eval = FALSE}
-res <- MADseqLOY(files = "/tmp", exomeTargets = "/tmp/S0293689/S0293689_Padded.bed")
+res <- madseqloy(files = "/tmp", exomeTargets = "/tmp/S0293689/S0293689_Padded.bed")
 ```
-The samples analyzed can be visualized one by one from the MADseqLOY object using the `plot` function, but is recommended to have a minimum of 4GB of RAM memory to draw the plot. Otherwise, it could crash or take a large amount of time. The next code and image summarizes that. In order to plot a sample, it is required to input the filename of the sample to be plot. The MADseqLOY object stores the files in a vector in test$par$files where test is the name of the MADseqLOY object.
+The samples analyzed can be visualized one by one from the {\tt MADseqLOY} object using the generic `plot` function, but is recommended to have a minimum of 4GB of RAM memory to draw the plot. Otherwise, it could crash or take a large amount of time. The next code and image summarizes that. In order to plot a sample, it is required to input the filename of the sample to be plot. The {\tt MADseqLOY} object stores the files in a vector in test$par$files where test is the name of the {\tt MADseqLOY} object.
 
 ```{r, MADseqLOY_3, eval = FALSE}
 plot(res, sample = res$par$files[1])
@@ -112,7 +119,7 @@ plot(res, sample = res$par$files[1])
 
 # Detecting LOY events
 
-Once samples are processed, you will have a MADloy or MADseqLOY object. The next step is detect which of the processed samples have a Loss of Y event using the getLOY function.
+Once samples are processed, you will have a {\tt MADloy} or {\tt MADseqLOY} object. The next step is detect which of the processed samples have a Loss of Y event using the getLOY function.
 
 ```{r, getLOY}
 
