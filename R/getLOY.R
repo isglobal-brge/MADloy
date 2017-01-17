@@ -13,7 +13,7 @@
 #' \dontrun{
 #' getLOY(resMADseqLOY)
 #' getLOY(resMADloy)}
-getLOY <- function(object, ref = "22", k , cutoff= 0.90, arbvar=FALSE, ...) {
+getLOY <- function(object, ref = "22", k , cutoff= 0.90, arbvar=FALSE, pval.harm=0.05, ...) {
   
   if (inherits(object, "MADseqLOY") | inherits(object, "MADloy")) {
     x <- MADloy:::getMedian(object)
@@ -98,10 +98,20 @@ getLOY <- function(object, ref = "22", k , cutoff= 0.90, arbvar=FALSE, ...) {
    
     ans <- list(class = cl, estim = estim, prob = probs, logLik = ans$loglik, 
       data = xx)
+    attr(ans, "type") <- "Coverage"
     class(ans) <- "LOY"
   } else {
-    ans <- NULL
-    warning("Methods to detect LOY in SNP data in development. NULL returned")
+    xx <- cbind(target, reference)
+    y <- exp(xx[,1])
+    ref <- exp(c(x[,-1]))
+    pars <- mleHarmonic(ref)$par
+    pvals <- pHarmonic(y, a=pars[1], m=pars[2])
+    cl <- ifelse(pvals > pval.harm, "normal", "altered")
+    cl[cl=="altered" & log(y) > 0] <- "GAIN"
+    cl[cl=="altered" & log(y) < 0] <- "LOY"
+    ans <- list(class = cl, prob = pvals, data = xx)
+    attr(ans, "type") <- "LRR"
+    class(ans) <- "LOY"
   }
   ans
 } 

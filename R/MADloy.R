@@ -121,7 +121,8 @@ madloy <- function(files, target.region = "chrY:7000000-30000000", ref.region.1 
     PosCol = PosCol, LRRCol = LRRCol, query = subsetC, mc.cores = mc.cores)
   names(targetLRR) <- names(ref1LRR) <- names(ref2LRR) <- basename(allfiles)
   par <- list(target.region = subsetA, ref.region.1 = subsetB, 
-              ref.region.2 = subsetC, files = basename(allfiles))
+              ref.region.2 = subsetC, files = basename(allfiles),
+              path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol))
   LRRmedians <- list(target = targetLRR, reference.1 = ref1LRR, reference.2 = ref2LRR, 
     par = par)
   class(LRRmedians) <- "MADloy"

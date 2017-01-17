@@ -37,8 +37,14 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
 
   d <- xx - yy
   ss <- 1:nrow(data)
-  plot.default(ss, d, type = "n", xlab = "Individuals", ylab = "Mean coverage difference (Reference - mY)")
-  points(ss, d, col = mycol, pch = 16, ...)
+  if(attr(x, "type")=="Coverage") {
+   plot.default(ss, d, type = "n", xlab = "Individuals", ylab = "Mean coverage difference (mY region - Reference)")
+   points(ss, d, col = mycol, pch = 16, ...)
+  }
+  if(attr(x, "type")=="LRR") {
+    plot.default(ss, xx, type = "n", xlab = "Individuals", ylab = "Mean LRR in mY region")
+    points(ss, xx, col = mycol, pch = 16, ...)
+  }
   legend(pos.leg, leg.lab, pch = 16, col = col.lab)
   text(ss[alt], jitter(d[alt]), labels[alt], cex = 0.8, adj = 0)
  # if (nclass==3)
