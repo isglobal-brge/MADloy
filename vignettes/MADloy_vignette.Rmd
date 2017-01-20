@@ -78,28 +78,28 @@ However, when thousands of samples are analyzed a proper statistical method can 
 
 
 ### Visualizing a set of SNP samples
-Let us illustrate how to visualize the data using 89 CEU HapMap samples.  Already pre-processed data can be retrieved into your ``R`` session from the `MADloyDataAll` data set that is included in the package by simply typing: 
+Let us illustrate how to visualize the data using 89 CEU HapMap samples.  Already pre-processed data can be retrieved into your ``R`` session from the `MADloyHapMapAll` data set that is included in the package by simply typing: 
 
 ```{r, MADloy_3}
-data(MADloyDataAll)
-MADloyDataAll
+data(MADloy_HapMapAll)
+MADloyHapMapAll
 ```
 Data can be visually inspected by using the generic `plot` function. This function depicts the median LLR of Y chormosome adjusted by the LRR of chromosome 22 in order to control for possible technical artifacts. Notice that this reference chromosome can be changed if the user suspects that alterations in this chromosome can appear in the analyzed data. 
 
 ```{r, fig.show='hold', fig.width=8, fig.height=6, fig.cap = "Plot of MADloy object including 89 HapMap samples"}
-plot(MADloyDataAll)
+plot(MADloyHapMapAll)
 ```
 
 This figure shows several samples having LOY (those in the -2, -4 range of Y-axis) that correspond to female samples. Of course, these are not real LOY samples since females are expected to show this pattern. Let us pay attention in the male individuals that are also available as a data example in our package. We have selected 23 male samples whose pre-processed LLR that can be get into ``R``by:
 
 ```{r, MADloy_4}
-data(MADloyDataMale)
-MADloyDataMale
+data(MADloy_HapMapMale)
+MADloyHapMapMale
 ```
 The plot is obtained by
 
 ```{r, fig.show='hold', fig.width=8, fig.height=6, fig.cap = "Plot of a MADloy object with 23 HapMap 3 male samples analyzed"}
-plot(MADloyDataMale, ylim=c(-0.3, 0.3))
+plot(MADloyHapMapMale, ylim=c(-0.3, 0.3))
 ```
 We observe that there are some points that deviate from 0. The question is to determine whether those samples belong to the general population of normal samples.
 
@@ -129,12 +129,10 @@ As in the case of using `madloy` function, the folder having the .bam and .bai f
 res2 <- madseqloy(files = "/tmp", exomeTargets = "/tmp/S0293689/S0293689_Padded.bed")
 ```
 
-**NO se puede hacer un print de res2?**
-
-The samples analyzed can be visualized one by one from the `MADseqLOY` object using the generic `plot` function, but it is recommended to have a minimum of 4GB of RAM memory to draw the plot. Otherwise, it could crash or take a large amount of time. The next code and image summarizes that. In order to plot a sample, it is required to input the filename of the sample to be plot. The `MADseqLOY` object stores the files in a vector in test$par$files where test is the name of the `MADseqLOY` object.
+The samples analyzed can be visualized one by one from the `MADseqLOY` object using the function `plotIndNGS` which is similar to the one designed for SNP array data. However, it is highly recommended to have a minimum of 4GB of RAM memory to draw the plot. Otherwise, it could crash or take long time in finishing. The plot for a given sample can be created using `plotIndNGS`function. It requires an object of class `MADseqLOY` and the name of the sample. The `MADseqLOY` object stores the files in a vector that can be access through in res2$par$files where 'res2' is the name of the `MADseqLOY` object. The name of the file can also be passed to this argument.
 
 ```{r, MADseqLOY_3, eval = FALSE}
-plot(res2, sample = res$par$files[1])
+plotIndNGS(res2, sample = res$par$files[1])
 ```
 
 ![Plot of a female HapMap sample in a MADseqLOY object](`r file.path(system.file("extdata", package = "MADloy"), "Rplot001.png")`)
@@ -142,18 +140,51 @@ plot(res2, sample = res$par$files[1])
 
 ### Visualizing a set of NGS samples
 
-**aqui voy a poner unos datos de ejemplo del PRAD o READ o el que sea para hacer un plot como el del LRR y que luego 
-se pueda hacer el calling como he hecho con los datos de SNPs**
+Let us illustrate how to visualize a set of .bam samples. We donwloaded .bam files of 26 male samples diagnosed with prostate cancer from [`TCGA project`](https://cancergenome.nih.gov/). Processed .bam files (using `madseqloy` function) can be loaded by:
+
+```{r, get_BLCA}
+data(MADseqLOY_BLCA)
+BLCA
+````
+
+Summarized coverage in mY region of each sample can be plotted by using the generic function `plot`:
+
+```{r, plot_BLCA}
+plot(BLCA)
+```
+
+Let us verify whether the subject having the lowest coverage is a having a LOY. The id of that sample can be retrived by executing: 
+
+```{r, lowest_coverage}
+dd <- MADloy:::getMedian(BLCA)
+id.tcga.low <- substr(rownames(dd)[which.min(dd[,1])], 6, 21)
+id.tcga.low
+```
+
+LRR can be downloaded from TCGA since this information is considered of level 3 and it is available from TCGA Data Portal. We have created a data.frame containing the LRR of selected samples. 
+
+```{r, LRR_BLCA}
+data(BLCA_LRR)
+head(blca.lrr)
+```
+
+The plot of mY region of that sample can be obtained by simply typing (NOTE: The function `plotIndSNP` can procude this plot from: 1) an object of class `madloy`; 2) a matrix having chromosome, position and LRR; or 3) a path indicanting where a file having chromosome, position and LRR is located).
+
+
+```{r, LRR_BLCA_plot, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "LRR in the mY region of BLCA sample `r id.tcga.low`. "}
+pos.id <- grep(id.tcga.low, names(blca.lrr))
+plotIndSNP(blca.lrr, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = pos.id)
+```
 
 
 # Detecting LOY events
 
 Once samples have been processed, the user will have either a `MADloy` or `MADseqLOY` object. The next step is to detect those samples having a LOY event. The calling is performed equally in both cases  by using the function `getLOY`. This function uses the Hermite distribution when analyzing LRR (e.g SNP data) and implements a mixture of binormal data in the case of having coverage (e.g NGS data). The main manuscript describes how these methods are implemented to detect LOY events in both type of data.
 
-Let us start by illustrating how to detect LOY in the HapMap samples. The object containing preprocessed data is called `MADloyDataMale`. Calling is performed by typing:
+Let us start by illustrating how to detect LOY in the HapMap samples. The object containing preprocessed data is called `MADloyHapMapMale`. Calling is performed by typing:
 
 ```{r, getLOY}
-ans <- getLOY(MADloyDataMale)
+ans <- getLOY(MADloyHapMapMale)
 
 ```
 
