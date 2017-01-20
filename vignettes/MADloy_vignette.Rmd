@@ -25,10 +25,6 @@ vignette: >
 
 By default, the region used to detect LOY is a region in chromosome Y region that avoids the PAR1 and PAR2 regions shared with chromosome X (mY). In order to take into consideration the variability of coverage or LRR in a given sample, the method clusters individuals into LOY, normal and GAIN categories by using a bivariate vector having data at mLRR-Y region and whole chromosome 22. Nonetheless, the reference region can be set manually. The package summarizes the coverage (median, mean and trimmed-mean) in all sequenced positions for the analyzed region when having NGS data, and the median LRR in the probes contained in the SNP array. These bivariate observations are computed for each individual and a bivariate mixture model is fitted in order to: 1st) decide how many cluster are in the data (2: LOY and Normal or 3: LOY, Normal and GAIN) and 2nd) call individuals.
 
-
-The method to detect the altered values is different for each type of data. **Marcos, esto no se a que te refieres** **Me refiero a que el método para detectar los valores alterados es diferente para los datos de secuencia y para los datos de array**
-
-
 You can install `MADloy` from Github by typing 
 
 ```{r eval=FALSE}
@@ -60,8 +56,6 @@ Then, data can be summarized by usgin  `madloy` function. The function creates a
 res <- madloy(rawDataPath)
 res
 ```
-**He quitado lo del folder path ... decimos que tienen que estar todos en una carperta y listos **
-
 We can manually inspect  information of mLRR-Y region (e.g., one by one sample) and decide whether a given individulas is having a LOY or not. For example this code will create the plot of Sample1 where LRR in the mLRR-Y region (shaded area) is clearly lost.
 
 ```{r, plotSample1, fig.width=6, fig.height=4.5, fig.cap="LRR in the mLRR.Y region (shaded) of Sample1 from the illustrative example"}
@@ -74,7 +68,7 @@ The same figure can be obtained of Sample2 which is not having a LOY event:
 plotIndSNP(res, sample="Sample2")
 ````
 
-However, when thousands of samples are analyzed a proper statistical method can be used to diferenciate those samples that are having LOY. Next section illustrate how to visualize the information of mLRR-Y of lot of samples
+However, when thousands of samples are analyzed a proper statistical method can be used to differenciate those samples that are having LOY. Next section illustrate how to visualize the information of mLRR-Y of lot of samples
 
 
 ### Visualizing a set of SNP samples
@@ -143,13 +137,13 @@ plotIndNGS(res2, sample = res$par$files[1])
 Let us illustrate how to visualize a set of .bam samples. We donwloaded .bam files of 26 male samples diagnosed with prostate cancer from [`TCGA project`](https://cancergenome.nih.gov/). Processed .bam files (using `madseqloy` function) can be loaded by:
 
 ```{r, get_BLCA}
-data(MADseqLOY_BLCA)
+load("../../MADseqLOY_BLCA.rda")
 BLCA
 ````
 
 Summarized coverage in mY region of each sample can be plotted by using the generic function `plot`:
 
-```{r, plot_BLCA}
+```{r, plot_BLCA, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Mean coverage of samples belonging to BLCA data."}
 plot(BLCA)
 ```
 
@@ -164,16 +158,16 @@ id.tcga.low
 LRR can be downloaded from TCGA since this information is considered of level 3 and it is available from TCGA Data Portal. We have created a data.frame containing the LRR of selected samples. 
 
 ```{r, LRR_BLCA}
-data(BLCA_LRR)
-head(blca.lrr)
+load("../../BLCA_LRR.rda")
+head(df)
 ```
 
 The plot of mY region of that sample can be obtained by simply typing (NOTE: The function `plotIndSNP` can procude this plot from: 1) an object of class `madloy`; 2) a matrix having chromosome, position and LRR; or 3) a path indicanting where a file having chromosome, position and LRR is located).
 
 
 ```{r, LRR_BLCA_plot, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "LRR in the mY region of BLCA sample `r id.tcga.low`. "}
-pos.id <- grep(id.tcga.low, names(blca.lrr))
-plotIndSNP(blca.lrr, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = pos.id)
+pos.id <- grep(id.tcga.low, names(df))
+plotIndSNP(df, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = pos.id)
 ```
 
 
@@ -184,7 +178,8 @@ Once samples have been processed, the user will have either a `MADloy` or `MADse
 Let us start by illustrating how to detect LOY in the HapMap samples. The object containing preprocessed data is called `MADloyHapMapMale`. Calling is performed by typing:
 
 ```{r, getLOY}
-ans <- getLOY(MADloyHapMapMale)
+nsamples <- length(MADloyHapMapMale$par$files)
+ans <- getLOY(MADloyHapMapMale, pval.harm = 0.05/nsamples)
 
 ```
 
@@ -194,10 +189,20 @@ Results can be visualized with the generic `plot` function as follows:
 plot(ans)
 
 ```
-The method is indicating that there are three samples having a LOY that can be verified by looking at the raw data.
+The method is indicating that there are three samples having a LOY that can be verified by looking at the raw data. We have incorporated a text file into the package having the LRR information of samples NA1276, NA12144 and NA11829 who are having a LOY and NA07048 who is not.
 
-**MArcos, aqui usare los datos crudos de estos individuos con la nueva funcion que he implementado 'plotIndSNP' para verificar que es un LOY**
+```{r, show_NAsamples}
+PathHapMapLRR <- system.file("extdata", package = "MADloy")
+list.files(PathHapMapLRR, pattern=".txt")
+```
+
+```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data"}
+plotIndSNP(file.path(PathHapMapLRR, "NA12716.txt"))
+```
+
 
 Next, the same procedure can be apply to the object XXX which encodes the preprocessed data of XXX
 
-**Aqui sera el ejemplo que he comentado antes de PRAD o BLCA o algun otro que tengamos** 
+```{r, BLCA_analysis}
+ans2 <- getLOY(BLCA)
+```

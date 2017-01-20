@@ -76,7 +76,7 @@ Bioinformatics Research Group in Epidemiolgy (BRGE)<br />
 <h1><span class="header-section-number">1</span> Introduction</h1>
 <p><code>MADloy</code> is a package to detect mosaic loss of chromosome Y (LOY) events from NGS and SNP data. It uses a bivariate mixture model which uses values in a target region of chromosome Y and in two reference chromosomes across several samples in order to detect those samples with altered values (LOY or GAIN) from the main population. The measures compared are different depending the type of data analyzed. Depth coverage is used for NGS data (exome sequencing data) and log R ratio (LRR) for SNP array data.</p>
 <p>By default, the region used to detect LOY is a region in chromosome Y region that avoids the PAR1 and PAR2 regions shared with chromosome X (mY). In order to take into consideration the variability of coverage or LRR in a given sample, the method clusters individuals into LOY, normal and GAIN categories by using a bivariate vector having data at mLRR-Y region and whole chromosome 22. Nonetheless, the reference region can be set manually. The package summarizes the coverage (median, mean and trimmed-mean) in all sequenced positions for the analyzed region when having NGS data, and the median LRR in the probes contained in the SNP array. These bivariate observations are computed for each individual and a bivariate mixture model is fitted in order to: 1st) decide how many cluster are in the data (2: LOY and Normal or 3: LOY, Normal and GAIN) and 2nd) call individuals.</p>
-<p>The method to detect the altered values is different for each type of data. <strong>Marcos, esto no se a que te refieres</strong> <strong>Me refiero a que el mÃ©todo para detectar los valores alterados es diferente para los datos de secuencia y para los datos de array</strong></p>
+<p>The method to detect the altered values is different for each type of data. <strong>Marcos, esto no se a que te refieres</strong> <strong>Me refiero a que el metodo para detectar los valores alterados es diferente para los datos de secuencia y para los datos de array</strong></p>
 <p>You can install <code>MADloy</code> from Github by typing</p>
 <pre class="r"><code>devtools::install_github(&quot;isglobal-brge/MADloy&quot;)</code></pre>
 <pre class="r"><code>library(MADloy)</code></pre>
@@ -173,7 +173,7 @@ download.file(url = &quot;ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/H
 <div id="visualizing-a-set-of-ngs-samples" class="section level3">
 <h3><span class="header-section-number">2.2.1</span> Visualizing a set of NGS samples</h3>
 <p>Let us illustrate how to visualize a set of .bam samples. We donwloaded .bam files of 26 male samples diagnosed with prostate cancer from <a href="https://cancergenome.nih.gov/"><code>TCGA project</code></a>. Processed .bam files (using <code>madseqloy</code> function) can be loaded by:</p>
-<pre class="r"><code>data(MADseqLOY_BLCA)
+<pre class="r"><code>load(&quot;../../MADseqLOY_BLCA.rda&quot;)
 BLCA</code></pre>
 <pre><code>## 
 ## Object of class MADseqLOY 
@@ -184,227 +184,223 @@ BLCA</code></pre>
 ## Reference region 2: chrchr22:1-300000000</code></pre>
 <p>Summarized coverage in mY region of each sample can be plotted by using the generic function <code>plot</code>:</p>
 <pre class="r"><code>plot(BLCA)</code></pre>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="figure">
+<img src="data:image/png;base64,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" alt="Mean coverage of samples belonging to BLCA data." />
+<p class="caption">Mean coverage of samples belonging to BLCA data.</p>
+</div>
 <p>Let us verify whether the subject having the lowest coverage is a having a LOY. The id of that sample can be retrived by executing:</p>
 <pre class="r"><code>dd &lt;- MADloy:::getMedian(BLCA)
 id.tcga.low &lt;- substr(rownames(dd)[which.min(dd[,1])], 6, 21)
 id.tcga.low</code></pre>
 <pre><code>## [1] &quot;TCGA-GD-A3OP-10A&quot;</code></pre>
 <p>LRR can be downloaded from TCGA since this information is considered of level 3 and it is available from TCGA Data Portal. We have created a data.frame containing the LRR of selected samples.</p>
-<pre class="r"><code>data(BLCA_LRR)
-head(blca.lrr)</code></pre>
-<pre><code>##       Probe.Set.ID Chromosome Physical.Position
-## 3023 SNP_A-1780270          7          78599583
-## 3024 SNP_A-1780271         15          33395779
-## 3025 SNP_A-1780272          1         189807684
-## 3026 SNP_A-1780274         20          33907909
-## 3027 SNP_A-1780277         12          75664046
-## 3028 SNP_A-1780278          1         218890658
-##      TCGA-BL-A0C8-10A-01D-A10T-01 TCGA-C4-A0F0-01A-12D-A10T-01
-## 3023                  0.093328627                   0.07746720
-## 3024                  0.035974010                   0.01443846
-## 3025                  0.033924507                   0.05791711
-## 3026                 -0.005205890                   0.02498910
-## 3027                 -0.071080359                  -0.06865078
-## 3028                 -0.007491714                   0.07173494
-##      TCGA-BL-A0C8-01A-11D-A10T-01 TCGA-C4-A0F0-10A-01D-A10T-01
-## 3023                   0.05780055                   0.13123101
-## 3024                   0.06379203                   0.03125139
-## 3025                  -0.01205311                   0.01525486
-## 3026                  -0.07194812                  -0.03199250
-## 3027                  -0.03496314                  -0.02263715
-## 3028                  -0.02861325                   0.05535504
-##      TCGA-BT-A42C-01A-11D-A23L-01 TCGA-FJ-A3Z7-01A-12D-A23L-01
-## 3023                  0.012797389                   0.01377006
-## 3024                 -0.023325454                  -0.01553571
-## 3025                 -0.023663285                  -0.08148565
-## 3026                 -0.008327851                  -0.10551370
-## 3027                  0.021401793                   0.01365546
-## 3028                 -0.049273642                  -0.04458841
-##      TCGA-GC-A3YS-01A-11D-A23L-01 TCGA-BT-A42C-10A-01D-A23J-01
-## 3023                  0.041205413                  0.019576671
-## 3024                 -0.012770758                  0.003251035
-## 3025                 -0.026999646                  0.023984540
-## 3026                  0.011111625                 -0.001956434
-## 3027                  0.062425255                  0.012647128
-## 3028                 -0.005142829                 -0.027249884
-##      TCGA-FJ-A3Z7-10A-01D-A23J-01 TCGA-GC-A3YS-10A-01D-A23J-01
-## 3023                  0.006714258                 0.0083917276
-## 3024                  0.041336653                -0.0082223458
-## 3025                 -0.032782251                -0.0160321865
-## 3026                 -0.081519978                 0.0008532357
-## 3027                 -0.021210759                -0.0135422437
-## 3028                  0.026989691                -0.0163882886
-##      TCGA-GV-A6ZA-10A-01D-A338-01 TCGA-GV-A6ZA-01A-12D-A338-01
-## 3023                  -0.02241087                  -0.06069306
-## 3024                  -0.02261923                  -0.02043786
-## 3025                   0.00000000                  -0.00223416
-## 3026                   0.05980838                   0.03947065
-## 3027                   0.01830040                  -0.00891358
-## 3028                  -0.01666237                  -0.03299377
-##      TCGA-FD-A6TB-01A-12D-A338-01 TCGA-FD-A6TB-10A-21D-A338-01
-## 3023                 -0.041163701                  -0.04704637
-## 3024                  0.017866079                   0.03696956
-## 3025                 -0.001250815                   0.05268842
-## 3026                  0.039860498                   0.06774563
-## 3027                 -0.014417754                  -0.01977261
-## 3028                 -0.037607759                   0.01291890
-##      TCGA-MV-A51V-10A-01D-A26J-01 TCGA-MV-A51V-01A-11D-A26L-01
-## 3023                  -0.13293583                 -0.085960011
-## 3024                  -0.04357728                 -0.048475443
-## 3025                   0.11953970                  0.116733298
-## 3026                  -0.06416554                 -0.034882272
-## 3027                  -0.07550660                 -0.082967929
-## 3028                  -0.01713189                 -0.005718964
-##      TCGA-E7-A6ME-01A-22D-A32A-01 TCGA-E7-A6ME-10B-01D-A328-01
-## 3023                 -0.049865295                 -0.050582876
-## 3024                 -0.005871055                  0.001140022
-## 3025                 -0.069937522                 -0.038465180
-## 3026                  0.015148923                  0.026235248
-## 3027                  0.078072833                  0.078363004
-## 3028                 -0.012866967                  0.015441733
-##      TCGA-E7-A7DU-01A-11D-A32A-01 TCGA-E7-A7DU-10A-01D-A328-01
-## 3023                  0.036118374                 -0.001236118
-## 3024                  0.008279664                 -0.026135224
-## 3025                  0.017664754                  0.012055302
-## 3026                  0.011241809                  0.006517967
-## 3027                  0.000000000                 -0.034760443
-## 3028                  0.005085773                  0.004760211
-##      TCGA-FD-A6TI-01A-11D-A32A-01 TCGA-FD-A6TI-10A-01D-A328-01
-## 3023                 0.0006502013                 -0.002308084
-## 3024                 0.0189396848                  0.000000000
-## 3025                 0.0166423225                  0.036992745
-## 3026                 0.0251159365                  0.025602152
-## 3027                 0.0189316192                 -0.020266813
-## 3028                -0.0420487222                 -0.006897232
-##      TCGA-GU-A766-01A-11D-A32A-01 TCGA-GU-A766-10A-01D-A328-01
-## 3023                -0.0276708812                 -0.005728487
-## 3024                -0.0301348623                 -0.025201402
-## 3025                -0.0421249934                 -0.007313635
-## 3026                 0.0041872038                  0.012252455
-## 3027                 0.0007041769                 -0.045770003
-## 3028                 0.0025630322                  0.006682850
-##      TCGA-GD-A3OP-11A-11D-A21Y-01 TCGA-GD-A3OP-10A-01D-A21Y-01
-## 3023                -0.0100177930                 -0.012880539
-## 3024                 0.0200550283                  0.007218725
-## 3025                 0.0123197740                 -0.020807544
-## 3026                -0.0523975190                 -0.038890825
-## 3027                 0.0044209911                  0.004426322
-## 3028                 0.0006234471                  0.018995535
-##      TCGA-GV-A3QG-01A-11D-A21Y-01 TCGA-GV-A3QG-10A-01D-A21Y-01
-## 3023                 -0.007938829                -0.0276664567
-## 3024                  0.012044396                 0.0058051287
-## 3025                  0.021452774                -0.0152714335
-## 3026                 -0.001372508                 0.0182930634
-## 3027                 -0.052885353                -0.0002498286
-## 3028                  0.015144936                 0.0013602476
-##      TCGA-GD-A3OP-01A-21D-A21Y-01 TCGA-CF-A3MI-01A-11D-A20B-01
-## 3023                 -0.019689030                  0.056233855
-## 3024                  0.009577139                 -0.079137717
-## 3025                  0.030376843                  0.023707048
-## 3026                 -0.046476779                  0.001119011
-## 3027                 -0.015978790                  0.110310175
-## 3028                  0.013083795                 -0.012541254
-##      TCGA-CF-A3MI-10A-01D-A20B-01 TCGA-K4-A3WS-01A-11D-A22Y-01
-## 3023                  0.097581474                  0.038236925
-## 3024                 -0.031159178                  0.037194287
-## 3025                  0.029936714                  0.005639694
-## 3026                 -0.008378053                 -0.041806209
-## 3027                  0.114691266                  0.053338944
-## 3028                  0.006584842                  0.025152448
-##      TCGA-K4-A3WS-10A-01D-A22Y-01 TCGA-DK-A6B2-10A-01D-A30G-01
-## 3023                   0.00000000                  -0.03040636
-## 3024                   0.03136096                  -0.03742850
-## 3025                   0.01769587                   0.07853172
-## 3026                  -0.04694960                  -0.05809396
-## 3027                   0.04017086                  -0.06117367
-## 3028                   0.05008695                   0.02305374
-##      TCGA-DK-A6B2-01A-11D-A30D-01 TCGA-FD-A62N-10A-01D-A30G-01
-## 3023                  -0.03290278                  -0.04994168
-## 3024                   0.04988557                  -0.02287791
-## 3025                   0.05215309                   0.08291315
-## 3026                  -0.07215425                   0.04027521
-## 3027                  -0.07577710                  -0.02965230
-## 3028                   0.03293586                   0.00000000
-##      TCGA-FD-A62N-01A-11D-A30D-01 TCGA-UY-A78M-01A-21D-A34T-01
-## 3023                 -0.088101530                  -0.09954518
-## 3024                 -0.040836607                  -0.03828254
-## 3025                  0.106249661                   0.07282035
-## 3026                  0.072820010                  -0.02350195
-## 3027                 -0.078586532                  -0.06302954
-## 3028                  0.008937488                   0.04780273
-##      TCGA-UY-A78M-10A-01D-A34W-01 TCGA-BL-A0C8-01A-11D-A10T-01
-## 3023                 -0.067869533                  -0.03757816
-## 3024                 -0.059019077                   0.01492616
-## 3025                  0.048817192                   0.03028293
-## 3026                  0.009170212                   0.04044508
-## 3027                 -0.026331060                  -0.03951217
-## 3028                  0.039950116                  -0.02322256
-##      TCGA-BL-A0C8-01A-11D-A10T-01 TCGA-BL-A0C8-10A-01D-A10T-01
-## 3023                   0.06637774                 -0.049156305
-## 3024                  -0.10039516                  0.001931289
-## 3025                  -0.07236150                  0.032348921
-## 3026                   0.10061464                  0.074783304
-## 3027                  -0.05585458                 -0.047532723
-## 3028                  -0.12879605                 -0.006661808
-##      TCGA-CU-A3YL-01A-11D-A22Y-01 TCGA-GC-A3BM-01A-11D-A22Y-01
-## 3023                   0.10562959                 0.0367609659
-## 3024                   0.04237361                -0.0007450245
-## 3025                  -0.01880756                -0.0487765505
-## 3026                  -0.07257033                -0.0496252347
-## 3027                   0.03746693                 0.0104569611
-## 3028                   0.00504318                -0.0328032439
-##      TCGA-CU-A3YL-10A-01D-A22Y-01 TCGA-GC-A3BM-10A-01D-A22Y-01
-## 3023                 0.0556395558                  0.018127923
-## 3024                -0.0739066401                 -0.037524691
-## 3025                -0.0164647561                 -0.010106105
-## 3026                -0.0957490984                 -0.070677560
-## 3027                 0.0006140737                  0.007205752
-## 3028                -0.0578015305                 -0.016651557
-##      TCGA-DK-A3WY-01A-11D-A22Y-01 TCGA-DK-A3WY-10A-01D-A22Y-01
-## 3023                  0.074964677                   0.07355402
-## 3024                  0.056132150                   0.07821876
-## 3025                 -0.002352655                  -0.01601307
-## 3026                  0.013115435                   0.02650269
-## 3027                  0.036260575                   0.05130484
-## 3028                  0.004211610                  -0.01884914
-##      TCGA-GC-A3RD-01A-12D-A22Y-01 TCGA-GC-A3RD-10B-01D-A22Y-01
-## 3023                   0.07433751                  0.002897972
-## 3024                   0.01508623                 -0.035778898
-## 3025                  -0.05452587                 -0.025717052
-## 3026                  -0.05621933                 -0.066727688
-## 3027                   0.09036723                  0.018866776
-## 3028                   0.05398376                  0.045591798
-##      TCGA-FD-A3SP-01A-31D-A22Y-01 TCGA-FD-A3SP-10A-01D-A22Y-01
-## 3023                  0.091469446                   0.10108752
-## 3024                 -0.009862432                  -0.03342814
-## 3025                 -0.033646162                  -0.01212865
-## 3026                  0.013020045                   0.01934381
-## 3027                  0.069994101                   0.07671454
-## 3028                 -0.019287660                  -0.03462368
-##      TCGA-GC-A3BM-11A-11D-A22Y-01 TCGA-DK-A2I2-01A-11D-A17S-01
-## 3023                   0.02683346                  -0.03984829
-## 3024                   0.04579423                  -0.03312258
-## 3025                  -0.01702708                  -0.01708800
-## 3026                  -0.04134461                  -0.09104184
-## 3027                   0.08311683                  -0.01472952
-## 3028                  -0.01228951                  -0.05400901
-##      TCGA-DK-A2I2-10A-01D-A17S-01
-## 3023                -0.0197667671
-## 3024                 0.0051383090
-## 3025                 0.0807025844
-## 3026                 0.0000000000
-## 3027                 0.0318159230
-## 3028                 0.0005906408</code></pre>
+<pre class="r"><code>load(&quot;../../BLCA_LRR.rda&quot;)
+head(df)</code></pre>
+<pre><code>##                Probe.Set.ID Chromosome Physical.Position
+## SNP_A-8575125 SNP_A-8575125          1            564621
+## SNP_A-8497791 SNP_A-8497791          1            740857
+## SNP_A-1909444 SNP_A-1909444          1            752566
+## SNP_A-8358063 SNP_A-8358063          1            761732
+## SNP_A-8329892 SNP_A-8329892          1            765269
+## SNP_A-8408912 SNP_A-8408912          1            777122
+##               TCGA-BL-A0C8-10A-01D-A10T-01 TCGA-C4-A0F0-01A-12D-A10T-01
+## SNP_A-8575125                        0.862                        1.764
+## SNP_A-8497791                        2.238                        1.582
+## SNP_A-1909444                        1.670                        2.477
+## SNP_A-8358063                        1.376                        1.860
+## SNP_A-8329892                        1.578                        1.213
+## SNP_A-8408912                        2.077                        1.823
+##               TCGA-BL-A0C8-01A-11D-A10T-01 TCGA-C4-A0F0-10A-01D-A10T-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-BT-A42C-01A-11D-A23L-01 TCGA-FJ-A3Z7-01A-12D-A23L-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-GC-A3YS-01A-11D-A23L-01 TCGA-BT-A42C-10A-01D-A23J-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-GC-A3YS-10A-01D-A23J-01 TCGA-GV-A6ZA-10A-01D-A338-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-GV-A6ZA-01A-12D-A338-01 TCGA-FD-A6TB-01A-12D-A338-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-FD-A6TB-10A-21D-A338-01 TCGA-MV-A51V-10A-01D-A26J-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-MV-A51V-01A-11D-A26L-01 TCGA-E7-A6ME-01A-22D-A32A-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-E7-A6ME-10B-01D-A328-01 TCGA-E7-A7DU-01A-11D-A32A-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-E7-A7DU-10A-01D-A328-01 TCGA-FD-A6TI-01A-11D-A32A-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-FD-A6TI-10A-01D-A328-01 TCGA-GU-A766-01A-11D-A32A-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-GD-A3OP-11A-11D-A21Y-01 TCGA-GD-A3OP-10A-01D-A21Y-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-GV-A3QG-01A-11D-A21Y-01 TCGA-GV-A3QG-10A-01D-A21Y-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-GD-A3OP-01A-21D-A21Y-01 TCGA-CF-A3MI-01A-11D-A20B-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-CF-A3MI-10A-01D-A20B-01 TCGA-K4-A3WS-01A-11D-A22Y-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-K4-A3WS-10A-01D-A22Y-01 TCGA-DK-A6B2-10A-01D-A30G-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-DK-A6B2-01A-11D-A30D-01 TCGA-FD-A62N-10A-01D-A30G-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-FD-A62N-01A-11D-A30D-01 TCGA-UY-A78M-01A-21D-A34T-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-UY-A78M-10A-01D-A34W-01 TCGA-BL-A0C8-01A-11D-A10T-01.1
+## SNP_A-8575125                        1.764                          1.764
+## SNP_A-8497791                        1.582                          1.582
+## SNP_A-1909444                        2.477                          2.477
+## SNP_A-8358063                        1.860                          1.860
+## SNP_A-8329892                        1.213                          1.213
+## SNP_A-8408912                        1.823                          1.823
+##               TCGA-BL-A0C8-01A-11D-A10T-01.2
+## SNP_A-8575125                          1.764
+## SNP_A-8497791                          1.582
+## SNP_A-1909444                          2.477
+## SNP_A-8358063                          1.860
+## SNP_A-8329892                          1.213
+## SNP_A-8408912                          1.823
+##               TCGA-BL-A0C8-10A-01D-A10T-01.1 TCGA-CU-A3YL-01A-11D-A22Y-01
+## SNP_A-8575125                          1.764                        1.764
+## SNP_A-8497791                          1.582                        1.582
+## SNP_A-1909444                          2.477                        2.477
+## SNP_A-8358063                          1.860                        1.860
+## SNP_A-8329892                          1.213                        1.213
+## SNP_A-8408912                          1.823                        1.823
+##               TCGA-GC-A3BM-01A-11D-A22Y-01 TCGA-CU-A3YL-10A-01D-A22Y-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-GC-A3BM-10A-01D-A22Y-01 TCGA-DK-A3WY-01A-11D-A22Y-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-DK-A3WY-10A-01D-A22Y-01 TCGA-GC-A3RD-01A-12D-A22Y-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-GC-A3RD-10B-01D-A22Y-01 TCGA-FD-A3SP-01A-31D-A22Y-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-FD-A3SP-10A-01D-A22Y-01 TCGA-GC-A3BM-11A-11D-A22Y-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823
+##               TCGA-DK-A2I2-01A-11D-A17S-01 TCGA-DK-A2I2-10A-01D-A17S-01
+## SNP_A-8575125                        1.764                        1.764
+## SNP_A-8497791                        1.582                        1.582
+## SNP_A-1909444                        2.477                        2.477
+## SNP_A-8358063                        1.860                        1.860
+## SNP_A-8329892                        1.213                        1.213
+## SNP_A-8408912                        1.823                        1.823</code></pre>
 <p>The plot of mY region of that sample can be obtained by simply typing (NOTE: The function <code>plotIndSNP</code> can procude this plot from: 1) an object of class <code>madloy</code>; 2) a matrix having chromosome, position and LRR; or 3) a path indicanting where a file having chromosome, position and LRR is located).</p>
-<pre class="r"><code>pos.id &lt;- grep(id.tcga.low, names(blca.lrr))
-plotIndSNP(blca.lrr, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = pos.id)</code></pre>
-<pre><code>## Warning in plotIndSNP(blca.lrr, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol =
+<pre class="r"><code>pos.id &lt;- grep(id.tcga.low, names(df))
+plotIndSNP(df, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = pos.id)</code></pre>
+<pre><code>## Warning in plotIndSNP(df, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol =
 ## pos.id): NAs introducidos por coerción</code></pre>
-<pre><code>## Warning in plotIndSNP(blca.lrr, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = pos.id): 
+<pre><code>## Warning in plotIndSNP(df, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = pos.id): 
 ##  Genomic position information has changed to numeric values. Please, check</code></pre>
 <div class="figure">
-<img src="data:image/png;base64,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" alt="LRR in the mY region of BLCA sample r id.tcga.low." />
+<img src="data:image/png;base64,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" alt="LRR in the mY region of BLCA sample r id.tcga.low." />
 <p class="caption">LRR in the mY region of BLCA sample <code>r id.tcga.low</code>.</p>
 </div>
 </div>
@@ -417,8 +413,12 @@ plotIndSNP(blca.lrr, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = pos.id)</code><
 <pre class="r"><code>ans &lt;- getLOY(MADloyHapMapMale)</code></pre>
 <p>Results can be visualized with the generic <code>plot</code> function as follows:</p>
 <pre class="r"><code>plot(ans)</code></pre>
-<p><img src="data:image/png;base64,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" alt="Plot of a LOY object obtained from SNP array data" /> The method is indicating that there are three samples having a LOY that can be verified by looking at the raw data.</p>
-<p><strong>MArcos, aqui usare los datos crudos de estos individuos con la nueva funcion que he implementado ‘plotIndSNP’ para verificar que es un LOY</strong></p>
+<p><img src="data:image/png;base64,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" alt="Plot of a LOY object obtained from SNP array data" /> The method is indicating that there are three samples having a LOY that can be verified by looking at the raw data. We have incorporated a text file into the package having the LRR information of samples NA1276, NA12144 and NA11829 who are having a LOY and NA07048 who is not.</p>
+<pre class="r"><code>PathHapMapLRR &lt;- system.file(&quot;extdata&quot;, package = &quot;MADloy&quot;)
+list.files(PathHapMapLRR, pattern=&quot;.txt&quot;)</code></pre>
+<pre><code>## [1] &quot;NA07048.txt&quot; &quot;NA11829.txt&quot; &quot;NA12144.txt&quot; &quot;NA12716.txt&quot;</code></pre>
+<pre class="r"><code>file.path(PathHapMapLRR, &quot;NA1276.txt&quot;)</code></pre>
+<pre><code>## [1] &quot;C:/Users/jrgonzalez/Documents/R/win-library/3.3/MADloy/extdata/NA1276.txt&quot;</code></pre>
 <p>Next, the same procedure can be apply to the object XXX which encodes the preprocessed data of XXX</p>
 <p><strong>Aqui sera el ejemplo que he comentado antes de PRAD o BLCA o algun otro que tengamos</strong></p>
 </div>
