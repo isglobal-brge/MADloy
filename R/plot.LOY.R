@@ -46,7 +46,7 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
     points(ss, xx, col = mycol, pch = 16, ...)
   }
   legend(pos.leg, leg.lab, pch = 16, col = col.lab)
-  text(ss[alt], jitter(d[alt]), labels[alt], cex = 0.8, adj = 0)
+  text(ss[alt], jitter(d[alt]), tools::file_path_sans_ext(labels[alt]), cex = 0.8, adj = 0)
  # if (nclass==3)
  #  text(ss[gain], jitter(d[gain]), labels[gain], cex = 0.8, adj = 0)
 } 
