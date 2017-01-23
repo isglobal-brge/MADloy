@@ -2,14 +2,14 @@
 #' 
 #' MADloy check the median log R ratio(LRR) of all the MAD files specified or in
 #' a path to detect Loss of Y events. The LRR is computed by default for the 
-#' regions chr21, chr22 and chrY:7000000-3000000.
+#' regions chr21, chr22 and chrY:2694521-59034049 (hg19/GRCh37).
 #' 
 #' @seealso \code{\link{getLOY}} to process results from \code{MADloy}
 #' @param files A single file path (APT platform and MAD platform), a vector of 
 #'   file paths (MAD platform) or a MAD rawData folder path containing files 
 #'   ready to be processed with MAD (MAD platform).
 #' @param target.region The chromosome or region to be compared with the other 
-#'   regions. By default is the region chrY:7000000-3000000 but it can be 
+#'   regions. By default is the region chrY:2694521-59034049 (hg19/GRCh37) but it can be 
 #'   changed.
 #' @param ref.region.1 First chromosome or region to be compared with the Y 
 #'   region in UCSC style (i.e. "chr21" or "chr21:1000-10000").
@@ -30,12 +30,12 @@
 #' @examples
 #' \dontrun{
 #' madloy(filepath, mc.cores=2)}
-madloy <- function(files, target.region = "chrY:7000000-30000000", ref.region.1 = "chr21", ref.region.2 = "chr22",
+madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region.1 = "chr21", ref.region.2 = "chr22",
   rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.cores, quiet = FALSE, ...) {
   
   # Check target and reference regions -----------------------------------------
   if (missing(target.region)) 
-    message("Targeted region set to chr7:7000000-30000000 by default")
+    message("Targeted region set to chrY:2694521-59034049 by default")
   queryA <- unlist(strsplit(x = target.region, split = "[:, -]", perl = T))
   if (is.na(queryA[2]) | is.na(queryA[3])) {
     subsetA <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryA[1]), ranges = IRanges::IRanges(start = 1, 

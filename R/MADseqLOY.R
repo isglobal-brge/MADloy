@@ -2,14 +2,14 @@
 #' 
 #' MADseqLOY check all the bams in a given folder, by using the target regions
 #' of the technology used to sequence the sample. The coverage is computed for
-#' the region chrY:7000000-3000000 and another given by the query argument
+#' the region chrY:2694521-59034049 (hg19/GRCh37) and another given by the query argument.
 #' 
 #' @param files A folder path where the .bam files are or a vector of file
 #'   paths. This function searches in recursive folders.
 #' @param exomeTargets A file path to a .bed file with the regions targeted by
 #'   the sequencing method used.
 #' @param target.region The chromosome or region to be compared with the other
-#'   regions. By default is the region chrY:7000000-3000000 but it can be
+#'   regions. By default is the region chrY:2694521-59034049 but it can be
 #'   changed.
 #' @param ref.region.1 First chromosome or region to be compared with the Y
 #'   region in UCSC style (i.e. "chr21" or "chr21:1000-10000").
@@ -34,11 +34,11 @@
 #' madseqloy(files=bamFile, reference=targetFile, skip=0)}
 
 
-madseqloy <- function (files, exomeTargets, target.region = "chrY:7000000-30000000", 
+madseqloy <- function (files, exomeTargets, target.region = "chrY:2694521-59034049", 
                        ref.region.1 = "chr21", ref.region.2 = "chr22", mc.cores, 
                        quiet = FALSE, skip = 2, ...) {
   if (missing(target.region)) 
-    message("Targeted region set to chr7:7000000-30000000 by default\n")
+    message("Targeted region set to chrY:2694521-59034049 by default\n")
   queryA <- unlist(strsplit(x = target.region, split = "[:, -]", 
                             perl = T))
   if (is.na(queryA[2]) | is.na(queryA[3])) {
