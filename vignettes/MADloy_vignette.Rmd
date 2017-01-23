@@ -109,7 +109,14 @@ download.file(url = "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG0023
               destfile = "/tmp/HG00236.mapped.ILLUMINA.bwa.GBR.exome.20121211.bam.bai")
 ```
 
+<<<<<<< HEAD
 The exome DNA was isolated by using a capture kit. The regions captured by the kit are described in a file with the starting and ending positions. In the downloaded samples, the kit used is the "SureSelect Human All Exon V2". Regions captured by this kit must be downloaded from Agilent webpage [https://earray.chem.agilent.com/suredesign/search.htm](https://earray.chem.agilent.com/suredesign/search.htm) with the Design ID S0293689, but registration is required. To follow the tutorial, it is considered that the targets file is decompressed and inside the /tmp folder.
+=======
+**en las dos ejecuciones anteriores se bajan dos muestras? y se baja el .bam y el .bai**
+
+**Esto que viene ahora si no lo explicas mejor no se entiende** 
+The targets file for HapMap analyzed samples is "SureSelect Human All Exon V2". It must be downloaded from Agilent webpage [https://earray.chem.agilent.com/suredesign/search.htm](https://earray.chem.agilent.com/suredesign/search.htm) with the Design ID S0293689, but registration is required. To follow the tutorial, it is considered that the targets file is decompressed and inside the /tmp folder.  **Estas cosas se las tiene que bajar cada uno? no podemos poner algo por defecto dependiendo de los datos que se usen?**
+>>>>>>> origin/master
 
 As in the case of using `madloy` function, the folder having the .bam and .bai files must be provided. As previously mentioned, exome sequencing data also requires the targets file. The function `madseqloy` recursively processes all .bam files that are provided in the path. An object of class `MADseqLOY` is created.
 
@@ -130,20 +137,24 @@ plotIndNGS(res2, sample = res$par$files[1])
 
 Let us illustrate how to visualize a set of .bam samples. We donwloaded .bam files of 26 male samples diagnosed with prostate cancer from [`TCGA project`](https://cancergenome.nih.gov/). Processed .bam files (using `madseqloy` function) can be loaded by:
 
-```{r, get_BLCA}
-load("../../MADseqLOY_BLCA.rda")
+```{r, get_BLCA, eval=FALSE}
+if(!file.exists("temp"))
+dir.create("temp")
+filedata <- "https://drive.google.com/a/isglobal.org/file/d/0B9z3DpVIA7h6MjY3M3o0NksteUE/view?usp=sharing"
+download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", method="curl")
+load("temp/MADseqLOY_BLCA.rda")
 BLCA
 ````
 
 Summarized coverage in mY region of each sample can be plotted by using the generic function `plot`:
 
-```{r, plot_BLCA, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Mean coverage of samples belonging to BLCA data."}
+```{r, plot_BLCA, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Mean coverage of samples belonging to BLCA data.", eval=FALSE}
 plot(BLCA)
 ```
 
 Let us verify whether the subject having the lowest coverage is a having a LOY. The id of that sample can be retrived by executing: 
 
-```{r, lowest_coverage}
+```{r, lowest_coverage, eval=FALSE}
 dd <- MADloy:::getMedian(BLCA)
 id.tcga.low <- substr(rownames(dd)[which.min(dd[,1])], 6, 21)
 id.tcga.low
@@ -151,7 +162,7 @@ id.tcga.low
 
 LRR can be downloaded from TCGA since this information is considered of level 3 and it is available from TCGA Data Portal. We have created a data.frame containing the LRR of selected samples. 
 
-```{r, LRR_BLCA}
+```{r, LRR_BLCA, eval=FALSE}
 load("../../BLCA_LRR.rda")
 head(df)
 ```
@@ -159,7 +170,7 @@ head(df)
 The plot of mY region of that sample can be obtained by simply typing (NOTE: The function `plotIndSNP` can procude this plot from: 1) an object of class `madloy`; 2) a matrix having chromosome, position and LRR; or 3) a path indicanting where a file having chromosome, position and LRR is located).
 
 
-```{r, LRR_BLCA_plot, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "LRR in the mY region of BLCA sample `r id.tcga.low`. "}
+```{r, LRR_BLCA_plot, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "LRR in the mY region of BLCA sample `r id.tcga.low`. ", eval=FALSE}
 pos.id <- grep(id.tcga.low, names(df))
 plotIndSNP(df, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = pos.id)
 ```
@@ -171,7 +182,7 @@ Once samples have been processed, the user will have either a `MADloy` or `MADse
 
 Let us start by illustrating how to detect LOY in the HapMap samples. The object containing preprocessed data is called `MADloyHapMapMale`. Calling is performed by typing:
 
-```{r, getLOY}
+```{r, getLOY, eval=FALSE}
 nsamples <- length(MADloyHapMapMale$par$files)
 ans <- getLOY(MADloyHapMapMale, pval.harm = 0.05/nsamples)
 
@@ -179,24 +190,24 @@ ans <- getLOY(MADloyHapMapMale, pval.harm = 0.05/nsamples)
 
 Results can be visualized with the generic `plot` function as follows:
 
-```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data"}
+```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data", eval=FALSE}
 plot(ans)
 
 ```
 The method is indicating that there are three samples having a LOY that can be verified by looking at the raw data. We have incorporated a text file into the package having the LRR information of samples NA1276, NA12144 and NA11829 who are having a LOY and NA07048 who is not.
 
-```{r, show_NAsamples}
+```{r, show_NAsamples, eval=FALSE}
 PathHapMapLRR <- system.file("extdata", package = "MADloy")
 list.files(PathHapMapLRR, pattern=".txt")
 ```
 
-```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data"}
+```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data", eval=FALSE}
 plotIndSNP(file.path(PathHapMapLRR, "NA12716.txt"))
 ```
 
 
 Next, the same procedure can be apply to the object XXX which encodes the preprocessed data of XXX
 
-```{r, BLCA_analysis}
+```{r, BLCA_analysis, eval=FALSE}
 ans2 <- getLOY(BLCA)
 ```
