@@ -100,7 +100,7 @@ We observe that there are some points that deviate from 0. The question is to de
 
 ## Processing NGS Exome-seq data with `madseqloy`
 
-To detect samples having LOY events when using NGS data requires a very similar procedure as the one used for SNP data. In that case the required input files are indexed .bam files. The next code illustrate how to download and analyze two samples **Marcos, es asi?** from HapMap 3 project. This code is not executed due to the large size of Exome-seq data files. However, if you want to reproduce the results, you can try it. It is required that .bam files are indexed. Therefore, the .bai index files must also be in the same folder. It is required that both files (.bam and .bai) have the same filename (i.e. test.bam and test.bai). If you don't have an index file, you can create it by using the function `indexBam` from `Rsamtools` package if the .bam file is sorted. Otherwise, you will need to sort it beforehand with the function `sortBam` also from `Rsamtools`.
+To detect samples having LOY events when using NGS data requires a very similar procedure as the one used for SNP data. In that case the required input files are indexed .bam files. The next code illustrate how to download and analyze two Hapmap samples sequenced in  the 1000 Genomes project. This code is not executed due to the large size of Exome-seq data files. However, if you want to reproduce the results, you can try it. It is required that .bam files are indexed. Therefore, the .bai index files must also be in the same folder. It is required that both files (.bam and .bai) have the same filename (i.e. test.bam and test.bai). If you don't have an index file, you can create it by using the function `indexBam` from `Rsamtools` package if the .bam file is sorted. Otherwise, you will need to sort it beforehand with the function `sortBam` also from `Rsamtools`.
 
 ```{r, Download_Hapmap, eval=FALSE}
 download.file(url = "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG12716/exome_alignment/HG00236.mapped.ILLUMINA.bwa.GBR.exome.20121211.bam",
@@ -109,13 +109,7 @@ download.file(url = "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG0023
               destfile = "/tmp/HG00236.mapped.ILLUMINA.bwa.GBR.exome.20121211.bam.bai")
 ```
 
-**en las dos ejecuciones anteriores se bajan dos muestras? y se baja el .bam y el .bai**
-
-**Esto que viene ahora si no lo explicas mejor no se entiende** 
-The targets file for HapMap analyzed samples is "SureSelect Human All Exon V2". It must be downloaded from Agilent webpage [https://earray.chem.agilent.com/suredesign/search.htm](https://earray.chem.agilent.com/suredesign/search.htm) with the Design ID S0293689, but registration is required. To follow the tutorial, it is considered that the targets file is decompressed and inside the /tmp folder.  **Estas cosas se las tiene que bajar cada uno? no podemos poner algo por defecto dependiendo de los datos que se usen?**
-
-
-**He eliminado el chunk MADseqLOY_1 para que sea homogeneo ... se pone el folder y listo -- igual que hecho para SNPs** 
+The exome DNA was isolated by using a capture kit. The regions captured by the kit are described in a file with the starting and ending positions. In the downloaded samples, the kit used is the "SureSelect Human All Exon V2". Regions captured by this kit must be downloaded from Agilent webpage [https://earray.chem.agilent.com/suredesign/search.htm](https://earray.chem.agilent.com/suredesign/search.htm) with the Design ID S0293689, but registration is required. To follow the tutorial, it is considered that the targets file is decompressed and inside the /tmp folder.
 
 As in the case of using `madloy` function, the folder having the .bam and .bai files must be provided. As previously mentioned, exome sequencing data also requires the targets file. The function `madseqloy` recursively processes all .bam files that are provided in the path. An object of class `MADseqLOY` is created.
 
