@@ -132,17 +132,14 @@ plotIndNGS(res2, sample = samples(res)[1])
 
 Let us illustrate how to visualize a set of .bam samples. We donwloaded .bam files of 26 male samples diagnosed with prostate cancer from [`TCGA project`](https://cancergenome.nih.gov/). Processed .bam files (using `madseqloy` function) can be loaded by:
 
-<<<<<<< HEAD
+
 ```{r, get_BLCA}
-load("../../MADseqLOY_BLCA.rda")
-=======
-```{r, get_BLCA, eval=FALSE}
-if(!file.exists("temp"))
-dir.create("temp")
-filedata <- "https://drive.google.com/uc?export=download&id=XXX" ## Where XXX is the identifier of the shared file within google drive
-download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", method="curl")
-load("temp/MADseqLOY_BLCA.rda")
->>>>>>> origin/master
+if(!file.exists("./temp"))
+dir.create("./temp")
+filedata <- "https://drive.google.com/uc?export=download&id=0B8VpqcZ29oqOY09uNEVKMk5fQW8" ## Where 0B8VpqcZ29oqOY09uNEVKMk5fQW8 is the identifier of the shared file in google drive
+if(Sys.info()["sysname"] == "Linux") download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", method="wget")
+if(Sys.info()["sysname"] == "Windows") download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", mode = "wb")
+load("./temp/MADSeqLOY_BLCA.rda")
 BLCA
 ````
 
