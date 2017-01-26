@@ -19,6 +19,8 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
+
+
 # Introduction
 
 `MADloy` is a package to detect mosaic loss of chromosome Y (LOY) events from NGS and SNP data. It uses a bivariate mixture model which uses values in a target region of chromosome Y and in two reference chromosomes across several samples in order to detect those samples with altered values (LOY or GAIN) from the main population. The measures compared are different depending the type of data analyzed. Depth coverage is used for NGS data (exome sequencing data) and log R ratio (LRR) for SNP array data.
@@ -130,43 +132,37 @@ plotIndNGS(res2, sample = samples(res)[1])
 
 Let us illustrate how to visualize a set of .bam samples. We donwloaded .bam files of 26 male samples diagnosed with prostate cancer from [`TCGA project`](https://cancergenome.nih.gov/). Processed .bam files (using `madseqloy` function) can be loaded by:
 
-```{r, get_BLCA, eval=FALSE}
+
+```{r, get_BLCA}
 if(!file.exists("./temp"))
 dir.create("./temp")
 filedata <- "https://drive.google.com/uc?export=download&id=0B8VpqcZ29oqOY09uNEVKMk5fQW8" ## Where 0B8VpqcZ29oqOY09uNEVKMk5fQW8 is the identifier of the shared file in google drive
-if(Sys.info()["sysname"] == "Windows") download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", method="wget")
-if(Sys.info()["sysname"] == "Linux") download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", mode = "wb")
+if(Sys.info()["sysname"] == "Linux") download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", method="wget")
+if(Sys.info()["sysname"] == "Windows") download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", mode = "wb")
 load("./temp/MADSeqLOY_BLCA.rda")
 BLCA
 ````
 
 Summarized coverage in mY region of each sample can be plotted by using the generic function `plot`:
 
-```{r, plot_BLCA, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Mean coverage of samples belonging to BLCA data.", eval=FALSE}
+```{r, plot_BLCA, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Mean coverage of samples belonging to BLCA data."}
 plot(BLCA)
 ```
 
 Let us verify whether the subject having the lowest coverage is a having a LOY. The id of that sample can be retrived by executing: 
 
-```{r, lowest_coverage, eval=FALSE}
+```{r, lowest_coverage}
 dd <- MADloy:::getMedian(BLCA)
 id.tcga.low <- substr(rownames(dd)[which.min(dd[,1])], 6, 21)
 id.tcga.low
 ```
 
-LRR can be downloaded from TCGA since this information is considered of level 3 and it is available from TCGA Data Portal. We have created a data.frame containing the LRR of selected samples. 
-
-```{r, LRR_BLCA, eval=FALSE}
-load("../../BLCA_LRR.rda")
-head(df)
-```
-
-The plot of mY region of that sample can be obtained by simply typing (NOTE: The function `plotIndSNP` can procude this plot from: 1) an object of class `madloy`; 2) a matrix having chromosome, position and LRR; or 3) a path indicanting where a file having chromosome, position and LRR is located).
+LRR can be downloaded from TCGA since this information is considered of level 3 and it is available from TCGA Data Portal. The plot of mY region of that sample can be obtained by simply typing (NOTE: The function `plotIndSNP` can procude this plot from: 1) an object of class `madloy`; 2) a matrix having chromosome, position and LRR; or 3) a path indicanting where a file having chromosome, position and LRR is located).
 
 
-```{r, LRR_BLCA_plot, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "LRR in the mY region of BLCA sample `r id.tcga.low`. ", eval=FALSE}
-pos.id <- grep(id.tcga.low, names(df))
-plotIndSNP(df, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = pos.id)
+```{r, LRR_BLCA_plot, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "LRR in the mY region of BLCA sample `r id.tcga.low`. "}
+folder <- "../../BLCAdata/rawData"
+plotIndSNP(file.path(folder, paste0(id.tcga.low, ".txt")))
 ```
 
 
@@ -176,7 +172,7 @@ Once samples have been processed, the user will have either a `MADloy` or `MADse
 
 Let us start by illustrating how to detect LOY in the HapMap samples. The object containing preprocessed data is called `MADloyHapMapMale`. Calling is performed by typing:
 
-```{r, getLOY, eval=FALSE}
+```{r, getLOY}
 nsamples <- length(MADloyHapMapMale$par$files)
 ans <- getLOY(MADloyHapMapMale, pval.harm = 0.05/nsamples)
 
@@ -184,18 +180,18 @@ ans <- getLOY(MADloyHapMapMale, pval.harm = 0.05/nsamples)
 
 Results can be visualized with the generic `plot` function as follows:
 
-```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data", eval=FALSE}
+```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data"}
 plot(ans)
-
 ```
+
 The method is indicating that there are three samples having a LOY that can be verified by looking at the raw data. We have incorporated a text file into the package having the LRR information of samples NA1276, NA12144 and NA11829 who are having a LOY and NA07048 who is not.
 
-```{r, show_NAsamples, eval=FALSE}
+```{r, show_NAsamples}
 PathHapMapLRR <- system.file("extdata", package = "MADloy")
 list.files(PathHapMapLRR, pattern=".txt")
 ```
 
-```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data", eval=FALSE}
+```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data"}
 plotIndSNP(file.path(PathHapMapLRR, "NA12716.txt"))
 ```
 
@@ -205,3 +201,10 @@ Next, the same procedure can be apply to the object XXX which encodes the prepro
 ```{r, BLCA_analysis, eval=FALSE}
 ans2 <- getLOY(BLCA)
 ```
+
+And the figure to determine LOY samples can be obtained by: 
+
+```{r, fig.show='hold', fig.width=6, fig.height=5,fig.cap = "Plot of a LOY object obtained from BLCA dataset", eval=FALSE}
+plot(ans2)
+```
+

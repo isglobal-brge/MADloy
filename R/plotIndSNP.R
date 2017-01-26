@@ -55,9 +55,14 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, ...) {
   pos.target <- dat$Position[which(dat$Chr == as.character(GenomeInfoDb::seqnames(subsetA)) & dat$Position > 
                                         BiocGenerics::start(subsetA) & dat$Position < BiocGenerics::end(subsetA))]
   
-  
-  plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ...)
-  rect(7e6, max(lrr.target, na.rm=TRUE), 25e6, min(lrr.target, na.rm=TRUE), col="MistyRose", border="white")
+  if (max(lrr.target, na.rm=TRUE)<1){
+    plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ylim=c(min(lrr.target, na.rm=TRUE), 1), ...)
+    rect(7e6, 1, 25e6, min(lrr.target, na.rm=TRUE), col="MistyRose", border="white")
+  }  
+  else {
+   plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ...)
+   rect(7e6, max(lrr.target, na.rm=TRUE), 25e6, min(lrr.target, na.rm=TRUE), col="MistyRose", border="white")
+  }
   points(pos.target, lrr.target, pch=16, cex=0.7, col="blue")
   title(tt)
   abline(h=0, col="red", lty=2, lwd=3)
