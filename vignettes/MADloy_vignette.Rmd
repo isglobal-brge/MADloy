@@ -136,10 +136,11 @@ Let us illustrate how to visualize a set of .bam samples. We donwloaded .bam fil
 ```{r, get_BLCA}
 if(!file.exists("./temp"))
 dir.create("./temp")
-filedata <- "https://drive.google.com/uc?export=download&id=0B8VpqcZ29oqOY09uNEVKMk5fQW8" ## Where 0B8VpqcZ29oqOY09uNEVKMk5fQW8 is the identifier of the shared file in google drive
+filedata <- "https://drive.google.com/uc?export=download&id=0B_pkfs1Zxa9DRkhUZTY2OV80ZDg" ## Where 0B8VpqcZ29oqOY09uNEVKMk5fQW8 is the identifier of the shared file in google drive
 if(Sys.info()["sysname"] == "Linux") download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", method="wget")
 if(Sys.info()["sysname"] == "Windows") download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", mode = "wb")
 load("./temp/MADSeqLOY_BLCA.rda")
+unlink("./temp", recursive = TRUE)
 BLCA
 ````
 
