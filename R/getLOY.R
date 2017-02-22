@@ -102,7 +102,7 @@ getLOY <- function(object, ref = "22", k , cutoff= 0.90, arbvar=FALSE, pval.harm
     class(ans) <- "LOY"
   } else {
     xx <- cbind(target, reference)
-    y <- exp(xx[,1])
+    y <- exp(target-reference)
     ref <- exp(c(x[,-1]))
     pars <- mleHarmonic(ref)$par
     pvals <- pHarmonic(y, a=pars[1], m=pars[2])
