@@ -2,7 +2,7 @@
 #' 
 #' MADloy check the median log R ratio(LRR) of all the MAD files specified or in
 #' a path to detect Loss of Y events. The LRR is computed by default for the 
-#' regions chr21, chr22 and chrY:2694521-59034049 (hg19/GRCh37).
+#' autosomes and chrY:2694521-59034049 (hg19/GRCh37).
 #' 
 #' @seealso \code{\link{getLOY}} to process results from \code{MADloy}
 #' @param files A single file path (APT platform and MAD platform), a vector of 
@@ -11,10 +11,8 @@
 #' @param target.region The chromosome or region to be compared with the other 
 #'   regions. By default is the region chrY:2694521-59034049 (hg19/GRCh37) but it can be 
 #'   changed.
-#' @param ref.region.1 First chromosome or region to be compared with the Y 
+#' @param ref.region If declared, the chromosome or region to be compared with the Y 
 #'   region in UCSC style (i.e. "chr21" or "chr21:1000-10000").
-#' @param ref.region.2 Second chromosome or region to be compared with the Y 
-#'   region in UCSC style (i.e. "chr22" or "chr22:1000-10000").
 #' @param rsCol The position of the column with the SNP identifier.
 #' @param ChrCol The position of the column with the Chromosome field.
 #' @param PosCol The position of the column with the Position field.
@@ -30,8 +28,10 @@
 #' @examples
 #' \dontrun{
 #' madloy(filepath, mc.cores=2)}
-madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region.1 = "chr21", ref.region.2 = "chr22",
+madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="Autosomes",
   rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.cores, quiet = FALSE, ...) {
+  
+  chrSizes <- fread("data/hg19.chrom.sizes", skip=1, colClasses = c("character", "numeric"), showProgress = FALSE)
   
   # Check target and reference regions -----------------------------------------
   if (missing(target.region)) 
@@ -45,33 +45,24 @@ madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region.1 
       end = as.numeric(queryA[3])))
   }
   
-  if (missing(ref.region.1)) 
-    message("Reference region 1 set to chr21 by default")
-  queryB <- unlist(strsplit(x = ref.region.1, split = "[:, -]", perl = T))
-  if (is.na(queryB[2]) | is.na(queryB[3])) {
-    subsetB <- GenomicRanges::GRanges(seqnames =gsub("chr", "", queryB[1]), ranges = IRanges::IRanges(start = 1, 
-      end = 3e+08))
+  if (missing(ref.region)) {
+    message("Using all autosomes as Reference region")
+    subsetB <- GenomicRanges::GRanges(seqnames = chrSizes$V1[1:22], ranges = IRanges::IRanges(0, chrSizes$V2[1:22]))
   } else {
-    subsetB <- GenomicRanges::GRanges(seqnames =gsub("chr", "", queryB[1]), ranges = IRanges::IRanges(start = as.numeric(queryB[2]), 
-      end = as.numeric(queryB[3])))
+    queryB <- unlist(strsplit(x = ref.region, split = "[:, -]", perl = T))
+    if (is.na(queryB[2]) | is.na(queryB[3])) {
+      subsetB <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryB[1]), ranges = IRanges::IRanges(start = 1, 
+                                                                                                        end = 3e+08))
+    } else {
+      subsetB <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryB[1]), ranges = IRanges::IRanges(start = as.numeric(queryB[2]), 
+                                                                                                        end = as.numeric(queryB[3])))
+    }
   }
   
-  if (missing(ref.region.2)) 
-    message("Reference region 2 set to chr22 by default")
-  queryC <- unlist(strsplit(x = ref.region.2, split = "[:, -]", perl = T))
-  if (is.na(queryC[2]) | is.na(queryC[3])) {
-    subsetC <- GenomicRanges::GRanges(seqnames =gsub("chr", "", queryC[1]), ranges = IRanges::IRanges(start = 1, 
-      end = 3e+08))
-  } else {
-    subsetC <- GenomicRanges::GRanges(seqnames =gsub("chr", "", queryC[1]), ranges = IRanges::IRanges(start = as.numeric(queryC[2]), 
-      end = as.numeric(queryC[3])))
-  }
   if (!quiet) 
-    message(paste0("LRR median will be computed in reference regions ", ref.region.1, 
-      ", ", ref.region.2, " and target region ", target.region, "\n"))
+    if (missing(ref.region)) message(paste0("LRR median will be computed in all autosomal chromosomes as reference regions and target region ", target.region, "\n")) else message(paste0("LRR median will be computed in reference region ", ref.region, " and target region ", target.region, "\n"))
   
-  
-  # Check input-----------------------------------------------------------------
+    # Check input-----------------------------------------------------------------
   
   if (missing(files)) {
     stop("A single file path (APT platform and MAD platform), a vector of files paths (MAD platform) or a MAD rawData folder path containing files ready to be processed with MAD (MAD platform) must be provided")
@@ -115,16 +106,13 @@ madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region.1 
   
   targetLRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
     PosCol = PosCol, LRRCol = LRRCol, query = subsetA, mc.cores = mc.cores)
-  ref1LRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
+  refLRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
     PosCol = PosCol, LRRCol = LRRCol, query = subsetB, mc.cores = mc.cores)
-  ref2LRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
-    PosCol = PosCol, LRRCol = LRRCol, query = subsetC, mc.cores = mc.cores)
-  names(targetLRR) <- names(ref1LRR) <- names(ref2LRR) <- basename(allfiles)
-  par <- list(target.region = subsetA, ref.region.1 = subsetB, 
-              ref.region.2 = subsetC, files = basename(allfiles),
+  names(targetLRR) <- names(refLRR) <- basename(allfiles)
+  par <- list(target.region = subsetA, ref.region = subsetB, 
+              files = basename(allfiles),
               path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol))
-  LRRmedians <- list(target = targetLRR, reference.1 = ref1LRR, reference.2 = ref2LRR, 
-    par = par)
+  LRRmedians <- list(target = targetLRR, reference = refLRR, par = par)
   class(LRRmedians) <- "MADloy"
   return(LRRmedians)
 } 
