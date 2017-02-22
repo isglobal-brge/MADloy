@@ -31,7 +31,7 @@
 madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="Autosomes",
   rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.cores, quiet = FALSE, ...) {
   
-  chrSizes <- fread("data/hg19.chrom.sizes", skip=1, colClasses = c("character", "numeric"), showProgress = FALSE)
+  chrSizes <- fread(system.file("data", "hg19.chrom.sizes", package = "MADloy"), skip=1, colClasses = c("character", "numeric"), showProgress = FALSE)
   
   # Check target and reference regions -----------------------------------------
   if (missing(target.region)) 
