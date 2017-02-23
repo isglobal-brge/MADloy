@@ -17,25 +17,21 @@ getMedian <- function(object) {
     targetAvg <- sapply(object$target, "[[", "medianTargetCoverage")
     refAvg.1 <- sapply(object$reference.1, "[[", "medianTargetCoverage")
     refAvg.2 <- sapply(object$reference.2, "[[", "medianTargetCoverage")
+    avg <- cbind(targetAvg, refAvg.1, refAvg.2)
+    targetChr <- as.character(GenomeInfoDb::seqnames(object$par$target.region))
+    refChr.1 <- as.character(GenomeInfoDb::seqnames(object$par$ref.region.1))
+    refChr.2 <- as.character(GenomeInfoDb::seqnames(object$par$ref.region.2))
+    colnames(avg) <- c(paste0("medianCov_", targetChr), paste0("medianCov_", refChr.1), paste0("medianCov_", refChr.2))
   }
   
   if (inherits(object, "MADloy")) {
     targetAvg <- sapply(object$target, "[[", "median")
-    refAvg.1 <- sapply(object$reference.1, "[[", "median")
-    refAvg.2 <- sapply(object$reference.2, "[[", "median")
+    refAvg <- sapply(object$reference, "[[", "median")
+    avg <- cbind(targetAvg, refAvg)
+    targetChr <- as.character(GenomeInfoDb::seqnames(object$par$target.region))
+    refChr <- as.character(GenomeInfoDb::seqnames(object$par$ref.region))
+    if ( length(refChr) > 1 ) refChr <- paste(refChr, collapse = "_")
+    colnames(avg) <- c(paste0("medianLRR_", targetChr), paste0("medianLRR_", refChr))
   }
-  
-  avg <- cbind(targetAvg, refAvg.1, refAvg.2)
-  targetChr <- as.character(GenomeInfoDb::seqnames(object$par$target.region))
-  refChr.1 <- as.character(GenomeInfoDb::seqnames(object$par$ref.region.1))
-  refChr.2 <- as.character(GenomeInfoDb::seqnames(object$par$ref.region.2))
-  if (inherits(object, "MADseqLOY")) 
-    colnames(avg) <- c(paste0("medianCov_", targetChr), paste0("medianCov_", 
-      refChr.1), paste0("medianCov_", refChr.2))
-  
-  if (inherits(object, "MADloy")) 
-    colnames(avg) <- c(paste0("medianLRR_", targetChr), paste0("medianLRR_", refChr.1), 
-      paste0("medianLRR_", refChr.2))
-  
   return(avg)
 } 
