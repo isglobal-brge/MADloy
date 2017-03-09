@@ -102,10 +102,12 @@ getLOY <- function(object, ref = "22", k , cutoff= 0.90, arbvar=FALSE, pval.harm
     class(ans) <- "LOY"
   } else {
     xx <- cbind(target, reference)
-    y <- exp(target-reference)
-    ref <- exp(c(x[,-1]))
-    pars <- mleHarmonic(ref)$par
-    pvals <- pHarmonic(y, a=pars[1], m=pars[2])
+    y <- target-reference
+    ref <- reference
+    pars <- nigFit(ref, trace=FALSE)
+    pp <- pars@fit$estimate
+    pvals <- pnig(y, pp[1], pp[2], pp[3], pp[4])
+    
     cl <- ifelse(pvals > pval.harm, "normal", "altered")
     cl[cl=="altered" & log(y) > 0] <- "GAIN"
     cl[cl=="altered" & log(y) < 0] <- "LOY"
