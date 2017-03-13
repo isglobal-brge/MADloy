@@ -19,11 +19,11 @@ Imports:
     parallel,
     plotrix,
     Rsamtools,
-    TEQC
+    TEQC,
+    GeneralizedHyperbolic
 Description: This packages implements a method to detect loss of Y events using
-    .bam files from exome sequencing or microarray data.It compares the
-    coverage in the chromosome Y, a region of interest in chrY:7000000-30000000
-    and a given chromosome in UCSC format.
+    SNP array or NGS data. It compares the
+    coverage in the chromosome Y,  ................
 License: GPL (>= 2)
 URL: http://www.creal.cat/brge and http://www.creal.cat/jrgonzalez/software.htm
 VignetteBuilder: knitr

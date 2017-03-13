@@ -25,13 +25,13 @@ getMedian <- function(object) {
   }
   
   if (inherits(object, "MADloy")) {
-    targetAvg <- sapply(object$target, "[[", "median")
-    refAvg <- sapply(object$reference, "[[", "median")
+    targetAvg <- sapply(object$target, "[[", "summary")
+    refAvg <- sapply(object$reference, "[[", "summary")
     avg <- cbind(targetAvg, refAvg)
     targetChr <- as.character(GenomeInfoDb::seqnames(object$par$target.region))
     refChr <- as.character(GenomeInfoDb::seqnames(object$par$ref.region))
     if ( length(refChr) > 1 ) refChr <- paste(refChr, collapse = "_")
-    colnames(avg) <- c(paste0("medianLRR_", targetChr), paste0("medianLRR_", refChr))
+    colnames(avg) <- c(paste0("summaryLRR_", targetChr), paste0("summaryLRR_", refChr))
   }
   return(avg)
 } 
