@@ -1,13 +1,11 @@
 #' Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data
 #' 
 #' @param object A MADloy or MADseqLOY object.
-#' @param ref One of the reference chromosomes used in the \code{MADloy} or \code{MADseqLOY}
-#'   functions.
 #' @offset Offset value of SNP array data in the LRR of chromosome Y. That is, value to
 #' guarantee that mean LRR at chrmosome Y is centered at 0.  Default 0 since LRR at 
 #' m-LRR region is expected to be centered at O. 
-#' @k Number of groups. Only necessary in NGS data  
-#' @param ... Other parameters
+#' @k Number of groups. Only necessary in NGS data.  
+#' @param ... Other parameters.
 #'   
 #' @return An object of class "LOY" that summarizes the LOY events detected in
 #'   the analyzed samples
@@ -16,7 +14,7 @@
 #' \dontrun{
 #' getLOY(resMADseqLOY)
 #' getLOY(resMADloy)}
-getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
+getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
   
   if (inherits(object, "MADseqLOY") | inherits(object, "MADloy")) {
     x <- MADloy:::getSummary(object)
@@ -24,10 +22,7 @@ getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
     x <- object
   }
   target <- x[, 1]
-  posRef <- grep(ref, colnames(x))
-  if (length(posRef) == 0) 
-    stop(paste0("Chromosome reference ", ref, " is not valid. Check argument 'ref.region' in MADseqLOY funcion"))
-  reference <- x[, posRef]
+  reference <- x[, 2]
   
   if (inherits(object, "MADseqLOY")) {
     xx <- cbind(target, reference)
@@ -107,8 +102,7 @@ getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
   else {
     xx <- cbind(target, reference)
     norm.lrr <- target - reference + offset
-    ref <- reference
-    pars <- GeneralizedHyperbolic:::nigFit(ref)
+    pars <- GeneralizedHyperbolic:::nigFit(reference)
 #    pars <- fBasics:::nigFit(ref, trace=FALSE)
 #    pp <- pars@fit$estimate
     pp <- pars$param

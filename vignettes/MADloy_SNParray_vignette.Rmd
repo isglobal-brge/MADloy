@@ -107,7 +107,7 @@ Let us start by illustrating how to detect LOY in the HapMap samples. The object
 
 ```{r, getLOY}
 nsamples <- length(MADloyHapMapMale$par$files)
-ans <- getLOY(MADloyHapMapMale, pval.harm = 0.05/nsamples)
+ans <- getLOY(MADloyHapMapMale, pval.sig = 0.05/nsamples)
 
 ```
 
