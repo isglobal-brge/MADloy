@@ -9,11 +9,11 @@ Depends:
     BiocStyle,
     data.table,
     GenomicRanges,
+    GeneralizedHyperbolic,
     R (>= 3.2.0),
 Imports: 
     BiocGenerics,
     ecolitk,
-    GeneralizedHyperbolic,
     GenomeInfoDb,
     IRanges,
     mixtools,
