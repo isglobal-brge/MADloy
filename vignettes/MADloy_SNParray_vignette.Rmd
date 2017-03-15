@@ -148,7 +148,8 @@ load("C:/Juan/CREAL/GitHub/BLCAdata/blcaLOY.rda")
 ``` 
 
 ```{r, BLCA_analysis}
-call.blca <- getLOY(blcaLOY, offset= 0.46, pval.sig=0.05/49)
+n <- length(blcaLOY$par$files)
+call.blca <- getLOY(blcaLOY, offset= 0.46, pval.sig=0.05/n)
 call.blca
 ```
 
