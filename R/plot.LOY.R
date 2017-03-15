@@ -54,8 +54,14 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
   }
   legend(pos.leg, leg.lab, pch = 16, col = col.lab)
   alt <- x$class%in%c("LOY", "GAIN")
-  wordcloud::textplot(x = ss[alt], y = d[alt], words = tools::file_path_sans_ext(labels[alt]), 
-                      cex = 0.8, new = FALSE, xlim=c(min(ss[alt]), max(ss[alt])), ylim=c(min(d[alt]), max(d[alt])))
+  if (requireNamespace("wordcloud", quietly = TRUE)) {
+    wordcloud::textplot(x = ss[alt], y = d[alt], words = tools::file_path_sans_ext(labels[alt]), 
+                        cex = 0.8, new = FALSE, xlim=c(min(ss[alt]), max(ss[alt])), ylim=c(min(d[alt]), max(d[alt])))
+  } else {
+    text(ss[alt], jitter(d[alt]), tools::file_path_sans_ext(labels[alt]),
+         cex = 0.8, adj = 0)
+  }
+  
  # if (nclass==3)
  #  text(ss[gain], jitter(d[gain]), labels[gain], cex = 0.8, adj = 0)
 } 
