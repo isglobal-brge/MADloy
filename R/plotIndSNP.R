@@ -46,7 +46,7 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, ...) {
     
   data.table::setnames(dat, colnames(dat[, c(rsCol, ChrCol, PosCol, LRRCol), with = F]), 
                        c("Name", "Chr", "Position", "Log.R.Ratio"))
-  queryA <- unlist(strsplit(x = "chrY:7000000-30000000", split = "[:, -]", perl = T))
+  queryA <- unlist(strsplit(x = "chrY:2694521-59034049", split = "[:, -]", perl = T))
   subsetA <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryA[1]), 
                                     ranges = IRanges::IRanges(start = as.numeric(queryA[2]), end = as.numeric(queryA[3])))
   

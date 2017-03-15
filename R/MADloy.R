@@ -30,9 +30,9 @@
 #' \dontrun{
 #' madloy(filepath, mc.cores=2)}
 madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="Autosomes",
-  rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, trim=0, mc.cores, quiet = FALSE, ...) {
+  rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, trim=0, mc.cores, quiet = FALSE, hg="hg19", ...) {
   
-  chrSizes <- fread(system.file("data", "hg19.chrom.sizes", package = "MADloy"), skip=1, colClasses = c("character", "numeric"), showProgress = FALSE)
+  chrSizes <- fread(system.file("data", paste0(hg, ".chrom.sizes"), package = "MADloy"), skip=1, colClasses = c("character", "numeric"), showProgress = FALSE)
   
   # Check target and reference regions -----------------------------------------
   if (missing(target.region)) 
@@ -54,6 +54,7 @@ madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="A
     if (is.na(queryB[2]) | is.na(queryB[3])) {
       subsetB <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryB[1]), ranges = IRanges::IRanges(start = 1, 
                                                                                                         end = 3e+08))
+      if (queryB[1] == "Autosomes") subsetB <- GenomicRanges::GRanges(seqnames = chrSizes$V1[1:22], ranges = IRanges::IRanges(0, chrSizes$V2[1:22]))
     } else {
       subsetB <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryB[1]), ranges = IRanges::IRanges(start = as.numeric(queryB[2]), 
                                                                                                         end = as.numeric(queryB[3])))
@@ -103,7 +104,7 @@ madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="A
         mc.cores))
   }
   
-  # Check LRRs------------------------------------------------------------------
+  # Get LRR summary ------------------------------------------------------------------
   
   targetLRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
     PosCol = PosCol, LRRCol = LRRCol, query = subsetA, mc.cores = mc.cores)
@@ -113,7 +114,7 @@ madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="A
   par <- list(target.region = subsetA, ref.region = subsetB, 
               files = basename(allfiles),
               path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol))
-  LRRmedians <- list(target = targetLRR, reference = refLRR, par = par)
-  class(LRRmedians) <- "MADloy"
-  return(LRRmedians)
+  LRRsummary <- list(target = targetLRR, reference = refLRR, par = par)
+  class(LRRsummary) <- "MADloy"
+  return(LRRsummary)
 } 

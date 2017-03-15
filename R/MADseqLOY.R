@@ -2,7 +2,7 @@
 #' 
 #' MADseqLOY check all the bams in a given folder, by using the target regions
 #' of the technology used to sequence the sample. The coverage is computed for
-#' the region chrY:2694521-59034049 (hg19/GRCh37) and another given by the query argument.
+#' the region chrY:2694521-59034049 (hg19/GRCh37) and another given by the ref.region argument.
 #' 
 #' @param files A folder path where the .bam files are or a vector of file
 #'   paths. This function searches in recursive folders.
@@ -12,9 +12,7 @@
 #'   regions. By default is the region chrY:2694521-59034049 but it can be
 #'   changed.
 #' @param ref.region.1 First chromosome or region to be compared with the Y
-#'   region in UCSC style (i.e. "chr21" or "chr21:1000-10000").
-#' @param ref.region.2 Second chromosome or region to be compared with the Y
-#'   region in UCSC style (i.e. "chr22" or "chr22:1000-10000").
+#'   region in UCSC style (i.e. "chr22" or "chr21:1000-10000").
 #' @param mc.cores umber of cores to be used with this function. If there are
 #'   more cores than samples, the number of cores will be limited to the number
 #'   of samples. By default set to 1.
@@ -24,10 +22,9 @@
 #'   By default is set to 1.
 #' @param ... Other parameters of the read.targets function.
 #'   
-#' @return The returned value is an object of "MADseqLOY" class with four lists,
-#'   one regarding the target region coverage called "target", two regarding the
-#'   reference regions to be compared against called "reference.1" and
-#'   "reference.2" and finally one with the parameters used in the query.
+#' @return The returned value is an object of "MADseqLOY" class with three lists,
+#'   one regarding the target region coverage called "target", another regarding the
+#'   reference regions to be compared against called "reference"  and finally one with the parameters used in the query.
 #' @export
 #' @examples
 #' \dontrun{
@@ -35,8 +32,10 @@
 
 
 madseqloy <- function (files, exomeTargets, target.region = "chrY:2694521-59034049", 
-                       ref.region.1 = "chr21", ref.region.2 = "chr22", mc.cores, 
+                       ref.region = "chr22", mc.cores, 
                        quiet = FALSE, skip = 2, ...) {
+  
+  # Check target and reference regions -----------------------------------------
   if (missing(target.region)) 
     message("Targeted region set to chrY:2694521-59034049 by default\n")
   queryA <- unlist(strsplit(x = target.region, split = "[:, -]", 
@@ -44,15 +43,14 @@ madseqloy <- function (files, exomeTargets, target.region = "chrY:2694521-590340
   if (is.na(queryA[2]) | is.na(queryA[3])) {
     subsetA <- GenomicRanges::GRanges(seqnames = queryA[1], 
                                       ranges = IRanges::IRanges(start = 1, end = 3e+08))
-  }
-  else {
+  } else {
     subsetA <- GenomicRanges::GRanges(seqnames = queryA[1], 
                                       ranges = IRanges::IRanges(start = as.numeric(queryA[2]), 
                                                                 end = as.numeric(queryA[3])))
   }
-  if (missing(ref.region.1)) 
-    message("Reference region 1 set to chr21 by default\n")
-  queryB <- unlist(strsplit(x = ref.region.1, split = "[:, -]", 
+  if (missing(ref.region)) 
+    message("Reference region 1 set to chr22 by default\n")
+  queryB <- unlist(strsplit(x = ref.region, split = "[:, -]", 
                             perl = T))
   if (is.na(queryB[2]) | is.na(queryB[3])) {
     subsetB <- GenomicRanges::GRanges(seqnames = queryB[1], 
@@ -63,23 +61,13 @@ madseqloy <- function (files, exomeTargets, target.region = "chrY:2694521-590340
                                       ranges = IRanges::IRanges(start = as.numeric(queryB[2]), 
                                                                 end = as.numeric(queryB[3])))
   }
-  if (missing(ref.region.1)) 
-    message("Reference region 2 set to chr22 by default\n")
-  queryC <- unlist(strsplit(x = ref.region.2, split = "[:, -]", 
-                            perl = T))
-  if (is.na(queryC[2]) | is.na(queryC[3])) {
-    subsetC <- GenomicRanges::GRanges(seqnames = queryC[1], 
-                                      ranges = IRanges::IRanges(start = 1, end = 3e+08))
-  }
-  else {
-    subsetC <- GenomicRanges::GRanges(seqnames = queryC[1], 
-                                      ranges = IRanges::IRanges(start = as.numeric(queryC[2]), 
-                                                                end = as.numeric(queryC[3])))
-  }
   if (!quiet) 
-    message(paste0("Computing coverages in reference regions ", 
-                   ref.region.1, ", ", ref.region.2, " and target region ", 
+    message(paste0("Computing coverages in reference region ", 
+                   ref.region, " and target region ", 
                    target.region, "\n"))
+  
+  # Check input-----------------------------------------------------------------
+  
   if (missing(files)) {
     stop("A vector of .bam files paths, a single .bam file path or a folder path containing .bam files must be provided\n")
   }
@@ -123,6 +111,9 @@ madseqloy <- function (files, exomeTargets, target.region = "chrY:2694521-590340
     if (!quiet) 
       message(paste0("Processing ", length(allfiles), " bam file(s)...\n"))
   }
+  
+  # Check the number of cores---------------------------------------------------
+  
   if (missing(mc.cores)) 
     mc.cores <- 1
   if (mc.cores > length(allfiles)) {
@@ -131,6 +122,9 @@ madseqloy <- function (files, exomeTargets, target.region = "chrY:2694521-590340
       message(paste0("There are more cores than files to be processed. Parameter 'mc.cores' set to ", 
                      mc.cores, "\n"))
   }
+  
+  # Check the exome targets file---------------------------------------------------
+  
   if (missing(exomeTargets)) {
     stop("A path to a exome targets .bed file related to the technology used must be provided\n")
   }
@@ -145,17 +139,18 @@ madseqloy <- function (files, exomeTargets, target.region = "chrY:2694521-590340
       GenomeInfoDb::seqlevelsStyle(targets) <- "UCSC"
     }
   }
+  
+  # Get coverages summary ------------------------------------------------------------------
+  
   targetCov <- parallel::mclapply(X = allfiles, FUN = processBam, 
                                   targets = targets, subset = subsetA, mc.cores = mc.cores)
-  ref.1.Cov <- parallel::mclapply(X = allfiles, FUN = processBam, 
+  refCov <- parallel::mclapply(X = allfiles, FUN = processBam, 
                                   targets = targets, subset = subsetB, mc.cores = mc.cores)
-  ref.2.Cov <- parallel::mclapply(X = allfiles, FUN = processBam, 
-                                  targets = targets, subset = subsetC, mc.cores = mc.cores)
-  names(targetCov) <- names(ref.1.Cov) <- names(ref.2.Cov) <- basename(allfiles)
-  par <- list(targets = targets, target.region = subsetA, ref.region.1 = subsetB, 
-              ref.region.2 = subsetC, files = basename(allfiles))
-  coverages <- list(target = targetCov, reference.1 = ref.1.Cov, 
-                    reference.2 = ref.2.Cov, par = par)
+  names(targetCov) <- names(refCov) <- basename(allfiles)
+  par <- list(targets = targets, target.region = subsetA, ref.region = subsetB, 
+              files = basename(allfiles))
+  coverages <- list(target = targetCov, reference = refCov, 
+                    par = par)
   class(coverages) <- "MADseqLOY"
   return(coverages)
 }

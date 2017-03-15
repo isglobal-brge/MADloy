@@ -1,6 +1,6 @@
-#' Get median values from MADseqLOY or MADloy objects
+#' Get summary values from MADseqLOY or MADloy objects
 #' 
-#' This function retrieves the median values from the MADloy or MADseqLOY
+#' This function retrieves the summary values from the MADloy or MADseqLOY
 #' objects and prepares the data to be analyzed for LOY events.
 #' 
 #' @param object A MADloy or MADseqLOY object from the \code{MADloy} or 
@@ -11,17 +11,15 @@
 #' \dontrun{
 #' getMedian(resMADloy)
 #' getMedian(resMADseqLOY)}
-getMedian <- function(object) {
+getSummary <- function(object) {
   
   if (inherits(object, "MADseqLOY")) {
-    targetAvg <- sapply(object$target, "[[", "medianTargetCoverage")
-    refAvg.1 <- sapply(object$reference.1, "[[", "medianTargetCoverage")
-    refAvg.2 <- sapply(object$reference.2, "[[", "medianTargetCoverage")
-    avg <- cbind(targetAvg, refAvg.1, refAvg.2)
+    targetAvg <- sapply(object$target, "[[", "summaryTargetCoverage")
+    refAvg <- sapply(object$reference, "[[", "summaryTargetCoverage")
+    avg <- cbind(targetAvg, refAvg)
     targetChr <- as.character(GenomeInfoDb::seqnames(object$par$target.region))
-    refChr.1 <- as.character(GenomeInfoDb::seqnames(object$par$ref.region.1))
-    refChr.2 <- as.character(GenomeInfoDb::seqnames(object$par$ref.region.2))
-    colnames(avg) <- c(paste0("medianCov_", targetChr), paste0("medianCov_", refChr.1), paste0("medianCov_", refChr.2))
+    refChr <- as.character(GenomeInfoDb::seqnames(object$par$ref.region))
+    colnames(avg) <- c(paste0("summaryCov_", targetChr), paste0("summaryCov_", refChr))
   }
   
   if (inherits(object, "MADloy")) {
