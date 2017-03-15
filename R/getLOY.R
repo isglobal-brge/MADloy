@@ -71,7 +71,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
     o <- order(tt[,2])
      alt <- which.max(abs(tt[,2] - 1))
      if (tt[alt,2] > 1) {
-       labs <- c("normal", "GAIN") }
+       labs <- c("normal", "gain") }
      else {
        labs <- c("LOY", "normal") }
     cl <- factor(cl, labels = labs[o])     
@@ -80,7 +80,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
      ratio <- xx[, 1]/xx[, 2]
      tt <- aggregate(ratio ~ as.factor(cl), FUN=mean)
      o <- order(tt[,2])
-     cl <- factor(cl, labels = c("LOY", "normal", "GAIN")[o])     
+     cl <- factor(cl, labels = c("LOY", "normal", "gain")[o])     
     }
     
     labs <- rownames(xx)
@@ -118,7 +118,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
     pvals <- sapply(norm.lrr, ff, param=pp)
     
     cl <- ifelse(pvals > pval.sig, "normal", "altered")
-    cl[cl=="altered" & norm.lrr > 0] <- "GAIN"
+    cl[cl=="altered" & norm.lrr > 0] <- "gain"
     cl[cl=="altered" & norm.lrr < 0] <- "LOY"
     ans <- list(class = cl, prob = pvals, data = norm.lrr)
     attr(ans, "type") <- "LRR"

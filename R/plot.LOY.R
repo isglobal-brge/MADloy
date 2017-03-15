@@ -14,7 +14,7 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
 
   if (nclass==2) {
    loy <- x$class == "LOY"
-   gain <- x$class == "GAIN"
+   gain <- x$class == "gain"
    if (sum(loy) > sum(gain)) { 
      mycol <- ifelse(loy, colors[1], colors[2])
      leg.lab <- c("LOY", "normal") 
@@ -22,18 +22,18 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
      alt <- loy }
    else {
      mycol <- ifelse(gain, colors[3], colors[2])
-     leg.lab <- c("normal", "GAIN")
+     leg.lab <- c("normal", "gain")
      col.lab <- colors[2:3]
      alt <- gain}  
   
   }
   if (nclass==3) {
    loy <- x$class == "LOY"
-   gain <- x$class == "GAIN"
+   gain <- x$class == "gain"
    mycol <- ifelse(loy, colors[1], ifelse(gain, colors[3],colors[2]))
-   leg.lab <- c("LOY", "normal", "GAIN")
+   leg.lab <- c("LOY", "normal", "gain")
    col.lab <- colors
-   alt <- x$class%in%c("LOY", "GAIN")
+   alt <- x$class%in%c("LOY", "gain")
   }  
 
   
@@ -52,8 +52,8 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
                  ylab = "Mean normalized LRR in mY region")
     points(ss, d, col = mycol, pch = 16, ...)
   }
-  legend(pos.leg, leg.lab, pch = 16, col = col.lab)
-  alt <- x$class%in%c("LOY", "GAIN")
+  legend(pos.leg, leg.lab, pch = 16, col = col.lab, horiz=TRUE, cex=0.8)
+  alt <- x$class%in%c("LOY", "gain")
   if (requireNamespace("wordcloud", quietly = TRUE)) {
     wordcloud::textplot(x = ss[alt], y = d[alt], words = tools::file_path_sans_ext(labels[alt]), 
                         cex = 0.8, new = FALSE, xlim=c(min(ss[alt]), max(ss[alt])), ylim=c(min(d[alt]), max(d[alt])))
@@ -61,7 +61,7 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
     text(ss[alt], jitter(d[alt]), tools::file_path_sans_ext(labels[alt]),
          cex = 0.8, adj = 0)
   }
-  
+  abline(h=0, lty=2, col="red")
  # if (nclass==3)
  #  text(ss[gain], jitter(d[gain]), labels[gain], cex = 0.8, adj = 0)
 } 

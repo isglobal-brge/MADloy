@@ -80,7 +80,7 @@ MADloyHapMapAll
 ```
 Data can be visually inspected by using the generic `plot` function. This function depicts the median LLR of Y chormosome adjusted by the LRR of chromosome 22 in order to control for possible technical artifacts. Notice that this reference chromosome can be changed if the user suspects that alterations in this chromosome can appear in the analyzed data. 
 
-```{r, fig.show='hold', fig.width=8, fig.height=6, fig.cap = "Plot of MADloy object including 89 HapMap samples"}
+```{r, fig.show='hold', fig.width=6, fig.height=4.5, fig.cap = "Plot of MADloy object including 89 HapMap samples"}
 plot(MADloyHapMapAll)
 ```
 
@@ -92,7 +92,7 @@ MADloyHapMapMale
 ```
 The plot is obtained by
 
-```{r, fig.show='hold', fig.width=8, fig.height=6, fig.cap = "Plot of a MADloy object with 23 HapMap 3 male samples analyzed"}
+```{r, fig.show='hold', fig.width=6, fig.height=4.5, fig.cap = "Plot of a MADloy object with 23 HapMap 3 male samples analyzed"}
 plot(MADloyHapMapMale, ylim=c(-0.3, 0.3))
 ```
 We observe that there are some points that deviate from 0. The question is to determine whether those samples belong to the general population of normal samples.
@@ -147,14 +147,52 @@ data(BLCA)
 load("C:/Juan/CREAL/GitHub/BLCAdata/blcaLOY.rda")
 ``` 
 
+First, let's have a look at the summarized data of LRR in mY region and in the autosomal choromosomes that are used as the reference ones
+
+```{r, lrr_ref_mY}
+lrr.summary <- MADloy:::getSummary(blcaLOY)
+head(lrr.summary)
+```
+
+```{r, plot_lrr_ref_mY, fig.show='hold', fig.width=6, fig.height=9, fig.cap ="LRR in reference (autosomes) and mY region of BLCA data"}
+par(mfrow=c(2,1))
+plot(lrr.summary[,2], xlab="samples", ylab="LRR in autosomes")
+abline(h=0, lty=2, col="red")
+plot(lrr.summary[,1], xlab="samples", ylab="LRR in mY region")
+abline(h=0, lty=2, col="red")
+```
+
+Here we can observe that:
+
+> * The LRR in autosomes are centered in 0 as expected
+> * The LRR in mY region deviates from 0 since there is only one copy (e.g ploidy is equal to 1) and hence, the LRR is centered in 2/3·log(1/2) = `r round(2/3*log(1/2),2)`
+> * There is also a little deviation due to the overall mean in the array
+
+Therefore, data in mY region is normalized by computing 
+
+```{r, normalized}
+norm.lrr <- lrr.summary[,1] - lrr.summary[,2] - 2/3*log(1/2)
+``` 
+
+Now the normalized LRR in mY regions is properly centered at 0
+
+```{r, plot_normalized, fig.show='hold', fig.width=6, fig.height=5, fig.cap ="Normalized LRR in mY region of BLCA data"}
+plot(norm.lrr, ylab="Normalized LRR in mY region", xlab="samples")
+abline(h=0, lty=2, col="red")
+``` 
+
+The calling that also incorporates the normalization procedure can be performed by computing:
+
 ```{r, BLCA_analysis}
 n <- length(blcaLOY$par$files)
 call.blca <- getLOY(blcaLOY, offset= 0.46, pval.sig=0.05/n)
 call.blca
 ```
 
+Notice that the offset corresponds to the absolute value of the mean LRR of chromosome Y in this array. In some occasions the software used to obtain LRR normalized this value to 0. In that case the offset is not necesary. The argument `pval.sig` controls the FDR of alterations (LOY or gains) by using Bonferroni correction.
+
 And the figure to determine LOY samples can be obtained by: 
 
 ```{r, fig.show='hold', fig.width=6, fig.height=5,fig.cap = "Plot of a LOY object obtained from BLCA dataset"}
-plot(call.blca)
+plot(call.blca, pos.leg="topright")
 ```
