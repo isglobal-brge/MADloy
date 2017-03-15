@@ -107,7 +107,7 @@ madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="A
   # Get LRR summary ------------------------------------------------------------------
   
   targetLRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
-    PosCol = PosCol, LRRCol = LRRCol, query = subsetA, mc.cores = mc.cores)
+    PosCol = PosCol, LRRCol = LRRCol, query = subsetA, mc.cores = mc.cores, trim=trim)
   refLRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
     PosCol = PosCol, LRRCol = LRRCol, query = subsetB, mc.cores = mc.cores, trim=trim)
   names(targetLRR) <- names(refLRR) <- basename(allfiles)
