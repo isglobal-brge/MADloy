@@ -12,7 +12,13 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
   
   nclass <- length(unique(x$class))
 
-  if (nclass==2) {
+  if (nclass==1){
+    mycol <- colors[2]
+    leg.lab <- c("normal") 
+    col.lab <- colors[2]
+#    alt <- rep(FALSE, length(x$class))
+  } 
+  else if (nclass==2) {
    loy <- x$class == "LOY"
    gain <- x$class == "gain"
    if (sum(loy) > sum(gain)) { 
@@ -24,8 +30,8 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
      mycol <- ifelse(gain, colors[3], colors[2])
      leg.lab <- c("normal", "gain")
      col.lab <- colors[2:3]
-     alt <- gain}  
-  
+#     alt <- gain
+     }
   }
   if (nclass==3) {
    loy <- x$class == "LOY"
@@ -33,7 +39,7 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
    mycol <- ifelse(loy, colors[1], ifelse(gain, colors[3],colors[2]))
    leg.lab <- c("LOY", "normal", "gain")
    col.lab <- colors
-   alt <- x$class%in%c("LOY", "gain")
+#   alt <- x$class%in%c("LOY", "gain")
   }  
 
   
@@ -49,20 +55,20 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
     ss <- 1:length(data)
     d <- x$data
     plot.default(ss, d, type = "n", xlab = "Individuals", 
-                 ylab = "Mean normalized LRR in mY region")
+                 ylab = "Trimmed mean normalized mLRR-Y")
     points(ss, d, col = mycol, pch = 16, ...)
   }
   legend(pos.leg, leg.lab, pch = 16, col = col.lab, horiz=TRUE, cex=0.8)
   alt <- x$class%in%c("LOY", "gain")
-  if (requireNamespace("wordcloud", quietly = TRUE)) {
+  if (any(alt)) {
+   if (requireNamespace("wordcloud", quietly = TRUE)) {
     wordcloud::textplot(x = ss[alt], y = d[alt], words = tools::file_path_sans_ext(labels[alt]), 
                         cex = 0.8, new = FALSE, xlim=c(min(ss[alt]), max(ss[alt])), ylim=c(min(d[alt]), max(d[alt])))
-  } else {
+   } else {
     text(ss[alt], jitter(d[alt]), tools::file_path_sans_ext(labels[alt]),
          cex = 0.8, adj = 0)
-  }
+   }
+  }  
   abline(h=0, lty=2, col="red")
- # if (nclass==3)
- #  text(ss[gain], jitter(d[gain]), labels[gain], cex = 0.8, adj = 0)
 } 
 

@@ -117,7 +117,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
     }
     pvals <- sapply(norm.lrr, ff, param=pp)
     
-    cl <- ifelse(pvals > pval.sig, "normal", "altered")
+    cl <- ifelse(pvals > pval.sig | abs(norm.lrr)<0.2, "normal", "altered")
     cl[cl=="altered" & norm.lrr > 0] <- "gain"
     cl[cl=="altered" & norm.lrr < 0] <- "LOY"
     ans <- list(class = cl, prob = pvals, data = norm.lrr)
