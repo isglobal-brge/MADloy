@@ -17,6 +17,7 @@
 #' @param ChrCol The position of the column with the Chromosome field.
 #' @param PosCol The position of the column with the Position field.
 #' @param LRRCol The position of the column with the LRR identifier.
+#' @param trim trim the fraction (0 to 0.5) of probes to be trimmed when summaryzing LRR.
 #' @param mc.cores The number of cores used to perform the function. By default 
 #'   is set to 1.
 #' @param quiet Should the function not inform about the status of the process. 
@@ -29,7 +30,7 @@
 #' \dontrun{
 #' madloy(filepath, mc.cores=2)}
 madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="Autosomes",
-  rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.cores, quiet = FALSE, ...) {
+  rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, trim=0, mc.cores, quiet = FALSE, ...) {
   
   chrSizes <- fread(system.file("data", "hg19.chrom.sizes", package = "MADloy"), skip=1, colClasses = c("character", "numeric"), showProgress = FALSE)
   
@@ -107,7 +108,7 @@ madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="A
   targetLRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
     PosCol = PosCol, LRRCol = LRRCol, query = subsetA, mc.cores = mc.cores)
   refLRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
-    PosCol = PosCol, LRRCol = LRRCol, query = subsetB, mc.cores = mc.cores)
+    PosCol = PosCol, LRRCol = LRRCol, query = subsetB, mc.cores = mc.cores, trim=trim)
   names(targetLRR) <- names(refLRR) <- basename(allfiles)
   par <- list(target.region = subsetA, ref.region = subsetB, 
               files = basename(allfiles),

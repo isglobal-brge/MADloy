@@ -3,17 +3,20 @@
 #' @param object A MADloy or MADseqLOY object.
 #' @param ref One of the reference chromosomes used in the \code{MADloy} or \code{MADseqLOY}
 #'   functions.
-#' @param k Number of expected classification groups
+#' @offset Offset value of SNP array data in the LRR of chromosome Y. That is, value to
+#' guarantee that mean LRR at chrmosome Y is centered at 0.  Default 0 since LRR at 
+#' m-LRR region is expected to be centered at O. 
+#' @k Number of groups. Only necessary in NGS data  
 #' @param ... Other parameters
 #'   
-#' @return An object of "LOY" class that summarizes the LOY events detected in
+#' @return An object of class "LOY" that summarizes the LOY events detected in
 #'   the analyzed samples
 #' @export
 #' @examples
 #' \dontrun{
 #' getLOY(resMADseqLOY)
 #' getLOY(resMADloy)}
-getLOY <- function(object, ref = "22", k , cutoff= 0.90, arbvar=FALSE, pval.harm=0.05, ...) {
+getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
   
   if (inherits(object, "MADseqLOY") | inherits(object, "MADloy")) {
     x <- MADloy:::getMedian(object)
@@ -100,16 +103,30 @@ getLOY <- function(object, ref = "22", k , cutoff= 0.90, arbvar=FALSE, pval.harm
       data = xx)
     attr(ans, "type") <- "Coverage"
     class(ans) <- "LOY"
-  } else {
+  } 
+  else {
     xx <- cbind(target, reference)
-    y <- exp(target-reference)
-    ref <- exp(c(x[,-1]))
-    pars <- mleHarmonic(ref)$par
-    pvals <- pHarmonic(y, a=pars[1], m=pars[2])
-    cl <- ifelse(pvals > pval.harm, "normal", "altered")
-    cl[cl=="altered" & log(y) > 0] <- "GAIN"
-    cl[cl=="altered" & log(y) < 0] <- "LOY"
-    ans <- list(class = cl, prob = pvals, data = xx)
+    norm.lrr <- target - reference + offset
+    ref <- reference
+    pars <- GeneralizedHyperbolic:::nigFit(ref)
+#    pars <- fBasics:::nigFit(ref, trace=FALSE)
+#    pp <- pars@fit$estimate
+    pp <- pars$param
+    
+    ff <- function(x, param){
+      if (x>=0.1)
+        ans <- GeneralizedHyperbolic:::pnig(x, param[1], param[2], 
+                                            param[3], param[4], lower=FALSE)
+      else
+        ans <- GeneralizedHyperbolic:::pnig(x, param[1], param[2],
+                                                param[3], param[4], lower=TRUE)
+    }
+    pvals <- sapply(norm.lrr, ff, param=pp)
+    
+    cl <- ifelse(pvals > pval.sig, "normal", "altered")
+    cl[cl=="altered" & norm.lrr > 0] <- "GAIN"
+    cl[cl=="altered" & norm.lrr < 0] <- "LOY"
+    ans <- list(class = cl, prob = pvals, data = norm.lrr)
     attr(ans, "type") <- "LRR"
     class(ans) <- "LOY"
   }
