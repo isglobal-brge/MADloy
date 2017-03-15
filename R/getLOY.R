@@ -19,14 +19,14 @@
 getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
   
   if (inherits(object, "MADseqLOY") | inherits(object, "MADloy")) {
-    x <- MADloy:::getMedian(object)
+    x <- MADloy:::getSummary(object)
   } else {
     x <- object
   }
   target <- x[, 1]
   posRef <- grep(ref, colnames(x))
   if (length(posRef) == 0) 
-    stop(paste0("Chromosome reference ", ref, " is not valid. Check arguments 'ref.region.1' and 'ref.region.2' in MADseqLOY funcion"))
+    stop(paste0("Chromosome reference ", ref, " is not valid. Check argument 'ref.region' in MADseqLOY funcion"))
   reference <- x[, posRef]
   
   if (inherits(object, "MADseqLOY")) {

@@ -12,6 +12,7 @@ Depends:
 Imports: 
     BiocGenerics,
     ecolitk,
+    GeneralizedHyperbolic,
     GenomeInfoDb,
     GenomicRanges,
     IRanges,
@@ -19,8 +20,7 @@ Imports:
     parallel,
     plotrix,
     Rsamtools,
-    TEQC,
-    GeneralizedHyperbolic
+    TEQC
 Description: This packages implements a method to detect loss of Y events using
     SNP array or NGS data. It compares the
     coverage in the chromosome Y,  ................
