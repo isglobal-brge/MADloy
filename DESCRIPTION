@@ -8,13 +8,13 @@ Maintainer: Juan R Gonzalez <jrgonzalez@creal.cat>
 Depends: 
     BiocStyle,
     data.table,
+    GenomicRanges,
     R (>= 3.2.0),
 Imports: 
     BiocGenerics,
     ecolitk,
     GeneralizedHyperbolic,
     GenomeInfoDb,
-    GenomicRanges,
     IRanges,
     mixtools,
     parallel,
