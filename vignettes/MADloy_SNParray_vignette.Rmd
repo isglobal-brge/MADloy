@@ -28,15 +28,17 @@ vignette: >
 In this vignettes we are going to illustrate how to process SNP array data. In that case, log R ratio (LRR) is used to stablished whether an individual is carrying an alteration in chromosome Y or not. We use Normal Inverse Gaussian (NIG) distribution which is able to model data that is obtained from the ratio of two values (e.g. LRR). The model parameters are estimated by using the trimmed mean LRR from the autosomes. Then, the values in the target region of chromosome Y are tested to provide evidences against the null hypothesis that corresponds to the case of having data from the reference. This figure illustrates how the NIG model perfectly fits the observed data, while the normal model is not.
 
 
-```{r, fitNIG, echo=FALSE, fig.cap="Empirical cumulative distribution function (ecdf) of the observed data and ecdf estimated using NIG and Normal models of reference LRR in BLCA data"}
+```{r, fitNIG, echo=FALSE, message = FALSE, warning=FALSE, fig.cap="Empirical cumulative distribution function (ecdf) of the observed data and ecdf estimated using NIG and Normal models of reference LRR in PRAD data of TCGA project."}
 library(MADloy)
-load("C:/Juan/CREAL/GitHub/BLCAdata/blcaLOY.rda")
-lrr <- MADloy:::getSummary(blcaLOY)
-plotNIG(lrr[,2])
+load("C:/Juan/CREAL/GitHub/PRADdata/pradLOY.rda")
+lrr <- MADloy:::getSummary(pradLOY)
+plotNIG(lrr[,2], tit="PRAD data of TCGA")
 ``` 
 
 
 By default, the target region used to detect LOY is the one in chromosome Y that avoids the PAR1 and PAR2 regions shared with chromosome X (mLRR-Y). In order to take into consideration the variability of coverage or LRR in a given sample, the method clusters individuals into LOY, normal and gain categories by using the NIG distribution evaluated at mLRR-Y region using parameters model estimated in the autosomes that are used as the reference values of LRR. The package summarizes the trimmed mean LRR in the probes contained in the SNP array and then perform the calling by using this pre-processed data. 
+
+# Getting started
 
 You can install `MADloy` from Github by typing 
 
@@ -44,13 +46,15 @@ You can install `MADloy` from Github by typing
 devtools::install_github("isglobal-brge/MADloy")
 ```
 
+Then the package is loaded as usual
+
 ```{r, message = FALSE}
 library(MADloy)
 ```
 
-# Processing SNP data with `madloy` (load and summarize)
+# Processing SNP data with `madloy`: loading and summarizing LRR
 
-`MADloy` contains a different function to pre-process your data depending on the technology. `madloy` processes SNP array data, while `madseqloy` deals with NGS data that is illustrated in a separate vignette. 
+`MADloy` contains a different function to pre-process your data depending on the technology. `madloy` processes SNP array data, while `madseqloy` deals with NGS data. Let us focus on `madloy`function (`madseqloy` and how to process NGS data is illustrated in a separate vignette). [**Marcos** no se si quitar lo de madseqloy de aquí para no dar pistas o para que nos pidan que lo pongamos]. 
 
 Detecting LOY events in SNP arrays requires to get summarized data from log R ratio (LRR) files. The idea is to see whether LRR in the male-specific region of chromosome Y is different from 0. The mLRR-Y corresponds to the 56-Mb region between pseudoautosomal regions 1 and 2 (PAR1 and PAR2) on chromosome Y (chrY:2,694,521-59,034,049, hg19/GRCh37). 
 
@@ -69,7 +73,7 @@ res
 ```
 We can manually inspect  information of mLRR-Y region (e.g., one by one sample) and decide whether a given individulas is having a LOY or not. For example this code will create the plot of Sample1 where LRR in the mLRR-Y region (shaded area) is clearly lost.
 
-```{r, plotSample1,  fig.cap="LRR in the mLRR.Y region (shaded) of Sample1 from the illustrative example"}
+```{r, plotSample1,  fig.cap="LRR in the mLRR-Y region (shaded) of Sample1 from the illustrative example"}
 plotIndSNP(res, sample="Sample1")
 ````
 
@@ -82,7 +86,7 @@ plotIndSNP(res, sample="Sample2")
 However, when thousands of samples are analyzed a proper statistical method must be used to differenciate those samples that are having LOY. Next section illustrate how to visualize the information of mLRR-Y of lot of samples
 
 
-# Visualizing a set of SNP samples
+# Visualizing a set of samples
 Let us illustrate how to visualize the data using 89 CEU HapMap samples.  Already pre-processed data can be retrieved into your ``R`` session from the `MADloyHapMapAll` data set that is included in the package by simply typing: 
 
 ```{r, MADloy_3}
