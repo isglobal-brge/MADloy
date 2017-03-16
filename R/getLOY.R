@@ -38,7 +38,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
        control <- control + 1
      } 
      if (inherits(ans2, "try-error") | inherits(ans3, "try-error"))
-      stop("Model does not converge: change initial parameters or run again the function")
+      stop("Model does not converge: change initial parameters or run aXYY the function")
 
      df2 <- length(unique(unlist(ans2$estim)))
      df3 <- length(unique(unlist(ans3$estim)))
@@ -59,7 +59,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
       control <- control + 1 
      }
      if (inherits(ans, "try-error"))
-      stop("Model does not converge: change initial parameters or run again the function")
+      stop("Model does not converge: change initial parameters or run aXYY the function")
      p.test <- 1
     }
 
@@ -71,7 +71,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
     o <- order(tt[,2])
      alt <- which.max(abs(tt[,2] - 1))
      if (tt[alt,2] > 1) {
-       labs <- c("normal", "gain") }
+       labs <- c("normal", "XYY") }
      else {
        labs <- c("LOY", "normal") }
     cl <- factor(cl, labels = labs[o])     
@@ -80,7 +80,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
      ratio <- xx[, 1]/xx[, 2]
      tt <- aggregate(ratio ~ as.factor(cl), FUN=mean)
      o <- order(tt[,2])
-     cl <- factor(cl, labels = c("LOY", "normal", "gain")[o])     
+     cl <- factor(cl, labels = c("LOY", "normal", "XYY")[o])     
     }
     
     labs <- rownames(xx)
@@ -117,8 +117,8 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
     }
     pvals <- sapply(norm.lrr, ff, param=pp)
     
-    cl <- ifelse(pvals > pval.sig | abs(norm.lrr)<0.2, "normal", "altered")
-    cl[cl=="altered" & norm.lrr > 0] <- "gain"
+    cl <- ifelse(pvals > pval.sig | abs(norm.lrr)<0.15, "normal", "altered")
+    cl[cl=="altered" & norm.lrr > 0] <- "XYY"
     cl[cl=="altered" & norm.lrr < 0] <- "LOY"
     ans <- list(class = cl, prob = pvals, data = norm.lrr)
     attr(ans, "type") <- "LRR"

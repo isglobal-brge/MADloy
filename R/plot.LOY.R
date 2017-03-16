@@ -1,6 +1,7 @@
 #' @method plot LOY
 #' @export
-plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg = "bottomleft", ...) {
+plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg = "bottomleft",
+                     cex.label=0.8, ...) {
   data <- x$data
   if (missing(labels)) {
     if(attr(x, "type")=="Coverage")
@@ -20,7 +21,7 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
   } 
   else if (nclass==2) {
    loy <- x$class == "LOY"
-   gain <- x$class == "gain"
+   gain <- x$class == "XYY"
    if (sum(loy) > sum(gain)) { 
      mycol <- ifelse(loy, colors[1], colors[2])
      leg.lab <- c("LOY", "normal") 
@@ -28,18 +29,18 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
      alt <- loy }
    else {
      mycol <- ifelse(gain, colors[3], colors[2])
-     leg.lab <- c("normal", "gain")
+     leg.lab <- c("normal", "XYY")
      col.lab <- colors[2:3]
 #     alt <- gain
      }
   }
   if (nclass==3) {
    loy <- x$class == "LOY"
-   gain <- x$class == "gain"
+   gain <- x$class == "XYY"
    mycol <- ifelse(loy, colors[1], ifelse(gain, colors[3],colors[2]))
-   leg.lab <- c("LOY", "normal", "gain")
+   leg.lab <- c("LOY", "normal", "XYY")
    col.lab <- colors
-#   alt <- x$class%in%c("LOY", "gain")
+#   alt <- x$class%in%c("LOY", "XYY")
   }  
 
   
@@ -59,14 +60,14 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
     points(ss, d, col = mycol, pch = 16, ...)
   }
   legend(pos.leg, leg.lab, pch = 16, col = col.lab, horiz=TRUE, cex=0.8)
-  alt <- x$class%in%c("LOY", "gain")
+  alt <- x$class%in%c("LOY", "XYY")
   if (any(alt)) {
    if (requireNamespace("wordcloud", quietly = TRUE)) {
     wordcloud::textplot(x = ss[alt], y = d[alt], words = tools::file_path_sans_ext(labels[alt]), 
-                        cex = 0.8, new = FALSE, xlim=c(min(ss[alt]), max(ss[alt])), ylim=c(min(d[alt]), max(d[alt])))
+                        cex = cex.label, new = FALSE, xlim=c(min(ss[alt]), max(ss[alt])), ylim=c(min(d[alt]), max(d[alt])))
    } else {
     text(ss[alt], jitter(d[alt]), tools::file_path_sans_ext(labels[alt]),
-         cex = 0.8, adj = 0)
+         cex = cex.label, adj = 0)
    }
   }  
   abline(h=0, lty=2, col="red")
