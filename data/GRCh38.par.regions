@@ -1,0 +1,6 @@
+#Obtained from https://www.ncbi.nlm.nih.gov/grc/human GRCh38.p10 2017/04/18
+chromosome type	start	end
+Y	PAR1	10001	2781479	
+Y	PAR2	56887903	57217415
+X	PAR1	10001	2781479
+X	PAR2	155701383	156030895

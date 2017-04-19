@@ -9,4 +9,4 @@
 #'   \item{par}{parameters specifying the regions analyzed}
 #'   ...
 #' }
-"MADloyDataAll"
+"MADloyHapMapAll"

@@ -1,3 +1,14 @@
+#' Plot of the distribution of the LRR values for the different models
+#' 
+#' This function draws the LRR values distribution for the Normal, Normal Inverse Gaussian (NIG) and Empiric Cumulative Distribution functions from a LOY object.
+#' 
+#' @param x A MADloy object from the \code{madloy} function.
+#' @param tit Title of the plot.
+#' 
+#' @return A data table with the results for all samples in columns
+#' @examples
+#' \dontrun{
+#' plotNIG(resMADloy)}
 plotNIG <- function(x, tit){
   pars <- nigFit(x)
   pp <- pars$param

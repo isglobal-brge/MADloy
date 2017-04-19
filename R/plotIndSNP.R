@@ -1,3 +1,18 @@
+#' Plots the SNP data of an individual
+#' 
+#' This function draws the LRR and BAF data for an individual
+#' 
+#' @param x A MADloy object from the \code{MADloy} functions.
+#' @param sample The identifier of a sample in the MADloy object.
+#' @param rsCol Column of the MAD file with the name of the SNP.
+#' @param ChrCol Column of the MAD file with the chromosome information.
+#' @param PosCol Column of the MAD file with the position information.
+#' @param LRRCol Column of the MAD file with the LRR information.
+#'   
+#' @return A data table with the results for all samples in columns
+#' @examples
+#' \dontrun{
+#' plotindSNP(resMADloy)}
 plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, ...) {
   if (inherits(x, "MADloy")) {
    samples <- x$par$files

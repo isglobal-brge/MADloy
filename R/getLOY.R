@@ -1,10 +1,10 @@
 #' Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data
 #' 
 #' @param object A MADloy or MADseqLOY object.
-#' @offset Offset value of SNP array data in the LRR of chromosome Y. That is, value to
+#' @param offset Offset value of SNP array data in the LRR of chromosome Y. That is, value to
 #' guarantee that mean LRR at chrmosome Y is centered at 0.  Default 0 since LRR at 
 #' m-LRR region is expected to be centered at O. 
-#' @k Number of groups. Only necessary in NGS data.  
+#' @param k Number of groups. Only necessary in NGS data.  
 #' @param ... Other parameters.
 #'   
 #' @return An object of class "LOY" that summarizes the LOY events detected in

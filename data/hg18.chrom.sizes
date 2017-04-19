@@ -1,4 +1,5 @@
 #Chromosome sizes obtained from https://genome.ucsc.edu/goldenpath/help/hg18.chrom.sizes
+chromosome	size
 1	247249719
 2	242951149
 3	199501827
@@ -19,7 +20,7 @@
 18	76117153
 19	63811651
 20	62435964
-22	49691432
 21	46944323
+22	49691432
 X	154913754
 Y	57772954
