@@ -16,36 +16,36 @@
 #' @examples
 #' \dontrun{
 #' processBdevMAD(file=file.path, query=rangedDataROI, rsCol=1, chrCol=2, PosCol=3, LRRCol=4)}
-processBdevMAD <- function(file, query, rsCol, ChrCol, PosCol, BAFCol, top, bot) {
+processBdevMAD <- function(file, query, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top, bot) {
   
   dat <- data.table::fread(file, showProgress = FALSE, sep = "\t")
 
-  data.table::setnames(dat, colnames(dat[, c(rsCol, ChrCol, PosCol, BAFCol), with = F]), 
-    c("Name", "Chr", "Position", "B.Allele.Freq"))
+  data.table::setnames(dat, colnames(dat[, c(rsCol, ChrCol, PosCol, LRRCol, BAFCol), with = F]), 
+    c("Name", "Chr", "Position", "Log.R.Ratio", "B.Allele.Freq"))
   Bdevsummary <- list()
   sel <- dat[ which(dat$Chr == as.character(GenomeInfoDb::seqnames(query[1])) & dat$Position > BiocGenerics::start(query[1]) & dat$Position < BiocGenerics::end(query[1]) & dat$B.Allele.Freq <= top & dat$B.Allele.Freq >= bot)]
   Bdevsummary$PAR1$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
   Bdevsummary$PAR1$Bdevsd <- sd(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
-  Bdevsummary$PAR1$LRR <- mean(abs(0.5 - sel$Log.R.Ratio), na.rm = T)
-  Bdevsummary$PAR1$LRRsd <- sd(abs(0.5 - sel$Log.R.Ratio), na.rm = T)
+  Bdevsummary$PAR1$LRR <- mean(sel$Log.R.Ratio, na.rm = T)
+  Bdevsummary$PAR1$LRRsd <- sd(sel$Log.R.Ratio, na.rm = T)
   Bdevsummary$PAR1$n <- nrow(sel)
   sel <- dat[ which(dat$Chr == as.character(GenomeInfoDb::seqnames(query[2])) & dat$Position > BiocGenerics::start(query[2]) & dat$Position < BiocGenerics::end(query[2]) & dat$B.Allele.Freq <= top & dat$B.Allele.Freq >= bot)]
   Bdevsummary$PAR2$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
   Bdevsummary$PAR2$Bdevsd <- sd(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
-  Bdevsummary$PAR2$LRR <- mean(abs(0.5 - sel$Log.R.Ratio), na.rm = T)
-  Bdevsummary$PAR2$LRRsd <- sd(abs(0.5 - sel$Log.R.Ratio), na.rm = T)
+  Bdevsummary$PAR2$LRR <- mean(sel$Log.R.Ratio, na.rm = T)
+  Bdevsummary$PAR2$LRRsd <- sd(sel$Log.R.Ratio, na.rm = T)
   Bdevsummary$PAR2$n <- nrow(sel)
   sel <- dat[ which(dat$Chr == as.character(GenomeInfoDb::seqnames(query[3])) & as.numeric(dat$Position) > BiocGenerics::start(query[3]) & as.numeric(dat$Position) < BiocGenerics::end(query[3]))]
   Bdevsummary$p$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
   Bdevsummary$p$Bdevsd <- sd(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
-  Bdevsummary$p$LRR <- mean(abs(0.5 - sel$Log.R.Ratio), na.rm = T)
-  Bdevsummary$p$LRRsd <- sd(abs(0.5 - sel$Log.R.Ratio), na.rm = T)
+  Bdevsummary$p$LRR <- mean(sel$Log.R.Ratio, na.rm = T)
+  Bdevsummary$p$LRRsd <- sd(sel$Log.R.Ratio, na.rm = T)
   Bdevsummary$p$n <- nrow(sel)
   sel <- dat[ which(dat$Chr == as.character(GenomeInfoDb::seqnames(query[4])) & as.numeric(dat$Position) > BiocGenerics::start(query[4]) & as.numeric(dat$Position) < BiocGenerics::end(query[4]))]
   Bdevsummary$q$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
   Bdevsummary$q$Bdevsd <- sd(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
-  Bdevsummary$q$LRR <- mean(abs(0.5 - sel$Log.R.Ratio), na.rm = T)
-  Bdevsummary$q$LRRsd <- sd(abs(0.5 - sel$Log.R.Ratio), na.rm = T)
+  Bdevsummary$q$LRR <- mean(sel$Log.R.Ratio, na.rm = T)
+  Bdevsummary$q$LRRsd <- sd(sel$Log.R.Ratio, na.rm = T)
   Bdevsummary$q$n <- nrow(sel)
   
   return(Bdevsummary)

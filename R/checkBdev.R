@@ -25,7 +25,7 @@
 #' @examples
 #' \dontrun{
 #' checkBdev(filepath, mc.cores=2)}
-checkBdev <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, BAFCol = 4, top=0.9, bot=0.1, mc.cores, quiet = FALSE, hg="hg18", ...) {
+checkBdev <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAFCol = 5, top=0.9, bot=0.1, mc.cores, quiet = FALSE, hg="hg18", ...) {
   
   # process PAR regions -----------------------------------------
   
@@ -76,7 +76,7 @@ checkBdev <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, BAFCol = 4, top=
   # Get Bdev summary ------------------------------------------------------------------
   
   Bdev <- parallel::mclapply(X = allfiles, FUN = processBdevMAD, rsCol = rsCol, ChrCol = ChrCol, 
-    PosCol = PosCol, BAFCol = BAFCol, query = subset, mc.cores = mc.cores, top = top, bot = bot)
+    PosCol = PosCol, LRRCol=LRRCol, BAFCol = BAFCol, query = subset, mc.cores = mc.cores, top = top, bot = bot)
   names(Bdev) <- basename(allfiles)
   par <- list(files = basename(allfiles),
               path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol, BAFCol),
