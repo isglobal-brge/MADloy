@@ -19,9 +19,7 @@
 processMAD <- function(file, query, rsCol, ChrCol, PosCol, LRRCol, trim=0.1) {
   
   dat <- data.table::fread(file, showProgress = FALSE, sep = "\t")
-  if (!all(c("Name", "Chr", "Position", "Log.R.Ratio") %in% colnames(dat))) {
-    stop("Wrong MAD file header in ", file)
-  }
+
   data.table::setnames(dat, colnames(dat[, c(rsCol, ChrCol, PosCol, LRRCol), with = F]), 
     c("Name", "Chr", "Position", "Log.R.Ratio"))
   LRRsummary <- list()

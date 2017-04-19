@@ -19,9 +19,7 @@
 processBdevMAD <- function(file, query, rsCol, ChrCol, PosCol, BAFCol, top, bot) {
   
   dat <- data.table::fread(file, showProgress = FALSE, sep = "\t")
-  if (!all(c("Name", "Chr", "Position", "B.Allele.Freq") %in% colnames(dat))) {
-    stop("Wrong MAD file header in ", file)
-  }
+
   data.table::setnames(dat, colnames(dat[, c(rsCol, ChrCol, PosCol, BAFCol), with = F]), 
     c("Name", "Chr", "Position", "B.Allele.Freq"))
   Bdevsummary <- list()
