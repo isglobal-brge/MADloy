@@ -1,8 +1,8 @@
-#' Check the mean LRR values to detect Loss of Y events in a folder or files.
+#' Check the mean LRR values in msY region to detect Loss of Y events in a folder or files.
 #' 
-#' MADloy check the median log R ratio(LRR) of all the MAD files specified or in
+#' madloy check the median log R ratio(LRR) of all the MAD files specified or in
 #' a path to detect Loss of Y events. The LRR is computed by default for the 
-#' autosomes and chrY:2694521-59034049 (hg19/GRCh37).
+#' autosomes and msY chrY:2694521-59034049 (hg19/GRCh37).
 #' 
 #' @seealso \code{\link{getLOY}} to process results from \code{MADloy}
 #' @param files A single file path (APT platform and MAD platform), a vector of 
@@ -32,7 +32,7 @@
 madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="Autosomes",
   rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, trim=0, mc.cores, quiet = FALSE, hg="hg19", ...) {
   
-  chrSizes <- fread(system.file("data", paste0(hg, ".chrom.sizes"), package = "MADloy"), skip=1, colClasses = c("character", "numeric"), showProgress = FALSE)
+  chrSizes <- fread(system.file("data", paste0(hg, ".chrom.sizes"), package = "MADloy"), header=T, skip="#", colClasses = c("character", "numeric"), showProgress = FALSE)
   
   # Check target and reference regions -----------------------------------------
   if (missing(target.region)) 
@@ -48,13 +48,13 @@ madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="A
   
   if (missing(ref.region)) {
     message("Using all autosomes as Reference region")
-    subsetB <- GenomicRanges::GRanges(seqnames = chrSizes$V1[1:22], ranges = IRanges::IRanges(0, chrSizes$V2[1:22]))
+    subsetB <- GenomicRanges::GRanges(seqnames = chrSizes$chromosome[1:22], ranges = IRanges::IRanges(0, chrSizes$size[1:22]))
   } else {
     queryB <- unlist(strsplit(x = ref.region, split = "[:, -]", perl = T))
     if (is.na(queryB[2]) | is.na(queryB[3])) {
       subsetB <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryB[1]), ranges = IRanges::IRanges(start = 1, 
                                                                                                         end = 3e+08))
-      if (queryB[1] == "Autosomes") subsetB <- GenomicRanges::GRanges(seqnames = chrSizes$V1[1:22], ranges = IRanges::IRanges(0, chrSizes$V2[1:22]))
+      if (queryB[1] == "Autosomes") subsetB <- GenomicRanges::GRanges(seqnames = chrSizes$chromosome[1:22], ranges = IRanges::IRanges(0, chrSizes$size[1:22]))
     } else {
       subsetB <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryB[1]), ranges = IRanges::IRanges(start = as.numeric(queryB[2]), 
                                                                                                         end = as.numeric(queryB[3])))
@@ -107,13 +107,14 @@ madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="A
   # Get LRR summary ------------------------------------------------------------------
   
   targetLRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
-    PosCol = PosCol, LRRCol = LRRCol, query = subsetA, mc.cores = mc.cores)
+    PosCol = PosCol, LRRCol = LRRCol, query = subsetA, mc.cores = mc.cores, trim=trim)
   refLRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
     PosCol = PosCol, LRRCol = LRRCol, query = subsetB, mc.cores = mc.cores, trim=trim)
   names(targetLRR) <- names(refLRR) <- basename(allfiles)
   par <- list(target.region = subsetA, ref.region = subsetB, 
               files = basename(allfiles),
-              path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol))
+              path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol),
+              trim = trim)
   LRRsummary <- list(target = targetLRR, reference = refLRR, par = par)
   class(LRRsummary) <- "MADloy"
   return(LRRsummary)

@@ -9,8 +9,8 @@
 #' @return A data table with the results for all samples in columns
 #' @examples
 #' \dontrun{
-#' getMedian(resMADloy)
-#' getMedian(resMADseqLOY)}
+#' getSummary(resMADloy)
+#' getSummary(resMADseqLOY)}
 getSummary <- function(object) {
   
   if (inherits(object, "MADseqLOY")) {
@@ -28,7 +28,7 @@ getSummary <- function(object) {
     avg <- cbind(targetAvg, refAvg)
     targetChr <- as.character(GenomeInfoDb::seqnames(object$par$target.region))
     refChr <- as.character(GenomeInfoDb::seqnames(object$par$ref.region))
-    if ( length(refChr) > 1 ) refChr <- paste(refChr, collapse = "_")
+    if ( identical(refChr, as.character(1:22))) refChr <- "Autosomes"
     colnames(avg) <- c(paste0("summaryLRR_", targetChr), paste0("summaryLRR_", refChr))
   }
   return(avg)

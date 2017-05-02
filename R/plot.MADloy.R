@@ -8,6 +8,8 @@ plot.MADloy <- function(x, ...) {
   ss <- 1:nrow(data)
   ref <- GenomeInfoDb::seqnames(x$par$ref.region)
   ref <- ifelse( length(GenomeInfoDb::seqnames(x$par$ref.region)) == 22 , "Autosomes", paste(GenomeInfoDb::seqnames(x$par$ref.region), collapse="_"))
-  plot.default(ss, d, type = "n", xlab = "Individuals", ylab = paste0("Mean LRR difference (",GenomeInfoDb::seqnames(x$par$target.region), " - ", ref, ")"), ...)
+  plot.default(ss, d, type = "n", xlab = "Individuals", 
+               ylab = paste0("Mean LRR difference (",GenomeInfoDb::seqnames(x$par$target.region), " - ", ref, ")"), ...)
   points(ss, d, pch = 16)
+  abline(h=0, lty=2, col="red")
 } 

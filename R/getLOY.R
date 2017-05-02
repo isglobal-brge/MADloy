@@ -1,13 +1,11 @@
 #' Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data
 #' 
 #' @param object A MADloy or MADseqLOY object.
-#' @param ref One of the reference chromosomes used in the \code{MADloy} or \code{MADseqLOY}
-#'   functions.
-#' @offset Offset value of SNP array data in the LRR of chromosome Y. That is, value to
+#' @param offset Offset value of SNP array data in the LRR of chromosome Y. That is, value to
 #' guarantee that mean LRR at chrmosome Y is centered at 0.  Default 0 since LRR at 
 #' m-LRR region is expected to be centered at O. 
-#' @k Number of groups. Only necessary in NGS data  
-#' @param ... Other parameters
+#' @param k Number of groups. Only necessary in NGS data.  
+#' @param ... Other parameters.
 #'   
 #' @return An object of class "LOY" that summarizes the LOY events detected in
 #'   the analyzed samples
@@ -16,7 +14,7 @@
 #' \dontrun{
 #' getLOY(resMADseqLOY)
 #' getLOY(resMADloy)}
-getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
+getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
   
   if (inherits(object, "MADseqLOY") | inherits(object, "MADloy")) {
     x <- MADloy:::getSummary(object)
@@ -24,10 +22,7 @@ getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
     x <- object
   }
   target <- x[, 1]
-  posRef <- grep(ref, colnames(x))
-  if (length(posRef) == 0) 
-    stop(paste0("Chromosome reference ", ref, " is not valid. Check argument 'ref.region' in MADseqLOY funcion"))
-  reference <- x[, posRef]
+  reference <- x[, 2]
   
   if (inherits(object, "MADseqLOY")) {
     xx <- cbind(target, reference)
@@ -43,7 +38,7 @@ getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
        control <- control + 1
      } 
      if (inherits(ans2, "try-error") | inherits(ans3, "try-error"))
-      stop("Model does not converge: change initial parameters or run again the function")
+      stop("Model does not converge: change initial parameters or run aXYY the function")
 
      df2 <- length(unique(unlist(ans2$estim)))
      df3 <- length(unique(unlist(ans3$estim)))
@@ -64,7 +59,7 @@ getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
       control <- control + 1 
      }
      if (inherits(ans, "try-error"))
-      stop("Model does not converge: change initial parameters or run again the function")
+      stop("Model does not converge: change initial parameters or run aXYY the function")
      p.test <- 1
     }
 
@@ -76,7 +71,7 @@ getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
     o <- order(tt[,2])
      alt <- which.max(abs(tt[,2] - 1))
      if (tt[alt,2] > 1) {
-       labs <- c("normal", "GAIN") }
+       labs <- c("normal", "XYY") }
      else {
        labs <- c("LOY", "normal") }
     cl <- factor(cl, labels = labs[o])     
@@ -85,7 +80,7 @@ getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
      ratio <- xx[, 1]/xx[, 2]
      tt <- aggregate(ratio ~ as.factor(cl), FUN=mean)
      o <- order(tt[,2])
-     cl <- factor(cl, labels = c("LOY", "normal", "GAIN")[o])     
+     cl <- factor(cl, labels = c("LOY", "normal", "XYY")[o])     
     }
     
     labs <- rownames(xx)
@@ -107,8 +102,7 @@ getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
   else {
     xx <- cbind(target, reference)
     norm.lrr <- target - reference + offset
-    ref <- reference
-    pars <- GeneralizedHyperbolic:::nigFit(ref)
+    pars <- GeneralizedHyperbolic:::nigFit(reference)
 #    pars <- fBasics:::nigFit(ref, trace=FALSE)
 #    pp <- pars@fit$estimate
     pp <- pars$param
@@ -123,8 +117,8 @@ getLOY <- function(object, ref = "22", offset=0, pval.sig=0.05, ...) {
     }
     pvals <- sapply(norm.lrr, ff, param=pp)
     
-    cl <- ifelse(pvals > pval.sig, "normal", "altered")
-    cl[cl=="altered" & norm.lrr > 0] <- "GAIN"
+    cl <- ifelse(pvals > pval.sig | abs(norm.lrr)<0.15, "normal", "altered")
+    cl[cl=="altered" & norm.lrr > 0] <- "XYY"
     cl[cl=="altered" & norm.lrr < 0] <- "LOY"
     ans <- list(class = cl, prob = pvals, data = norm.lrr)
     attr(ans, "type") <- "LRR"

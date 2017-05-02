@@ -8,7 +8,7 @@ print.LOY <- function(x, ...) {
   cat("---------------------------- \n")
   cat("Number of normal samples:", sum(x$class == "normal"), "\n")
   cat("Number of LOY:", sum(x$class == "LOY"), "\n")
-  cat("Number of Gains:", sum(x$class == "GAIN"), "\n")
+  cat("Number of XYY:", sum(x$class == "XYY"), "\n")
   cat("\n")
   
   # TODO adapt to MADloy processed objects

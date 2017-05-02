@@ -5,16 +5,16 @@ Version: 0.9.5-25
 Date: 2015-09-14
 Author: Marcos Lopez-Sanchez and Juan R Gonzalez
 Maintainer: Juan R Gonzalez <jrgonzalez@creal.cat>
-Depends: 
+Depends:
     BiocStyle,
     data.table,
+    GenomicRanges,
+    GeneralizedHyperbolic,
     R (>= 3.2.0),
-Imports: 
+Imports:
     BiocGenerics,
     ecolitk,
-    GeneralizedHyperbolic,
     GenomeInfoDb,
-    GenomicRanges,
     IRanges,
     mixtools,
     parallel,
@@ -27,5 +27,9 @@ Description: This packages implements a method to detect loss of Y events using
 License: GPL (>= 2)
 URL: http://www.creal.cat/brge and http://www.creal.cat/jrgonzalez/software.htm
 VignetteBuilder: knitr
-Suggests: BiocStyle, knitr, rmarkdown
+Suggests:
+    BiocStyle,
+    knitr,
+    rmarkdown
 LazyData: TRUE
+RoxygenNote: 5.0.1
