@@ -120,7 +120,10 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
     cl <- ifelse(pvals > pval.sig | abs(norm.lrr)<0.15, "normal", "altered")
     cl[cl=="altered" & norm.lrr > 0] <- "XYY"
     cl[cl=="altered" & norm.lrr < 0] <- "LOY"
-    ans <- list(class = cl, prob = pvals, data = norm.lrr)
+    par <- object$par
+    par$offset <- offset
+    par$pval.sig <- pval.sig
+    ans <- list(class = cl, prob = pvals, data = norm.lrr, par = par)
     attr(ans, "type") <- "LRR"
     class(ans) <- "LOY"
   }

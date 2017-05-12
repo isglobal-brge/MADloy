@@ -1,6 +1,7 @@
-#Obtained from ftp://hgdownload.cse.ucsc.edu/gbdb/hg18/html/description.html NCBI Build 36.1
+#Obtained from ftp://hgdownload.cse.ucsc.edu/gbdb/hg18/html/description.html NCBI Build 36.1. MSY coords obtained from http://www.nature.com/ng/journal/v48/n5/full/ng.3545.html
 chromosome	type	start	end
 Y	PAR1	1	2709520
 Y	PAR2	57443438	57772954
 Y	p	1	11200000
 Y	q	12500001	57772954
+Y	msY	6671498	22919969
