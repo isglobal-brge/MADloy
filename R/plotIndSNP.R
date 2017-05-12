@@ -10,6 +10,7 @@
 #' @param LRRCol Column of the MAD file with the LRR information.
 #'   
 #' @return A data table with the results for all samples in columns
+#' @export
 #' @examples
 #' \dontrun{
 #' plotindSNP(resMADloy, "SAMPLE")}
@@ -31,8 +32,8 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=
     o <- grep("^Y", (dat[, ChrCol]))
     dat <- dat[o, ]
     par(mar = c(5, 5, 4, 5) + 0.1)
-    plot(dat[, PosCol], dat[, LRRCol], ylim = c(-2, 2), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(0, max(dat[, PosCol], na.rm = T)), ...)
-    axis( 2, at = c(-2, -1, 0, 1, 2), labels = c("-2.0", "-1.0", "0.0", "1.0", "2.0"), las = 1, col = "black", col.axis = "black")
+    plot(dat[, PosCol], dat[, LRRCol], ylim = c(-5, 5), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(0, max(dat[, PosCol], na.rm = T)), ...)
+    axis( 2, at = c(-5:5), labels = c("-5.0", "-4.0", "-3.0", "-2.0", "-1.0", "0.0", "1.0", "2.0", "3.0", "4.0", "5.0"), las = 1, col = "black", col.axis = "black")
     par(new = TRUE)
     plot(dat[, PosCol], dat[, BAFCol], col = 2, pch = ".", cex = 2, ylab = "", xlab = "", main = "", axes = F, xlim=c(0, max(dat[, PosCol], na.rm = T)), ...)
     abline(h=0.5, col=8)

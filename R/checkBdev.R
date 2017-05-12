@@ -25,7 +25,7 @@
 #' @examples
 #' \dontrun{
 #' checkBdev(filepath, mc.cores=2)}
-checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAFCol = 5, top=0.9, bot=0.1, mc.cores, quiet = FALSE, hg="hg18", ...) {
+checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAFCol = 5, top = 0.9, bot = 0.1, trim = 0, mc.cores, quiet = FALSE, hg="hg18", pval.sig = 0.05, ...) {
   
   #two-sample t-test from https://stats.stackexchange.com/questions/30394/how-to-perform-two-sample-t-tests-in-r-by-inputting-sample-statistics-rather-tha
   t.test2 <- function(m1,m2,s1,s2,n1,n2,m0=0,equal.variance=FALSE)
@@ -101,7 +101,7 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
   # Get Bdev summary ------------------------------------------------------------------
   
   data <- parallel::mclapply(X = allfiles, FUN = MADloy:::processBdevMAD, rsCol = rsCol, ChrCol = ChrCol, 
-    PosCol = PosCol, LRRCol=LRRCol, BAFCol = BAFCol, query = subset, mc.cores = mc.cores, top = top, bot = bot, trim = 0.1)
+    PosCol = PosCol, LRRCol = LRRCol, BAFCol = BAFCol, query = subset, mc.cores = mc.cores, top = top, bot = bot, trim = 0.1 )
   names(data) <- basename(allfiles)
   par <- list(files = basename(allfiles),
               path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol, BAFCol),
@@ -126,7 +126,7 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
   
 
   
-  Bdev <- list(Bdev = data, par = par)
+  Bdev <- list(cl = cl, Bdev = data, par = par)
   
   class(Bdev) <- "MADloyBdev"
   return(Bdev)
