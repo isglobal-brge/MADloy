@@ -19,7 +19,7 @@
 processMAD <- function(file, query, rsCol, ChrCol, PosCol, LRRCol, trim=0.1) {
   
   dat <- data.table::fread(file, showProgress = FALSE, sep = "\t")
-
+  
   data.table::setnames(dat, colnames(dat[, c(rsCol, ChrCol, PosCol, LRRCol), with = F]), 
     c("Name", "Chr", "Position", "Log.R.Ratio"))
   LRRsummary <- list()

@@ -1,7 +1,7 @@
 #' @method plot LOY
 #' @export
 plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg = "bottomleft",
-                     cex.label=0.8, ...) {
+                     cex.label=0.8, print.labels=FALSE, ...) {
   data <- x$data
   if (missing(labels)) {
     if(attr(x, "type")=="Coverage")
@@ -61,10 +61,10 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
   }
   legend(pos.leg, leg.lab, pch = 16, col = col.lab, horiz=TRUE, cex=0.8)
   alt <- x$class%in%c("LOY", "XYY")
-  if (any(alt)) {
+  if (any(alt) & print.labels) {
    if (requireNamespace("wordcloud", quietly = TRUE)) {
     wordcloud::textplot(x = ss[alt], y = d[alt], words = tools::file_path_sans_ext(labels[alt]), 
-                        cex = cex.label, new = FALSE, xlim=c(min(ss[alt]), max(ss[alt])), ylim=c(min(d[alt]), max(d[alt])))
+                        cex = cex.label, new = FALSE, xlim=c(min(ss), max(ss)), ylim=c(min(d[alt]), max(d[alt])))
    } else {
     text(ss[alt], jitter(d[alt]), tools::file_path_sans_ext(labels[alt]),
          cex = cex.label, adj = 0)
