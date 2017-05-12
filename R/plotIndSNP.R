@@ -12,73 +12,47 @@
 #' @return A data table with the results for all samples in columns
 #' @examples
 #' \dontrun{
-#' plotindSNP(resMADloy)}
-plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, ...) {
+#' plotindSNP(resMADloy, "SAMPLE")}
+plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=5, ...) {
   if (inherits(x, "MADloy")) {
-   samples <- x$par$files
-   paths <- x$par$path
-   if(is.numeric(sample)){
-    ss <- samples[sample]
-    pp <- paths[sample]
-   }  
-   else {
-    if (sample%in%tools::file_path_sans_ext(samples)) {
-     ii <- grep(sample, samples)
-     ss <- samples[ii]
-     pp <- paths[ii]
-    }  
-    else
-     stop("The selected sample has not been processed")
+    samples <- x$par$files
+    paths <- x$par$path
+    if(is.numeric(sample)){
+      ss <- samples[sample]
+      pp <- paths[sample]
+    } else {
+      if (sample%in%tools::file_path_sans_ext(samples)) {
+        ii <- grep(sample, samples)
+        ss <- samples[ii]
+        pp <- paths[ii]
+      } else stop("The selected sample has not been processed")
     }
-  
-  dat <- fread(file.path(pp, ss), header = TRUE)
-  rsCol <- x$par$cols[1]
-  ChrCol <- x$par$cols[2]
-  PosCol <- x$par$cols[3]
-  LRRCol <- x$par$cols[4]
-  tt <- tools::file_path_sans_ext(ss)
+    dat <- data.frame(fread(file.path(pp, ss), header = TRUE))
+    o <- grep("^Y", (dat[, ChrCol]))
+    dat <- dat[o, ]
+    par(mar = c(5, 5, 4, 5) + 0.1)
+    plot(dat[, PosCol], dat[, LRRCol], ylim = c(-2, 2), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(0, max(dat[, PosCol], na.rm = T)), ...)
+    axis( 2, at = c(-2, -1, 0, 1, 2), labels = c("-2.0", "-1.0", "0.0", "1.0", "2.0"), las = 1, col = "black", col.axis = "black")
+    par(new = TRUE)
+    plot(dat[, PosCol], dat[, BAFCol], col = 2, pch = ".", cex = 2, ylab = "", xlab = "", main = "", axes = F, xlim=c(0, max(dat[, PosCol], na.rm = T)), ...)
+    abline(h=0.5, col=8)
+    abline(h=c(0.33, 0.66), col=8)
+    mtext("LRR", side = 2, col = "black", line = 2.5, adj = 0.5)
+    mtext("BAF", side = 4, col = "red", line = 2.5, adj = 0.5)
+    axis( 4, at = c(0, 0.25, 0.5, 0.75, 1), labels = c("0.0", 0.25, 0.5, 0.75, "1.0"), las = 1, col = "black", col.axis = "red")
+    xaxis <- seq(0, max(dat[, PosCol], na.rm=T), by=25000000)
+    axis( 1, at = xaxis, labels = as.character(round(xaxis/1000000, 1)), las = 1, col = "black", col.axis = "black")
+    mtext("position (Mb)", side = 1, col = "black", line = 2.5)
+    rect(6671498, -0.01, 22919969, -0.03, col="green", border=NA)
+    rect(6671498, 1.01, 22919969, 1.03, col="green", border=NA)
+    abline(v=c(6671498, 22919969), lty=2, col="green")
+    rect(1, -0.01, 2709520, -0.03, col="Blue", border=NA)
+    rect(1, 1.01, 2709520, 1.03, col="Blue", border=NA)
+    abline(v=c(1, 2709520), lty=2, col="blue")
+    rect(57443438, -0.01, 57772954, -0.03, col="Blue", border=NA)
+    rect(57443438, 1.01, 57772954, 1.03, col="Blue", border=NA)
+    abline(v=c(57443438, 57772954), lty=2, col="blue")
+    title(sample)
+    title("Chromosome Y", line = 0.3)
   }
-  
-  else if (is.data.frame(x)) {
-    x.i <- x[, c(rsCol, ChrCol, PosCol, LRRCol)]
-    if (!is.numeric(x.i[,3])) {
-      x.i[,3] <- as.numeric(as.character(x.i[,3]))
-      warning("\n Genomic position information has changed to numeric values. Please, check \n")
-    }  
-    dat <- as.data.table(x.i)
-    tt <- names(x.i)[4]
-    rsCol <- 1
-    ChrCol <- 2
-    PosCol <- 3
-    LRRCol <- 4
-  }
-  
-    
-  else {
-    dat <- fread(x, header=TRUE)
-    tt <- tools::file_path_sans_ext(basename(x))
-  }  
-    
-  data.table::setnames(dat, colnames(dat[, c(rsCol, ChrCol, PosCol, LRRCol), with = F]), 
-                       c("Name", "Chr", "Position", "Log.R.Ratio"))
-  queryA <- unlist(strsplit(x = "chrY:2694521-59034049", split = "[:, -]", perl = T))
-  subsetA <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryA[1]), 
-                                    ranges = IRanges::IRanges(start = as.numeric(queryA[2]), end = as.numeric(queryA[3])))
-  
-  lrr.target<- dat$Log.R.Ratio[which(dat$Chr == as.character(GenomeInfoDb::seqnames(subsetA)) & dat$Position > 
-                          BiocGenerics::start(subsetA) & dat$Position < BiocGenerics::end(subsetA))]
-  pos.target <- dat$Position[which(dat$Chr == as.character(GenomeInfoDb::seqnames(subsetA)) & dat$Position > 
-                                        BiocGenerics::start(subsetA) & dat$Position < BiocGenerics::end(subsetA))]
-  
-  if (max(lrr.target, na.rm=TRUE)<1){
-    plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ylim=c(min(lrr.target, na.rm=TRUE), 1), ...)
-    rect(7e6, 1, 25e6, min(lrr.target, na.rm=TRUE), col="MistyRose", border="white")
-  }  
-  else {
-   plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ...)
-   rect(7e6, max(lrr.target, na.rm=TRUE), 25e6, min(lrr.target, na.rm=TRUE), col="MistyRose", border="white")
-  }
-  points(pos.target, lrr.target, pch=16, cex=0.7, col="blue")
-  title(tt)
-  abline(h=0, col="red", lty=2, lwd=3)
 }
