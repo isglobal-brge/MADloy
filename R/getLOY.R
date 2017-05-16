@@ -5,6 +5,7 @@
 #' guarantee that mean LRR at chrmosome Y is centered at 0.  Default 0 since LRR at 
 #' m-LRR region is expected to be centered at O. 
 #' @param k Number of groups. Only necessary in NGS data.  
+#' @param pval.sig pval.sig p-value treshold to be used in the classification test.
 #' @param ... Other parameters.
 #'   
 #' @return An object of class "LOY" that summarizes the LOY events detected in
