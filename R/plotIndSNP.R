@@ -8,16 +8,20 @@
 #' @param ChrCol Column of the MAD file with the chromosome information.
 #' @param PosCol Column of the MAD file with the position information.
 #' @param LRRCol Column of the MAD file with the LRR information.
-#'   
+#' @param BAFCol Column of the MAD file with the BAF information.
+#' @param ... Any other graphical parameter.
+#' 
 #' @return A data table with the results for all samples in columns
 #' @export
 #' @examples
 #' \dontrun{
 #' plotindSNP(resMADloy, "SAMPLE")}
 plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=5, ...) {
-  if (inherits(x, "MADloy")) {
+  if (inherits(x, "MADloy") | inherits(x, "MADloyBdev")) {
+    
     samples <- x$par$files
     paths <- x$par$path
+    regions <- x$par$regions
     if(is.numeric(sample)){
       ss <- samples[sample]
       pp <- paths[sample]
@@ -30,12 +34,24 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=
     }
     dat <- data.frame(fread(file.path(pp, ss), header = TRUE))
     o <- grep("^Y", (dat[, ChrCol]))
+    xy <- any(c("XY", "25") %in% unique(dat$Chr))
+    if (xy)
+      xysel <- c(grep("^XY", (dat[, ChrCol])), grep("^23", (dat[, ChrCol])))
+      datxy <- dat[xysel, ]
     dat <- dat[o, ]
     par(mar = c(5, 5, 4, 5) + 0.1)
-    plot(dat[, PosCol], dat[, LRRCol], ylim = c(-5, 5), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(0, max(dat[, PosCol], na.rm = T)), ...)
+    plot(dat[, PosCol], dat[, LRRCol], ylim = c(-5, 5), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(1, as.numeric(regions[3, 4])), ...)
+    if (xy){
+      points(datxy[datxy[, PosCol] <= as.numeric(regions[2, 4]), PosCol], datxy[datxy[, PosCol] <= as.numeric(regions[2, 4]), LRRCol], pch =".", cex = 2, col=1)
+      points(datxy[datxy[, PosCol] >= as.numeric(regions[4, 3]) & datxy[, PosCol] <= as.numeric(regions[4, 4]), PosCol]-as.numeric(regions[3,4])+as.numeric(regions[3,3]), datxy[datxy[, PosCol] >= as.numeric(regions[4, 3]) & datxy[, PosCol] <= as.numeric(regions[4, 4]), LRRCol], pch =".", cex = 2, col=1)
+    }
     axis( 2, at = c(-5:5), labels = c("-5.0", "-4.0", "-3.0", "-2.0", "-1.0", "0.0", "1.0", "2.0", "3.0", "4.0", "5.0"), las = 1, col = "black", col.axis = "black")
     par(new = TRUE)
-    plot(dat[, PosCol], dat[, BAFCol], col = 2, pch = ".", cex = 2, ylab = "", xlab = "", main = "", axes = F, xlim=c(0, max(dat[, PosCol], na.rm = T)), ...)
+    plot(dat[, PosCol], dat[, BAFCol], col = 2, pch = ".", cex = 2, ylab = "", xlab = "", main = "", axes = F, xlim=c(1, as.numeric(regions[3, 4])), ...)
+    if (xy){
+      points(datxy[datxy[, PosCol] <= as.numeric(regions[2, 4]), PosCol], datxy[datxy[, PosCol] <= as.numeric(regions[2, 4]), BAFCol], pch =".", cex = 2, col=2)
+      points(datxy[datxy[, PosCol] >= as.numeric(regions[4, 3]) & datxy[, PosCol] <= as.numeric(regions[4, 4]), PosCol]-as.numeric(regions[3,4])+as.numeric(regions[3,3]), datxy[datxy[, PosCol] >= as.numeric(regions[4, 3]) & datxy[, PosCol] <= as.numeric(regions[4, 4]), BAFCol], pch =".", cex = 2, col=1)
+    }
     abline(h=0.5, col=8)
     abline(h=c(0.33, 0.66), col=8)
     mtext("LRR", side = 2, col = "black", line = 2.5, adj = 0.5)
@@ -55,5 +71,7 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=
     abline(v=c(57443438, 57772954), lty=2, col="blue")
     title(sample)
     title("Chromosome Y", line = 0.3)
+  } else {
+    stop("The object supplied is not a MADloy or MADloyBdev object.")
   }
 }

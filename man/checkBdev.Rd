@@ -4,14 +4,11 @@
 \alias{checkBdev}
 \title{Check the B deviation values in PAR1 and PAR2 regions to check possible Loss of Y events in a folder or files.}
 \usage{
-checkBdev(files, rsCol = 1, ChrCol = 2, PosCol = 3, BAFCol = 4,
-  top = 0.9, bot = 0.1, mc.cores, quiet = FALSE, hg = "hg18", ...)
+checkBdev(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
+  BAFCol = 5, top = 0.9, bot = 0.1, trim = 0, mc.cores, quiet = FALSE,
+  hg = "hg18", pval.sig = 0.05, ...)
 }
 \arguments{
-\item{files}{A single file path (APT platform and MAD platform), a vector of 
-file paths (MAD platform) or a MAD rawData folder path containing files 
-ready to be processed with MAD (MAD platform).}
-
 \item{rsCol}{The position of the column with the SNP identifier.}
 
 \item{ChrCol}{The position of the column with the Chromosome field.}
@@ -24,13 +21,23 @@ ready to be processed with MAD (MAD platform).}
 
 \item{bot}{Inferior treshold to consider an heterozygous allele.}
 
+\item{trim}{trim the fraction (0 to 0.5) of probes to be trimmed when summaryzing LRR.}
+
 \item{mc.cores}{The number of cores used to perform the function. By default 
 is set to 1.}
 
 \item{quiet}{Should the function not inform about the status of the process. 
 By default is FALSE.}
 
-\item{...}{Other parameters}
+\item{hg}{Human genome build version.}
+
+\item{pval.sig}{p-value treshold to be used in the statistic test.}
+
+\item{...}{Other parameters.}
+
+\item{files}{A LOY class object to check the LOY and uncertain samples or a single file path (APT platform and MAD platform), a vector of 
+file paths (MAD platform) or a MAD rawData folder path containing files 
+ready to be processed with MAD (MAD platform).}
 }
 \value{
 A MADloyBdev object that contains the Bdev values for the two PAR regions for all the files 

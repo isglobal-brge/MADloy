@@ -4,7 +4,8 @@
 \alias{processBdevMAD}
 \title{Process MAD file to obtain Bdev}
 \usage{
-processBdevMAD(file, query, rsCol, ChrCol, PosCol, BAFCol, top, bot)
+processBdevMAD(file, query, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top, bot,
+  trim)
 }
 \arguments{
 \item{file}{File path of the MAD file to be processed.}
@@ -22,6 +23,9 @@ processBdevMAD(file, query, rsCol, ChrCol, PosCol, BAFCol, top, bot)
 \item{top}{Superior treshold to consider an heterozygous allele.}
 
 \item{bot}{Inferior treshold to consider an heterozygous allele.}
+
+\item{trim}{the fraction (0 to 0.5) of probes to be trimmed when summaryzing LRR. 
+This argument tries to control the effect of having CNVs in the analyzed region. Default is 0.1.}
 }
 \value{
 A list with the Bdev for the query value.

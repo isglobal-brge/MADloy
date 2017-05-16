@@ -4,9 +4,9 @@
 \alias{madloy}
 \title{Check the mean LRR values in msY region to detect Loss of Y events in a folder or files.}
 \usage{
-madloy(files, target.region = "chrY:2694521-59034049",
-  ref.region = "Autosomes", rsCol = 1, ChrCol = 2, PosCol = 3,
-  LRRCol = 4, trim = 0, mc.cores, quiet = FALSE, hg = "hg19", ...)
+madloy(files, target.region, ref.region = "Autosomes", rsCol = 1,
+  ChrCol = 2, PosCol = 3, LRRCol = 4, trim = 0, mc.cores,
+  quiet = FALSE, hg = "hg18", ...)
 }
 \arguments{
 \item{files}{A single file path (APT platform and MAD platform), a vector of 
@@ -36,7 +36,7 @@ is set to 1.}
 \item{quiet}{Should the function not inform about the status of the process. 
 By default is FALSE.}
 
-\item{...}{Other parameters}
+\item{...}{Other parameters.}
 }
 \value{
 A MADloy object that contains the LRR means for all the files 

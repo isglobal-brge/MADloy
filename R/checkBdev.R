@@ -14,11 +14,14 @@
 #' @param BAFCol The position of the column with the BAF identifier.
 #' @param top Superior treshold to consider an heterozygous allele.
 #' @param bot Inferior treshold to consider an heterozygous allele.
+#' @param trim trim the fraction (0 to 0.5) of probes to be trimmed when summaryzing LRR.
 #' @param mc.cores The number of cores used to perform the function. By default 
 #'   is set to 1.
 #' @param quiet Should the function not inform about the status of the process. 
 #'   By default is FALSE.
-#' @param ... Other parameters
+#' @param hg Human genome build version.
+#' @param pval.sig p-value treshold to be used in the statistic test.
+#' @param ... Other parameters.
 #' @return A MADloyBdev object that contains the Bdev values for the two PAR regions for all the files 
 #'   analyzed.
 #' @export
@@ -47,11 +50,6 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
     return(dat) 
   }
   
-  # process PAR regions -----------------------------------------
-  
-  par <- fread(system.file("data", paste0(hg, ".par.regions"), package = "MADloy"), header=T, skip=1, colClasses = c("character", "character", "numeric", "numeric"), showProgress = FALSE)
-  
-  subset <- GenomicRanges::GRanges(seqnames = gsub("chr", "", par[par$chromosome == "Y"]$chromosome), ranges = IRanges::IRanges(start = par[par$chromosome == "Y"]$start, end = par[par$chromosome == "Y"]$end))
   
   # Check input-----------------------------------------------------------------
   
@@ -61,6 +59,10 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
     if (inherits(object, "LOY")) {
       if (!quiet) message("Processing the files in the LOY object")
       allfiles <- file.path(object$par$path, object$par$files)[object$prob <= 0.05/length(object$par$files)]
+      n <- length(object$par$files)
+      cl <- data.frame(orig = object$class[object$prob <= 0.05/n])
+      # process PAR regions -----------------------------------------
+      subset <- GenomicRanges::GRanges(seqnames = gsub("chr", "", object$par$regions[object$par$regions$chromosome == "Y"]$chromosome), ranges = IRanges::IRanges(start = object$par$regions[object$par$regions$chromosome == "Y"]$start, end = object$par$regions[object$par$regions$chromosome == "Y"]$end))
     } else {
       if (length(object) == 1) {
         if (!file.exists(object)) {
@@ -68,10 +70,14 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
         } else {
           if (file.info(object)$isdir) {
             allfiles <- list.files(object, recursive = T, full.names = T)
+            n <- length(allfiles)
+            cl <- data.frame(orig = allfiles)
             if (length(allfiles) == 0) 
               stop("There are no files in the given folder")
           } else {
             allfiles <- object
+            n <- length(allfiles)
+            cl <- data.frame(orig = allfiles)
           }
         }
       } else {
@@ -81,6 +87,12 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
           object <- object[file.exists(object)]
         }
         allfiles <- object
+        n <- length(allfiles)
+        cl <- data.frame(orig = allfiles)
+        # process PAR regions -----------------------------------------
+        regions <- fread(system.file("data", paste0(hg, ".par.regions"), package = "MADloy"), header=T, skip=1, colClasses = c("character", "character", "numeric", "numeric"), showProgress = FALSE)
+        subset <- GenomicRanges::GRanges(seqnames = gsub("chr", "", object$par$regions[object$par$regions$chromosome == "Y"]$chromosome), ranges = IRanges::IRanges(start = object$par$regions[object$par$regions$chromosome == "Y"]$start, end = object$par$regions[object$par$regions$chromosome == "Y"]$end))
+        
       }
     }
     if (!quiet) 
@@ -115,14 +127,12 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
   q$Pl <- as.numeric(q$Pl)
   pqstat <- data.frame(t(sapply(data, function(x){t.test2(x$p$Pl, x$q$Pl, x$p$Plsd, x$q$Plsd, x$p$n, x$q$n, equal.variance = FALSE)})))
   
-  cl <- data.frame(orig = object$class[object$prob <= 0.05/length(object$par$files)])
-  
   cl$pq <- ifelse(pqstat$p.value > pval.sig*10/nrow(pqstat), "balancedpq", "unbalancedpq")
   cl$pqn <- ifelse(pqstat$p.value > pval.sig, "balancedpq", "unbalancedpq")
-  cl$pq[cl$orig=="LOY" &  pqstat$p.value < pval.sig/length(object$par$files) & p$Pl > q$Pl] <- "LOYq"
-  cl$pq[cl$orig=="LOY" &  pqstat$p.value < pval.sig/length(object$par$files) & p$Pl < q$Pl] <- "LOYp"
-  cl$pq[cl$orig=="XYY" &  pqstat$p.value < pval.sig/length(object$par$files) & p$Pl < q$Pl] <- "XYYp"
-  cl$pq[cl$orig=="XYY" &  pqstat$p.value < pval.sig/length(object$par$files) & p$Pl < q$Pl] <- "XYYq"
+  cl$pq[cl$orig=="LOY" &  pqstat$p.value < pval.sig/n & p$Pl > q$Pl] <- "LOYq"
+  cl$pq[cl$orig=="LOY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "LOYp"
+  cl$pq[cl$orig=="XYY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "XYYp"
+  cl$pq[cl$orig=="XYY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "XYYq"
   
 
   
