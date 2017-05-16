@@ -20,7 +20,7 @@
 #' @param quiet Should the function not inform about the status of the process. 
 #'   By default is FALSE.
 #' @param hg Human genome build version.
-#' @param pval.sig p-value treshold to be used in the statistic test.
+#' @param pval.sig p-value treshold to be used in the classification test.
 #' @param ... Other parameters.
 #' @return A MADloyBdev object that contains the Bdev values for the two PAR regions for all the files 
 #'   analyzed.

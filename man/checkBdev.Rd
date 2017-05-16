@@ -31,7 +31,7 @@ By default is FALSE.}
 
 \item{hg}{Human genome build version.}
 
-\item{pval.sig}{p-value treshold to be used in the statistic test.}
+\item{pval.sig}{p-value treshold to be used in the classification test.}
 
 \item{...}{Other parameters.}
 
