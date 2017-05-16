@@ -22,21 +22,24 @@
 #'   is set to 1.
 #' @param quiet Should the function not inform about the status of the process. 
 #'   By default is FALSE.
-#' @param ... Other parameters
+#' @param ... Other parameters.
 #' @return A MADloy object that contains the LRR means for all the files 
 #'   analyzed.
 #' @export
 #' @examples
 #' \dontrun{
 #' madloy(filepath, mc.cores=2)}
-madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="Autosomes",
-  rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, trim=0, mc.cores, quiet = FALSE, hg="hg19", ...) {
+madloy <- function(files, target.region, ref.region="Autosomes",
+  rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, trim=0, mc.cores, quiet = FALSE, hg="hg18", ...) {
   
   chrSizes <- fread(system.file("data", paste0(hg, ".chrom.sizes"), package = "MADloy"), header=T, skip="#", colClasses = c("character", "numeric"), showProgress = FALSE)
+  regions <- fread(system.file("data", paste0(hg, ".par.regions"), package = "MADloy"), header=T, skip=1, colClasses = c("character", "character", "numeric", "numeric"), showProgress = FALSE)
   
   # Check target and reference regions -----------------------------------------
-  if (missing(target.region)) 
-    message("Targeted region set to chrY:2694521-59034049 by default")
+  if (missing(target.region))
+    msy <- regions[regions$type == "msY", ]
+    target.region <- paste0("chr", msy[,1], ":", msy[,3], "-", msy[,4])
+    message(paste0("Targeted region set to ",  target.region, " by default"))
   queryA <- unlist(strsplit(x = target.region, split = "[:, -]", perl = T))
   if (is.na(queryA[2]) | is.na(queryA[3])) {
     subsetA <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryA[1]), ranges = IRanges::IRanges(start = 1, 
@@ -111,9 +114,12 @@ madloy <- function(files, target.region = "chrY:2694521-59034049", ref.region="A
   refLRR <- parallel::mclapply(X = allfiles, FUN = processMAD, rsCol = rsCol, ChrCol = ChrCol, 
     PosCol = PosCol, LRRCol = LRRCol, query = subsetB, mc.cores = mc.cores, trim=trim)
   names(targetLRR) <- names(refLRR) <- basename(allfiles)
-  par <- list(target.region = subsetA, ref.region = subsetB, 
-              files = basename(allfiles),
+  par <- list(files = basename(allfiles),
+              hg = hg,
               path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol),
+              ref.region = subsetB,
+              regions = regions,
+              target.region = subsetA,  
               trim = trim)
   LRRsummary <- list(target = targetLRR, reference = refLRR, par = par)
   class(LRRsummary) <- "MADloy"
