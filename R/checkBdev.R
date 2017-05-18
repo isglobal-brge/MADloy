@@ -116,7 +116,8 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
     PosCol = PosCol, LRRCol = LRRCol, BAFCol = BAFCol, query = subset, mc.cores = mc.cores, top = top, bot = bot, trim = 0.1 )
   names(data) <- basename(allfiles)
   par <- list(files = basename(allfiles),
-              path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol, BAFCol),
+              path = dirname(allfiles), 
+              cols = c(rsCol, ChrCol, PosCol, LRRCol, BAFCol),
               top = top,
               bot = bot,
               hg = hg)
@@ -126,17 +127,17 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
   q <- data.frame(t(sapply(data, "[[", "q")), stringsAsFactors = FALSE)
   q$Pl <- as.numeric(q$Pl)
   pqstat <- data.frame(t(sapply(data, function(x){t.test2(x$p$Pl, x$q$Pl, x$p$Plsd, x$q$Plsd, x$p$n, x$q$n, equal.variance = FALSE)})))
-  
-  cl$pq <- ifelse(pqstat$p.value > pval.sig*10/nrow(pqstat), "balancedpq", "unbalancedpq")
-  cl$pqn <- ifelse(pqstat$p.value > pval.sig, "balancedpq", "unbalancedpq")
-  cl$pq[cl$orig=="LOY" &  pqstat$p.value < pval.sig/n & p$Pl > q$Pl] <- "LOYq"
-  cl$pq[cl$orig=="LOY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "LOYp"
-  cl$pq[cl$orig=="XYY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "XYYp"
-  cl$pq[cl$orig=="XYY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "XYYq"
-  
-
-  
-  Bdev <- list(cl = cl, Bdev = data, par = par)
+  cl$adjusted_p <- ifelse(pqstat$p.value > pval.sig*10/nrow(pqstat), "balancedpq", "unbalancedpq")
+  cl$nominal_p <- ifelse(pqstat$p.value > pval.sig, "balancedpq", "unbalancedpq")
+  cl$adjusted_p[cl$orig=="LOY" &  pqstat$p.value < pval.sig/n & p$Pl > q$Pl] <- "LOYq"
+  cl$adjusted_p[cl$orig=="LOY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "LOYp"
+  cl$adjusted_p[cl$orig=="XYY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "XYYp"
+  cl$adjusted_p[cl$orig=="XYY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "XYYq"
+  cl$nominal_p[cl$orig=="LOY" &  pqstat$p.value < pval.sig & p$Pl > q$Pl] <- "LOYq"
+  cl$nominal_p[cl$orig=="LOY" &  pqstat$p.value < pval.sig & p$Pl < q$Pl] <- "LOYp"
+  cl$nominal_p[cl$orig=="XYY" &  pqstat$p.value < pval.sig & p$Pl > q$Pl] <- "XYYp"
+  cl$nominal_p[cl$orig=="XYY" &  pqstat$p.value < pval.sig & p$Pl < q$Pl] <- "XYYq"
+  Bdev <- list(class = cl, prob = pqstat, Bdev = data, par = par)
   
   class(Bdev) <- "MADloyBdev"
   return(Bdev)
