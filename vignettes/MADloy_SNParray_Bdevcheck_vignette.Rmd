@@ -126,7 +126,7 @@ plotCI(x = unlist(data.frame(t(sapply( PRADresBdev$Bdev, "[[", "q")))$Pl[sel]), 
 axis(1, at=c(1:sum(sel)), labels=FALSE)
 text(x=c(1:sum(sel)), y=par()$usr[3]-0.125,labels=PRADresBdev$class$orig[sel], srt=45, adj=1, xpd=TRUE, cex=0.75)
 
-legend("topright", legend = c("p arm adjusted-p", "p arm only nominal-p", "q arm adjusted-p", "q arm only nominal-p"), pch = c(20, 1, 20, 1), col=c("red", "red", "black", "black"))
+legend("topright", legend = c("p arm adjusted-p", "p arm only nominal-p", "q arm adjusted-p", "q arm only nominal-p"), pch = c(20, 1, 20, 1), col=c("black", "black", "red", "red"))
 ```
 
 ## Visual inspection of the detected imbalances
