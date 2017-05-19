@@ -122,7 +122,6 @@ filled[(PRADresBdev$class$adjusted_p != "balancedpq")[sel]] <- 20
 plotCI(x = unlist(data.frame(t(sapply( PRADresBdev$Bdev, "[[", "p")))$Pl[sel]), uiw = unlist(data.frame(t(sapply( PRADresBdev$Bdev, "[[", "p")))$Plsd[sel]), lty = 2, xaxt ="n", pch=filled, gap = 0, ylim=c(0, 3), minbar = 0, maxbar = 3, main="Ploidy trimmed mean and deviation in p and q arms", ylab="Ploidy", xlab="getLOY classification")
 par(new=TRUE)
 plotCI(x = unlist(data.frame(t(sapply( PRADresBdev$Bdev, "[[", "q")))$Pl[sel]), uiw = unlist(data.frame(t(sapply( PRADresBdev$Bdev, "[[", "q")))$Plsd[sel]), lty = 2, xaxt ="n", pch=filled, gap = 0, ylim=c(0, 3), minbar = 0, maxbar = 3, col="red", ylab="", xlab="")
-text(cex=1, x=c(1:5)-.25, y=-1.25, PRADresBdev$class$orig[1:5], xpd=TRUE, srt=45, pos=2)
 
 axis(1, at=c(1:sum(sel)), labels=FALSE)
 text(x=c(1:sum(sel)), y=par()$usr[3]-0.125,labels=PRADresBdev$class$orig[sel], srt=45, adj=1, xpd=TRUE, cex=0.75)
@@ -134,16 +133,29 @@ legend("topright", legend = c("p arm adjusted-p", "p arm only nominal-p", "q arm
 
 The following plots were generated with the newly implemented `plotIndSNP` and the old function was renamed to `plotIndLRR`. The green box indicates the MSY region, while the blue boxes are the PAR1 and PAR2 regions (In those plots only PAR1 is visible). As can be seen, there are no shared probes with chrX in PAR1, and the ones in the X/Y transposed (Between blue and green boxes) are not heterozygous as they should be.
 
+```{r echo=FALSE, eval=FALSE}
+
+samples <- gsub(".txt", "", rownames(check))
+
+for (i in samples){
+  png(paste0("vignetteplots/", i, ".png"))
+  plotIndSNP(PRADres, i, LRRCol = 5, BAFCol = 4, offset=0.46)  
+  dev.off()
+}
+
+
+```
+
+
 ### Normal classified samples with disagreement between "adjusted-p"" and "nominal-p".
 
-```{r echo=FALSE}
+```{r echo=FALSE, results = 'asis'}
 
 samples <- gsub(".txt", "", rownames(check[check$orig == "normal" & check$adjusted_p == "balancedpq", ]))
 
 for (i in samples){
-  png(paste0("vignetteplots/", i, ".png"))
-  plotIndSNP(PRADres, i, LRRCol = 5, BAFCol = 4)  
-  dev.off()
+  path <- paste0(system.file("extdata", "vignetteplots", package = "MADloy"), "/", i, ".png")
+  cat('\n![',i,'](',path, ')\n')
 }
 
 ```
@@ -152,12 +164,13 @@ It seems that those samples are false positives
 
 ### Normal classified samples with agreement in unbalance.
 
-```{r echo=FALSE}
+```{r echo=FALSE, results = 'asis'}
 
 samples <- gsub(".txt", "", rownames(check[check$orig == "normal" & check$adjusted_p == "unbalancedpq", ]))
 
 for (i in samples){
-  MADloy:::plotIndSNP(res, i, LRRCol = 5, BAFCol = 4)  
+  path <- paste0(system.file("extdata", "vignetteplots", package = "MADloy"), "/", i, ".png")
+  cat('\n![',i,'](',path, ')\n')
 }
 
 ```
@@ -166,12 +179,13 @@ Those samples seems to have a small visible unbalance between the p and q arms, 
 
 ### LOY classified samples with disagreement between "adjusted-p" and "nominal-p".
 
-```{r echo=FALSE}
+```{r echo=FALSE, results = 'asis'}
 
 samples <- gsub(".txt", "", rownames(check[check$orig == "LOY" & check$adjusted_p == "balancedpq", ]))
 
 for (i in samples){
-  MADloy:::plotIndSNP(res, i, LRRCol = 5, BAFCol = 4)  
+  path <- paste0(system.file("extdata", "vignetteplots", package = "MADloy"), "/", i, ".png")
+  cat('\n![',i,'](',path, ')\n')
 }
 
 ```
@@ -180,12 +194,13 @@ The only sample that really seems unbalanced is the last one `TCGA-ZG-A9LM-01A` 
 
 ### LOY classified samples with unbalanced "adjusted-p" but unclear loss.
 
-```{r echo=FALSE}
+```{r echo=FALSE, results = 'asis'}
 
 samples <- gsub(".txt", "", rownames(check[check$orig == "LOY" & check$adjusted_p == "unbalancedpq", ]))
 
 for (i in samples){
-  MADloy:::plotIndSNP(res, i, LRRCol = 5, BAFCol = 4)  
+  path <- paste0(system.file("extdata", "vignetteplots", package = "MADloy"), "/", i, ".png")
+  cat('\n![',i,'](',path, ')\n')
 }
 
 ```
@@ -194,12 +209,13 @@ This sample has not been classified as p or q loss, but both thresholds classify
 
 ### LOY samples with detected losses in q arm.
 
-```{r echo=FALSE}
+```{r echo=FALSE, results = 'asis'}
 
 samples <- gsub(".txt", "", rownames(check[check$orig == "LOY" & check$adjusted_p == "LOYq", ]))
 
 for (i in samples){
-  MADloy:::plotIndSNP(res, i, LRRCol = 5, BAFCol = 4)  
+  path <- paste0(system.file("extdata", "vignetteplots", package = "MADloy"), "/", i, ".png")
+  cat('\n![',i,'](',path, ')\n')
 }
 
 ```
@@ -208,12 +224,13 @@ All of the samples classified have a terminal deletion of the q arm, with varyin
 
 ### XYY samples with disagreement between "adjusted-p" and "nominal-p"
 
-```{r echo=FALSE}
+```{r echo=FALSE, results = 'asis'}
 
 samples <- gsub(".txt", "", rownames(check[check$orig == "XYY" & check$adjusted_p == "balancedpq", ]))
 
 for (i in samples){
-  MADloy:::plotIndSNP(res, i, LRRCol = 5, BAFCol = 4)  
+  path <- paste0(system.file("extdata", "vignetteplots", package = "MADloy"), "/", i, ".png")
+  cat('\n![',i,'](',path, ')\n')
 }
 
 ```

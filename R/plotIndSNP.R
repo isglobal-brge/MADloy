@@ -16,7 +16,7 @@
 #' @examples
 #' \dontrun{
 #' plotindSNP(resMADloy, "SAMPLE")}
-plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=5, ...) {
+plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=5, offset=0,...) {
   if (inherits(x, "MADloy") | inherits(x, "MADloyBdev")) {
     
     samples <- x$par$files
@@ -35,12 +35,13 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=
     dat <- data.frame(fread(file.path(pp, ss), header = TRUE))
     o <- grep("^Y", (dat[, ChrCol]))
     xy <- any(c("XY", "25") %in% unique(dat$Chr))
-    if (xy)
+    if (xy){
       xysel <- c(grep("^XY", (dat[, ChrCol])), grep("^23", (dat[, ChrCol])))
       datxy <- dat[xysel, ]
+    }
     dat <- dat[o, ]
     par(mar = c(5, 5, 4, 5) + 0.1)
-    plot(dat[, PosCol], dat[, LRRCol], ylim = c(-5, 5), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(1, as.numeric(regions[3, 4])), ...)
+    plot(dat[, PosCol], dat[, LRRCol]+offset, ylim = c(-5, 5), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(1, as.numeric(regions[3, 4])), ...)
     if (xy){
       points(datxy[datxy[, PosCol] <= as.numeric(regions[2, 4]), PosCol], datxy[datxy[, PosCol] <= as.numeric(regions[2, 4]), LRRCol], pch =".", cex = 2, col=1)
       points(datxy[datxy[, PosCol] >= as.numeric(regions[4, 3]) & datxy[, PosCol] <= as.numeric(regions[4, 4]), PosCol]-as.numeric(regions[3,4])+as.numeric(regions[3,3]), datxy[datxy[, PosCol] >= as.numeric(regions[4, 3]) & datxy[, PosCol] <= as.numeric(regions[4, 4]), LRRCol], pch =".", cex = 2, col=1)
