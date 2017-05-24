@@ -105,7 +105,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
     norm.lrr <- target - reference + offset
     
     
-    sds <- sapply(egcut$reference, "[[", "sd")
+    sds <- sapply(x$reference, "[[", "sd")
     reference.qc <- reference[! sds > 2*mean(sds)]
       
     pars <- GeneralizedHyperbolic:::nigFit(reference.qc)
