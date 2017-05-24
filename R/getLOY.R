@@ -103,22 +103,28 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
   else {
     xx <- cbind(target, reference)
     norm.lrr <- target - reference + offset
-    pars <- GeneralizedHyperbolic:::nigFit(reference)
+    
+    
+    sds <- sapply(egcut$reference, "[[", "sd")
+    reference.qc <- reference[! sds > 2*mean(sds)]
+      
+    pars <- GeneralizedHyperbolic:::nigFit(reference.qc)
 #    pars <- fBasics:::nigFit(ref, trace=FALSE)
 #    pp <- pars@fit$estimate
     pp <- pars$param
     
     ff <- function(x, param){
-      if (x>=0.1)
+      if (x>0)
         ans <- GeneralizedHyperbolic:::pnig(x, param[1], param[2], 
-                                            param[3], param[4], lower=FALSE)
+                                            param[3], param[4], lower=TRUE)
       else
         ans <- GeneralizedHyperbolic:::pnig(x, param[1], param[2],
                                                 param[3], param[4], lower=TRUE)
     }
     pvals <- sapply(norm.lrr, ff, param=pp)
     
-    cl <- ifelse(pvals > pval.sig | abs(norm.lrr)<0.15, "normal", "altered")
+    threshold <- median(sds[! sds > 2*mean(sds)])
+    cl <- ifelse(pvals > pval.sig | abs(norm.lrr) < threshold, "normal", "altered")
     cl[cl=="altered" & norm.lrr > 0] <- "XYY"
     cl[cl=="altered" & norm.lrr < 0] <- "LOY"
     par <- object$par
