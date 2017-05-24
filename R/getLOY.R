@@ -105,7 +105,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
     norm.lrr <- target - reference + offset
     
     
-    sds <- sapply(x$reference, "[[", "sd")
+    sds <- sapply(object$reference, "[[", "sd")
     reference.qc <- reference[! sds > 2*mean(sds)]
       
     pars <- GeneralizedHyperbolic:::nigFit(reference.qc)
@@ -116,7 +116,7 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
     ff <- function(x, param){
       if (x>0)
         ans <- GeneralizedHyperbolic:::pnig(x, param[1], param[2], 
-                                            param[3], param[4], lower=TRUE)
+                                            param[3], param[4], lower=FALSE)
       else
         ans <- GeneralizedHyperbolic:::pnig(x, param[1], param[2],
                                                 param[3], param[4], lower=TRUE)
