@@ -30,4 +30,3 @@ This function draws the LRR data for an individual
 \dontrun{
 plotindLRR(resMADloy, "SAMPLE")}
 }
-

@@ -21,4 +21,3 @@ This function draws the LRR values distribution for the Normal, Normal Inverse G
 \dontrun{
 plotNIG(resMADloy)}
 }
-

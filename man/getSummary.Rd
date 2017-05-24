@@ -22,4 +22,3 @@ objects and prepares the data to be analyzed for LOY events.
 getSummary(resMADloy)
 getSummary(resMADseqLOY)}
 }
-

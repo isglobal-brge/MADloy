@@ -47,4 +47,3 @@ the region chrY:2694521-59034049 (hg19/GRCh37) and another given by the ref.regi
 \dontrun{
 madseqloy(files=bamFile, reference=targetFile, skip=0)}
 }
-

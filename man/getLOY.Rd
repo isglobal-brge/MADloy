@@ -4,7 +4,7 @@
 \alias{getLOY}
 \title{Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data}
 \usage{
-getLOY(object, offset = 0, pval.sig = 0.05, ...)
+getLOY(object, offset, pval.sig, ...)
 }
 \arguments{
 \item{object}{A MADloy or MADseqLOY object.}
@@ -31,4 +31,3 @@ Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data
 getLOY(resMADseqLOY)
 getLOY(resMADloy)}
 }
-

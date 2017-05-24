@@ -15,7 +15,7 @@
 #' \dontrun{
 #' getLOY(resMADseqLOY)
 #' getLOY(resMADloy)}
-getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
+getLOY <- function(object, offset, pval.sig, ...) {
   
   if (inherits(object, "MADseqLOY") | inherits(object, "MADloy")) {
     x <- MADloy:::getSummary(object)
@@ -102,6 +102,8 @@ getLOY <- function(object, offset=0, pval.sig=0.05, ...) {
   } 
   else {
     xx <- cbind(target, reference)
+    if (missing(offset)) offset <- median(target)
+    if (missing(pval.sig)) pval.sig <- 0.05/length(target)
     norm.lrr <- target - reference + offset
     
     

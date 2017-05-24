@@ -5,8 +5,8 @@
 \title{Check the B deviation values in PAR1 and PAR2 regions to check possible Loss of Y events in a folder or files.}
 \usage{
 checkBdev(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
-  BAFCol = 5, top = 0.9, bot = 0.1, trim = 0, mc.cores, quiet = FALSE,
-  hg = "hg18", pval.sig = 0.05, ...)
+  BAFCol = 5, top = 0.9, bot = 0.1, trim = 0.1, mc.cores,
+  quiet = FALSE, hg = "hg18", pval.sig = 0.05, ...)
 }
 \arguments{
 \item{rsCol}{The position of the column with the SNP identifier.}
@@ -55,4 +55,3 @@ checkBdev(filepath, mc.cores=2)}
 \seealso{
 \code{\link{getLOY}} to process results from \code{MADloy}
 }
-

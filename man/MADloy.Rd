@@ -54,4 +54,3 @@ madloy(filepath, mc.cores=2)}
 \seealso{
 \code{\link{getLOY}} to process results from \code{MADloy}
 }
-

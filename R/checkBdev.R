@@ -28,7 +28,7 @@
 #' @examples
 #' \dontrun{
 #' checkBdev(filepath, mc.cores=2)}
-checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAFCol = 5, top = 0.9, bot = 0.1, trim = 0, mc.cores, quiet = FALSE, hg="hg18", pval.sig = 0.05, ...) {
+checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAFCol = 5, top = 0.9, bot = 0.1, trim = 0.1, mc.cores, quiet = FALSE, hg="hg18", pval.sig = 0.05, ...) {
   
   #two-sample t-test from https://stats.stackexchange.com/questions/30394/how-to-perform-two-sample-t-tests-in-r-by-inputting-sample-statistics-rather-tha
   t.test2 <- function(m1,m2,s1,s2,n1,n2,m0=0,equal.variance=FALSE)
@@ -88,7 +88,7 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
         }
         allfiles <- object
         n <- length(allfiles)
-        cl <- data.frame(orig = allfiles)
+        cl <- data.frame(getLOY = allfiles)
         # process PAR regions -----------------------------------------
         regions <- fread(system.file("data", paste0(hg, ".par.regions"), package = "MADloy"), header=T, skip=1, colClasses = c("character", "character", "numeric", "numeric"), showProgress = FALSE)
         subset <- GenomicRanges::GRanges(seqnames = gsub("chr", "", object$par$regions[object$par$regions$chromosome == "Y"]$chromosome), ranges = IRanges::IRanges(start = object$par$regions[object$par$regions$chromosome == "Y"]$start, end = object$par$regions[object$par$regions$chromosome == "Y"]$end))
@@ -113,7 +113,7 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
   # Get Bdev summary ------------------------------------------------------------------
   
   data <- parallel::mclapply(X = allfiles, FUN = MADloy:::processBdevMAD, rsCol = rsCol, ChrCol = ChrCol, 
-    PosCol = PosCol, LRRCol = LRRCol, BAFCol = BAFCol, query = subset, mc.cores = mc.cores, top = top, bot = bot, trim = 0.1 )
+    PosCol = PosCol, LRRCol = LRRCol, BAFCol = BAFCol, query = subset, mc.cores = mc.cores, top = top, bot = bot, trim = trim )
   names(data) <- basename(allfiles)
   par <- list(files = basename(allfiles),
               path = dirname(allfiles), 
@@ -128,15 +128,10 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
   q$Pl <- as.numeric(q$Pl)
   pqstat <- data.frame(t(sapply(data, function(x){t.test2(x$p$Pl, x$q$Pl, x$p$Plsd, x$q$Plsd, x$p$n, x$q$n, equal.variance = FALSE)})))
   cl$adjusted_p <- ifelse(pqstat$p.value > pval.sig*10/nrow(pqstat), "balancedpq", "unbalancedpq")
-  cl$nominal_p <- ifelse(pqstat$p.value > pval.sig, "balancedpq", "unbalancedpq")
-  cl$adjusted_p[cl$orig=="LOY" &  pqstat$p.value < pval.sig/n & p$Pl > q$Pl] <- "LOYq"
-  cl$adjusted_p[cl$orig=="LOY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "LOYp"
-  cl$adjusted_p[cl$orig=="XYY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "XYYp"
-  cl$adjusted_p[cl$orig=="XYY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "XYYq"
-  cl$nominal_p[cl$orig=="LOY" &  pqstat$p.value < pval.sig & p$Pl > q$Pl] <- "LOYq"
-  cl$nominal_p[cl$orig=="LOY" &  pqstat$p.value < pval.sig & p$Pl < q$Pl] <- "LOYp"
-  cl$nominal_p[cl$orig=="XYY" &  pqstat$p.value < pval.sig & p$Pl > q$Pl] <- "XYYp"
-  cl$nominal_p[cl$orig=="XYY" &  pqstat$p.value < pval.sig & p$Pl < q$Pl] <- "XYYq"
+  cl$adjusted_p[cl$getLOY=="LOY" &  pqstat$p.value < pval.sig/n & p$Pl > q$Pl] <- "LOYq"
+  cl$adjusted_p[cl$getLOY=="LOY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "LOYp"
+  cl$adjusted_p[cl$getLOY=="XYY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "XYYp"
+  cl$adjusted_p[cl$getLOY=="XYY" &  pqstat$p.value < pval.sig/n & p$Pl < q$Pl] <- "XYYq"
   Bdev <- list(class = cl, prob = pqstat, Bdev = data, par = par)
   
   class(Bdev) <- "MADloyBdev"

@@ -2,6 +2,7 @@
 
 S3method(plot,LOY)
 S3method(plot,MADloy)
+S3method(plot,MADloyBdev)
 S3method(plot,MADseqLOY)
 S3method(print,LOY)
 S3method(print,MADloy)

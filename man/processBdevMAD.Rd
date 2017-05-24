@@ -38,4 +38,3 @@ interest.
 \dontrun{
 processBdevMAD(file=file.path, query=rangedDataROI, rsCol=1, chrCol=2, PosCol=3, LRRCol=4)}
 }
-

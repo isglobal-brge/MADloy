@@ -18,4 +18,3 @@ PRADres
 A MADloy object containing the median LRR values for the autosomal chromosomes and chromosome Y from position 2,694,521 to 59,034,049 from 1038 TCGA PRAD male samples.
 }
 \keyword{datasets}
-
