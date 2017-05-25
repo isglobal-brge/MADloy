@@ -117,12 +117,18 @@ getLOY <- function(object, offset, pval.sig, ...) {
     
     ff <- function(x, param){
       if (x>0)
-        ans <- GeneralizedHyperbolic:::pnig(x, param[1], param[2], 
-                                            param[3], param[4], lower=FALSE)
+        ans <- try(GeneralizedHyperbolic:::pnig(x, 
+                             param[1], param[2], 
+                             param[3], param[4], lower=FALSE), TRUE)
       else
-        ans <- GeneralizedHyperbolic:::pnig(x, param[1], param[2],
-                                                param[3], param[4], lower=TRUE)
+        ans <- try(GeneralizedHyperbolic:::pnig(x, 
+                             param[1], param[2],
+                             param[3], param[4], lower=TRUE), TRUE)
+      if (inherits(ans, "try-error")
+        ans <- NA
+      return(ans) 
     }
+    
     pvals <- sapply(norm.lrr, ff, param=pp)
     
     threshold <- median(sds[! sds > 2*mean(sds)])
