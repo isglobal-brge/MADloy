@@ -3,6 +3,8 @@
 #' @param x an object of class 'LOY'
 #' @return a matrix of probabilities
 #' 
+#' @export
+#' 
 #' 
 getProb <- function(x) {
   n <- length(x$class)
