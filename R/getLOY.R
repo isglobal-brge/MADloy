@@ -124,7 +124,7 @@ getLOY <- function(object, offset, pval.sig, ...) {
         ans <- try(GeneralizedHyperbolic:::pnig(x, 
                              param[1], param[2],
                              param[3], param[4], lower=TRUE), TRUE)
-      if (inherits(ans, "try-error")
+      if (inherits(ans, "try-error"))
         ans <- NA
       return(ans) 
     }
