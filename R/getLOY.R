@@ -104,7 +104,7 @@ getLOY <- function(object, offset, pval.sig, ...) {
     xx <- cbind(target, reference)
     if (missing(offset)) offset <- median(target)
     if (missing(pval.sig)) pval.sig <- 0.05/length(target)
-    norm.lrr <- target - reference + offset
+    norm.lrr <- target - reference - offset
     
     
     sds <- sapply(object$reference, "[[", "sd")
