@@ -21,5 +21,6 @@ getProb <- function(x) {
     if (idx[i]==3)
       ans[i, 2:3] <- c(x$prob[i], 1-x$prob[i]) 
   }
+  colnames(ans) <- c("LOY", "normal", "XYY")
   ans
 }
