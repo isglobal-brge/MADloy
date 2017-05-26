@@ -2,12 +2,12 @@
 % Please edit documentation in R/plotNIG.R
 \name{plotNIG}
 \alias{plotNIG}
-\title{Plot of the distribution of the LRR values for the different models}
+\title{Plot of LRR cummulative distribution function (CDF) of two models}
 \usage{
-plotNIG(x, tit)
+plotNIG(object, tit)
 }
 \arguments{
-\item{x}{A MADloy object from the \code{madloy} function.}
+\item{object}{An object of class LOY from the \code{getLOY} function.}
 
 \item{tit}{Title of the plot.}
 }
@@ -15,7 +15,7 @@ plotNIG(x, tit)
 A data table with the results for all samples in columns
 }
 \description{
-This function draws the LRR values distribution for the Normal, Normal Inverse Gaussian (NIG) and Empiric Cumulative Distribution functions from a LOY object.
+This function plots the CDF of the LRR values and the expected CDF under Normal and Inverse Gaussian (NIG) distributions.
 }
 \examples{
 \dontrun{

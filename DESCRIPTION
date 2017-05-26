@@ -1,8 +1,8 @@
 Package: MADloy
 Type: Package
-Title: Package to detect individuals with LOY in SNP array and sequence data
-Version: 0.9.5-25
-Date: 2015-09-14
+Title: Package to detect mosaic LOY from SNP array data
+Version: 0.9.5-30
+Date: 2017-05-25
 Author: Marcos Lopez-Sanchez and Juan R Gonzalez
 Maintainer: Juan R Gonzalez <jrgonzalez@creal.cat>
 Depends:
@@ -23,9 +23,12 @@ Imports:
     Rsamtools,
     TEQC,
     wordcloud
-Description: This packages implements a method to detect loss of Y events using
-    SNP array or NGS data. It compares the
-    coverage in the chromosome Y,  ................
+Description: This packages is a suit of functions to perform association analysis of
+             mosaic LOY and quantitative or continuous outcomes. It uses SNP array data in pennCNV
+             format (e.g. having snp_name, chromosome, position, LRR, BAF and genotype). There are             
+             functions to perform quality control of samples, functions to process raw data and extract
+             the LRR and BAF information of required genomic regions, and a function to perform 
+             calling based on Negative Inverse Gaussian distribution that properly fits LRR data.
 License: GPL (>= 2)
 URL: http://www.creal.cat/brge and http://www.creal.cat/jrgonzalez/software.htm
 VignetteBuilder: knitr
@@ -33,5 +36,5 @@ Suggests:
     BiocStyle,
     knitr,
     rmarkdown
-LazyData: TRUE
+LazyData: FALSE
 RoxygenNote: 6.0.1
