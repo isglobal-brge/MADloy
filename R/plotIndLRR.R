@@ -73,11 +73,13 @@ plotIndLRR <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, ...) {
   
   if (max(lrr.target, na.rm=TRUE)<1){
     plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ylim=c(min(lrr.target, na.rm=TRUE), 1), ...)
-    rect(7e6, 1, 25e6, min(lrr.target, na.rm=TRUE), col="MistyRose", border="white")
+    uu <- par("usr")
+    rect(7e6, uu[4], 25e6, uu[3], col="MistyRose", border="white")
   }  
   else {
    plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ...)
-   rect(7e6, max(lrr.target, na.rm=TRUE), 25e6, min(lrr.target, na.rm=TRUE), col="MistyRose", border="white")
+    uu <- par("usr")
+   rect(7e6, uu[4], 25e6, uu[3], col="MistyRose", border="white")
   }
   points(pos.target, lrr.target, pch=16, cex=0.7, col="brown")
   title(tt)
