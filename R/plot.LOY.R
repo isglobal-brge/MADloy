@@ -56,7 +56,7 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
     ss <- 1:length(data)
     d <- x$data
     plot.default(ss, d, type = "n", xlab = "Individuals", 
-                 ylab = "Trimmed mean normalized mLRR-Y")
+                 ylab = "Offset-adjusted trimmed mean normalized mLRR-Y")
     points(ss, d, col = mycol, pch = 16, ...)
   }
   legend(pos.leg, leg.lab, pch = 16, col = col.lab, horiz=TRUE, cex=0.8)
