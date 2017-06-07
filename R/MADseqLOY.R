@@ -11,7 +11,7 @@
 #' @param target.region The chromosome or region to be compared with the other
 #'   regions. By default is the region chrY:2694521-59034049 but it can be
 #'   changed.
-#' @param ref.region.1 First chromosome or region to be compared with the Y
+#' @param ref.region First chromosome or region to be compared with the Y
 #'   region in UCSC style (i.e. "chr22" or "chr21:1000-10000").
 #' @param mc.cores umber of cores to be used with this function. If there are
 #'   more cores than samples, the number of cores will be limited to the number

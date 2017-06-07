@@ -31,7 +31,7 @@ In this vignettes we are going to illustrate how to process SNP array data. In t
 ```{r, fitNIG, echo=FALSE, message = FALSE, warning=FALSE, fig.cap="Empirical cumulative distribution function (ecdf) of the observed data and ecdf estimated using NIG and Normal models of reference LRR in PRAD data of TCGA project."}
 library(MADloy)
 load("C:/Juan/CREAL/GitHub/PRADdata/pradLOY.rda")
-lrr <- MADloy:::getSummary(pradLOY)
+lrr <- getSummary(pradLOY)
 plotNIG(lrr[,2], tit="PRAD data of TCGA")
 ``` 
 
@@ -138,7 +138,7 @@ load("C:/Juan/CREAL/GitHub/BLCAdata/blcaLOY.rda")
 First, let's have a look at the summarized data of LRR in mLRR-Y region and in the autosomal choromosomes that are used as the reference ones
 
 ```{r, lrr_ref_mLRR-Y}
-lrr.summary <- MADloy:::getSummary(blcaLOY)
+lrr.summary <- getSummary(blcaLOY)
 head(lrr.summary)
 ```
 

@@ -7,7 +7,7 @@
 plotNIG(object, tit)
 }
 \arguments{
-\item{object}{An object of class LOY from the \code{getLOY} function.}
+\item{object}{An object of class MADloy from the \code{madloy} function.}
 
 \item{tit}{Title of the plot.}
 }

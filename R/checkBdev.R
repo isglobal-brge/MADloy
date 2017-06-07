@@ -5,13 +5,14 @@
 #' PAR1 and PAR2 regions.
 #' 
 #' @seealso \code{\link{getLOY}} to process results from \code{MADloy}
-#' @param files A LOY class object to check the LOY and uncertain samples or a single file path (APT platform and MAD platform), a vector of 
+#' @param object A LOY class object to check the LOY and uncertain samples or a single file path (APT platform and MAD platform), a vector of 
 #'   file paths (MAD platform) or a MAD rawData folder path containing files 
 #'   ready to be processed with MAD (MAD platform).
 #' @param rsCol The position of the column with the SNP identifier.
 #' @param ChrCol The position of the column with the Chromosome field.
 #' @param PosCol The position of the column with the Position field.
-#' @param BAFCol The position of the column with the BAF identifier.
+#' @param LRRCol The position of the column with the LRR field.
+#' @param BAFCol The position of the column with the BAF field.
 #' @param top Superior treshold to consider an heterozygous allele.
 #' @param bot Inferior treshold to consider an heterozygous allele.
 #' @param trim trim the fraction (0 to 0.5) of probes to be trimmed when summaryzing LRR.
@@ -45,7 +46,7 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
       df <- n1+n2-2
     }      
     t <- (m1-m2-m0)/se 
-    dat <- c(m1-m2, se, t, 2*pt(-abs(t),df))    
+    dat <- c(m1-m2, se, t, 2*stats::pt(-abs(t),df))    
     names(dat) <- c("Difference of means", "Std Error", "t", "p-value")
     return(dat) 
   }
@@ -112,7 +113,7 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
   
   # Get Bdev summary ------------------------------------------------------------------
   
-  data <- parallel::mclapply(X = allfiles, FUN = MADloy:::processBdevMAD, rsCol = rsCol, ChrCol = ChrCol, 
+  data <- parallel::mclapply(X = allfiles, FUN = processBdevMAD, rsCol = rsCol, ChrCol = ChrCol, 
     PosCol = PosCol, LRRCol = LRRCol, BAFCol = BAFCol, query = subset, mc.cores = mc.cores, top = top, bot = bot, trim = trim )
   names(data) <- basename(allfiles)
   par <- list(files = basename(allfiles),

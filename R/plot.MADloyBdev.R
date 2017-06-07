@@ -18,35 +18,35 @@ plot.MADloyBdev <- function(x, ...) {
          ylab="Ploidy", 
          xlab="getLOY classification")
   
-  par(new=TRUE)
+  graphics::par(new=TRUE)
   
   gplots::plotCI(x = unlist(data.frame(t(sapply( x$Bdev, "[[", "q")))$Pl[sel]), 
-         uiw = unlist(data.frame(t(sapply( x$Bdev, "[[", "q")))$Plsd[sel]), 
-         lty = 2, 
-         xaxt ="n", 
-         pch=filled, 
-         gap = 0, 
-         ylim=c(0, 3), 
-         minbar = 0, 
-         maxbar = 3, 
-         col="red", 
-         ylab="", 
-         xlab="")
+                 uiw = unlist(data.frame(t(sapply( x$Bdev, "[[", "q")))$Plsd[sel]), 
+                 lty = 2, 
+                 xaxt ="n", 
+                 pch=filled, 
+                 gap = 0, 
+                 ylim=c(0, 3), 
+                 minbar = 0, 
+                 maxbar = 3, 
+                 col="red", 
+                 ylab="", 
+                 xlab="")
   
-  axis(1, 
-       at=c(1:sum(sel)), 
-       labels=FALSE)
+  graphics::axis(1, 
+                 at=c(1:sum(sel)), 
+                 labels=FALSE)
   
-  text(x=c(1:sum(sel)), 
-       y=par()$usr[3]-0.125,
-       labels=x$class$orig[sel], 
-       srt=45, 
-       adj=1, 
-       xpd=TRUE, 
-       cex=0.75)
+  graphics::text(x=c(1:sum(sel)), 
+                 y=graphics::par()$usr[3]-0.125,
+                 labels=x$class$orig[sel], 
+                 srt=45, 
+                 adj=1, 
+                 xpd=TRUE, 
+                 cex=0.75)
   
-  legend("topright", 
-         legend = c("p arm", "q arm"), 
-         pch = c(20, 20), 
-         col=c("black", "red"))
+  graphics::legend("topright", 
+                   legend = c("p arm", "q arm"), 
+                   pch = c(20, 20), 
+                   col=c("black", "red"))
 } 

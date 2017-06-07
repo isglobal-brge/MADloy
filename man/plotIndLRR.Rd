@@ -19,6 +19,8 @@ plotIndLRR(x, sample, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
 \item{PosCol}{Column of the MAD file with the position information.}
 
 \item{LRRCol}{Column of the MAD file with the LRR information.}
+
+\item{...}{Other parameters of the generic plot function.}
 }
 \value{
 A data table with the results for all samples in columns

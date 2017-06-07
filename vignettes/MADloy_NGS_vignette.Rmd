@@ -62,13 +62,13 @@ We can manually inspect  information of mLRR-Y region (e.g., one by one sample) 
 
 ```{r, plotSample1, fig.width=6, fig.height=4.5, fig.cap="LRR in the mLRR.Y region (shaded) of Sample1 from the illustrative example"}
 plotIndSNP(res, sample="Sample1")
-````
+```
 
 The same figure can be obtained of Sample2 which is not having a LOY event:
 
 ```{r, plotSample2, fig.width=6, fig.height=4.5, fig.cap="LRR in the mLRR.Y region (shaded) of Sample2 from the illustrative example"}
 plotIndSNP(res, sample="Sample2")
-````
+```
 
 However, when thousands of samples are analyzed a proper statistical method can be used to differenciate those samples that are having LOY. Next section illustrate how to visualize the information of mLRR-Y of lot of samples
 
@@ -77,7 +77,7 @@ However, when thousands of samples are analyzed a proper statistical method can 
 Let us illustrate how to visualize the data using 89 CEU HapMap samples.  Already pre-processed data can be retrieved into your ``R`` session from the `MADloyHapMapAll` data set that is included in the package by simply typing: 
 
 ```{r, MADloy_3}
-data(MADloy_HapMapAll)
+data(MADloyHapMapAll)
 MADloyHapMapAll
 ```
 Data can be visually inspected by using the generic `plot` function. This function depicts the median LLR of Y chormosome adjusted by the LRR of chromosome 22 in order to control for possible technical artifacts. Notice that this reference chromosome can be changed if the user suspects that alterations in this chromosome can appear in the analyzed data. 
@@ -89,7 +89,7 @@ plot(MADloyHapMapAll)
 This figure shows several samples having LOY (those in the -2, -4 range of Y-axis) that correspond to female samples. Of course, these are not real LOY samples since females are expected to show this pattern. Let us pay attention in the male individuals that are also available as a data example in our package. We have selected 23 male samples whose pre-processed LLR that can be get into ``R``by:
 
 ```{r, MADloy_4}
-data(MADloy_HapMapMale)
+data(MADloyHapMapMale)
 MADloyHapMapMale
 ```
 The plot is obtained by
@@ -130,30 +130,23 @@ plotIndNGS(res2, sample = samples(res)[1])
 
 ### Visualizing a set of NGS samples
 
-Let us illustrate how to visualize a set of .bam samples. We donwloaded .bam files of 26 male samples diagnosed with prostate cancer from [`TCGA project`](https://cancergenome.nih.gov/). Processed .bam files (using `madseqloy` function) can be loaded by:
+Let us illustrate how to visualize a set of .bam samples. We donwloaded .bam files of 1038 male samples diagnosed with prostate cancer from [`TCGA project`](https://cancergenome.nih.gov/). Processed .bam files (using `madseqloy` function) can be loaded by:
 
 
-```{r, get_BLCA}
-if(!file.exists("./temp"))
-dir.create("./temp")
-filedata <- "https://drive.google.com/uc?export=download&id=0B_pkfs1Zxa9DRkhUZTY2OV80ZDg" ## Where 0B8VpqcZ29oqOY09uNEVKMk5fQW8 is the identifier of the shared file in google drive
-if(Sys.info()["sysname"] == "Linux") download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", method="wget")
-if(Sys.info()["sysname"] == "Windows") download.file(filedata, destfile = "temp/MADSeqLOY_BLCA.rda", mode = "wb")
-load("./temp/MADSeqLOY_BLCA.rda")
-unlink("./temp", recursive = TRUE)
-BLCA
-````
+```{r, get_PRAD}
+data(PRADres)
+```
 
 Summarized coverage in mY region of each sample can be plotted by using the generic function `plot`:
 
 ```{r, plot_BLCA, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Mean coverage of samples belonging to BLCA data."}
-plot(BLCA)
+plot(PRADres)
 ```
 
 Let us verify whether the subject having the lowest coverage is a having a LOY. The id of that sample can be retrived by executing: 
 
 ```{r, lowest_coverage}
-dd <- MADloy:::getMedian(BLCA)
+dd <- getSummary(PRADres)
 id.tcga.low <- substr(rownames(dd)[which.min(dd[,1])], 6, 21)
 id.tcga.low
 ```
@@ -161,8 +154,7 @@ id.tcga.low
 LRR can be downloaded from TCGA since this information is considered of level 3 and it is available from TCGA Data Portal. The plot of mY region of that sample can be obtained by simply typing (NOTE: The function `plotIndSNP` can procude this plot from: 1) an object of class `madloy`; 2) a matrix having chromosome, position and LRR; or 3) a path indicanting where a file having chromosome, position and LRR is located).
 
 
-```{r, LRR_BLCA_plot, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "LRR in the mY region of BLCA sample `r id.tcga.low`. "}
-folder <- "../../BLCAdata/rawData"
+```{r, LRR_BLCA_plot, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "LRR in the mY region of BLCA sample `r id.tcga.low`. ", eval=FALSE}
 plotIndSNP(file.path(folder, paste0(id.tcga.low, ".txt")))
 ```
 
@@ -175,7 +167,7 @@ Let us start by illustrating how to detect LOY in the HapMap samples. The object
 
 ```{r, getLOY}
 nsamples <- length(MADloyHapMapMale$par$files)
-ans <- getLOY(MADloyHapMapMale, pval.harm = 0.05/nsamples)
+ans <- getLOY(MADloyHapMapMale)
 
 ```
 
@@ -185,22 +177,22 @@ Results can be visualized with the generic `plot` function as follows:
 plot(ans)
 ```
 
-The method is indicating that there are three samples having a LOY that can be verified by looking at the raw data. We have incorporated a text file into the package having the LRR information of samples NA1276, NA12144 and NA11829 who are having a LOY and NA07048 who is not.
+The method is indicating that there are no samples having a LOY.
 
 ```{r, show_NAsamples}
 PathHapMapLRR <- system.file("extdata", package = "MADloy")
 list.files(PathHapMapLRR, pattern=".txt")
 ```
 
-```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data"}
-plotIndSNP(file.path(PathHapMapLRR, "NA12716.txt"))
+```{r, fig.show='hold', fig.width=6, fig.height=5, fig.cap = "Plot of a LOY object obtained from SNP array data", eval=FALSE}
+plotIndSNP(file.path(PathHapMapLRR, "TCGA-CF-A3MI-01A.txt"))
 ```
 
 
 Next, the same procedure can be apply to the object XXX which encodes the preprocessed data of XXX
 
 ```{r, BLCA_analysis, eval=FALSE}
-ans2 <- getLOY(BLCA)
+ans2 <- getLOY(PRADres)
 ```
 
 And the figure to determine LOY samples can be obtained by: 

@@ -18,6 +18,8 @@ processBdevMAD(file, query, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top, bot,
 
 \item{PosCol}{Column of the MAD file with the position information.}
 
+\item{LRRCol}{Column of the MAD file with the Log R Ratio information.}
+
 \item{BAFCol}{Column of the MAD file with the B Allele Frequency information.}
 
 \item{top}{Superior treshold to consider an heterozygous allele.}

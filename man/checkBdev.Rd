@@ -9,13 +9,19 @@ checkBdev(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
   quiet = FALSE, hg = "hg18", pval.sig = 0.05, ...)
 }
 \arguments{
+\item{object}{A LOY class object to check the LOY and uncertain samples or a single file path (APT platform and MAD platform), a vector of 
+file paths (MAD platform) or a MAD rawData folder path containing files 
+ready to be processed with MAD (MAD platform).}
+
 \item{rsCol}{The position of the column with the SNP identifier.}
 
 \item{ChrCol}{The position of the column with the Chromosome field.}
 
 \item{PosCol}{The position of the column with the Position field.}
 
-\item{BAFCol}{The position of the column with the BAF identifier.}
+\item{LRRCol}{The position of the column with the LRR field.}
+
+\item{BAFCol}{The position of the column with the BAF field.}
 
 \item{top}{Superior treshold to consider an heterozygous allele.}
 
@@ -34,10 +40,6 @@ By default is FALSE.}
 \item{pval.sig}{p-value treshold to be used in the classification test.}
 
 \item{...}{Other parameters.}
-
-\item{files}{A LOY class object to check the LOY and uncertain samples or a single file path (APT platform and MAD platform), a vector of 
-file paths (MAD platform) or a MAD rawData folder path containing files 
-ready to be processed with MAD (MAD platform).}
 }
 \value{
 A MADloyBdev object that contains the Bdev values for the two PAR regions for all the files 

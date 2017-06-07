@@ -4,7 +4,8 @@
 #' @param offset Offset value of SNP array data in the LRR of chromosome Y. That is, value to
 #' guarantee that mean LRR at chrmosome Y is centered at 0.  Default 0 since LRR at 
 #' m-LRR region is expected to be centered at O. 
-#' @param k Number of groups. Only necessary in NGS data.  
+#' @param k Number of groups. Only necessary in NGS data.
+#' @param cutoff cutoff value. Only necessari in NGS data.
 #' @param pval.sig pval.sig p-value treshold to be used in the classification test.
 #' @param ... Other parameters.
 #'   
@@ -15,10 +16,10 @@
 #' \dontrun{
 #' getLOY(resMADseqLOY)
 #' getLOY(resMADloy)}
-getLOY <- function(object, offset, pval.sig, ...) {
+getLOY <- function(object, offset, pval.sig, k, cutoff, ...) {
   
   if (inherits(object, "MADseqLOY") | inherits(object, "MADloy")) {
-    x <- MADloy:::getSummary(object)
+    x <- getSummary(object)
   } else {
     x <- object
   }
@@ -44,7 +45,7 @@ getLOY <- function(object, offset, pval.sig, ...) {
      df2 <- length(unique(unlist(ans2$estim)))
      df3 <- length(unique(unlist(ans3$estim)))
      df.diff <- df3 - df2
-     p.test <- pchisq(-2*(ans2$loglik - ans3$loglik), df.diff, lower=FALSE)
+     p.test <- stats::pchisq(-2*(ans2$loglik - ans3$loglik), df.diff, lower=FALSE)
      if (p.test < 0.01) {
        ans <- ans3 }
      else {
@@ -68,7 +69,7 @@ getLOY <- function(object, offset, pval.sig, ...) {
 
     if (p.test >= 0.01) {
     ratio <- xx[, 1]/xx[, 2]
-    tt <- aggregate(ratio ~ as.factor(cl), FUN=mean)
+    tt <- stats::aggregate(ratio ~ as.factor(cl), FUN=mean)
     o <- order(tt[,2])
      alt <- which.max(abs(tt[,2] - 1))
      if (tt[alt,2] > 1) {
@@ -79,7 +80,7 @@ getLOY <- function(object, offset, pval.sig, ...) {
     }
     else {
      ratio <- xx[, 1]/xx[, 2]
-     tt <- aggregate(ratio ~ as.factor(cl), FUN=mean)
+     tt <- stats::aggregate(ratio ~ as.factor(cl), FUN=mean)
      o <- order(tt[,2])
      cl <- factor(cl, labels = c("LOY", "normal", "XYY")[o])     
     }
@@ -102,7 +103,7 @@ getLOY <- function(object, offset, pval.sig, ...) {
   } 
   else {
     xx <- cbind(target, reference)
-    if (missing(offset)) offset <- median(target)
+    if (missing(offset)) offset <- stats::median(target)
     if (missing(pval.sig)) pval.sig <- 0.05/length(target)
     norm.lrr <- target - reference - offset
     
@@ -110,18 +111,18 @@ getLOY <- function(object, offset, pval.sig, ...) {
     sds <- sapply(object$reference, "[[", "sd")
     reference.qc <- reference[! sds > 2*mean(sds)]
       
-    pars <- GeneralizedHyperbolic:::nigFit(reference.qc)
+    pars <- GeneralizedHyperbolic::nigFit(reference.qc)
 #    pars <- fBasics:::nigFit(ref, trace=FALSE)
 #    pp <- pars@fit$estimate
     pp <- pars$param
     
     ff <- function(x, param){
       if (x>0)
-        ans <- try(GeneralizedHyperbolic:::pnig(x, 
+        ans <- try(GeneralizedHyperbolic::pnig(x, 
                              param[1], param[2], 
                              param[3], param[4], lower=FALSE), TRUE)
       else
-        ans <- try(GeneralizedHyperbolic:::pnig(x, 
+        ans <- try(GeneralizedHyperbolic::pnig(x, 
                              param[1], param[2],
                              param[3], param[4], lower=TRUE), TRUE)
       if (inherits(ans, "try-error"))
@@ -131,7 +132,7 @@ getLOY <- function(object, offset, pval.sig, ...) {
     
     pvals <- sapply(norm.lrr, ff, param=pp)
     
-    threshold <- median(sds[! sds > 2*mean(sds)])
+    threshold <- stats::median(sds[! sds > 2*mean(sds)])
     cl <- ifelse(pvals > pval.sig | abs(norm.lrr) < threshold, "normal", "altered")
     cl[cl=="altered" & norm.lrr > 0] <- "XYY"
     cl[cl=="altered" & norm.lrr < 0] <- "LOY"

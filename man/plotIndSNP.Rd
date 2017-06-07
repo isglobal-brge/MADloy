@@ -22,6 +22,8 @@ plotIndSNP(x, sample, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
 
 \item{BAFCol}{Column of the MAD file with the BAF information.}
 
+\item{offset}{offset applied to the msY region.}
+
 \item{...}{Any other graphical parameter.}
 }
 \value{

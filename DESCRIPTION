@@ -6,15 +6,14 @@ Date: 2017-05-25
 Author: Marcos Lopez-Sanchez and Juan R Gonzalez
 Maintainer: Juan R Gonzalez <jrgonzalez@creal.cat>
 Depends:
-    BiocStyle,
     data.table,
-    GenomicRanges,
-    GeneralizedHyperbolic,
     R (>= 3.2.0),
 Imports:
     BiocGenerics,
     ecolitk,
+    GeneralizedHyperbolic,
     GenomeInfoDb,
+    GenomicRanges,
     gplots,
     IRanges,
     mixtools,
@@ -33,7 +32,6 @@ License: GPL (>= 2)
 URL: http://www.creal.cat/brge and http://www.creal.cat/jrgonzalez/software.htm
 VignetteBuilder: knitr
 Suggests:
-    BiocStyle,
     knitr,
     rmarkdown
 LazyData: FALSE

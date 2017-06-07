@@ -11,6 +11,8 @@
 #'   is set to 1.
 #' @param trim the fraction (0 to 0.5) of probes to be trimmed when summaryzing LRR. 
 #' This argument tries to control the effect of having CNVs across genome. Default is 0.2.
+#' @param quiet Should the function not inform about the status of the process. 
+#'   By default is FALSE.
 #' @return A data.frame object that summarizes the LRR in chrX and chrY in
 #'   the analyzed samples.
 #' @export

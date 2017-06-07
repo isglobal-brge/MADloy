@@ -13,9 +13,9 @@ processBam <- function(file, targets, subset) {
   close(bamConn)
   GenomeInfoDb::seqlevelsStyle(reads) <- "UCSC"
   GenomeInfoDb::seqlevelsStyle(subset) <- "UCSC"
-  reads <- as(reads, "RangedData")[as.character(GenomeInfoDb::seqnames(subset))]
-  targets <- as(targets, "RangedData")[as.character(GenomeInfoDb::seqnames(subset))]
+  reads <- methods::as(reads, "RangedData")[as.character(GenomeInfoDb::seqnames(subset))]
+  targets <- methods::as(targets, "RangedData")[as.character(GenomeInfoDb::seqnames(subset))]
   coverage <- TEQC::coverage.target(reads = reads, targets = targets)
-  coverage$medianTargetCoverage <- median(coverage$coverageTarget[[1]])
+  coverage$medianTargetCoverage <- stats::median(coverage$coverageTarget[[1]])
   return(coverage)
 } 

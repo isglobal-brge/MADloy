@@ -1,5 +1,3 @@
-
-
 ### Download data from GEO
 #
 #FinalReport

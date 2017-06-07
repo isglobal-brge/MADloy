@@ -4,7 +4,7 @@
 \alias{getLOY}
 \title{Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data}
 \usage{
-getLOY(object, offset, pval.sig, ...)
+getLOY(object, offset, pval.sig, k, cutoff, ...)
 }
 \arguments{
 \item{object}{A MADloy or MADseqLOY object.}
@@ -15,9 +15,11 @@ m-LRR region is expected to be centered at O.}
 
 \item{pval.sig}{pval.sig p-value treshold to be used in the classification test.}
 
-\item{...}{Other parameters.}
-
 \item{k}{Number of groups. Only necessary in NGS data.}
+
+\item{cutoff}{cutoff value. Only necessari in NGS data.}
+
+\item{...}{Other parameters.}
 }
 \value{
 An object of class "LOY" that summarizes the LOY events detected in

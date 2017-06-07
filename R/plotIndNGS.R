@@ -69,17 +69,17 @@ plotIndNGS <-
     
     ## Check if png
     if (!missing(file))
-      png(
+      grDevices::png(
         filename = file, width = 150, height = 150, units = "mm", res = 300,
         pointsize = 20 
       )
     
     ## Shift text by small angle to make it centred on the region it's labelling...
     offset <- 2 * pi * deltatheta / 360
-    op <- par(mai = c(0, 0, 0, 0), bg = "white")
+    op <- graphics::par(mai = c(0, 0, 0, 0), bg = "white")
     
     ## Draw a circle
-    plot(
+    graphics::plot(
       NULL, xlim = c(-2.7, 2.7), ylim = c(-2.7, 2.7), axes = FALSE, ann = FALSE
     )
     
@@ -96,7 +96,7 @@ plotIndNGS <-
     for (j in 1:length(rads)) {
       rd <- lrads[j]
       ecolitk::linesCircle(rado + rd, lty = 2)
-      text(0, 1.025 * rado + rd, rads[j], cex = 0.5)
+      graphics::text(0, 1.025 * rado + rd, rads[j], cex = 0.5)
     }
     
     ## Draw histogram
@@ -107,15 +107,15 @@ plotIndNGS <-
     
     if (filled) {
       if (logged) {
-        polygon(dxl, dyl, col = "blue", border = NA)
+        graphics::polygon(dxl, dyl, col = "blue", border = NA)
       } else {
-        polygon(dx, dy, border = NA, col = "blue")
+        graphics::polygon(dx, dy, border = NA, col = "blue")
       }
     } else {
       if (logged) {
-        points(dxl, dyl, type = "l", col = "blue", lwd = 2)
+        graphics::points(dxl, dyl, type = "l", col = "blue", lwd = 2)
       } else {
-        points(dx, dy, type = "l", col = "blue", lwd = 2)
+        graphics::points(dx, dy, type = "l", col = "blue", lwd = 2)
       }
     }
     plotrix::draw.circle(
@@ -165,9 +165,9 @@ plotIndNGS <-
       theta <- pi / 2 + 2 * pi * (kb / max(pos))
       theta <- theta + offset
       ttext <- pi + theta
-      strw <- strwidth(paste(kb / 1000, " mb", sep = ""), cex = cexnum)
+      strw <- graphics::strwidth(paste(kb / 1000, " mb", sep = ""), cex = cexnum)
       dist <- trad + strw
-      text(
+      graphics::text(
         dist * cos(theta), dist * sin(theta), paste(kb / 1e+06, " mb", sep = ""),
         col = "black", cex = 1 * cexnum, srt = 360 * ttext / (2 * pi), adj = c(0,
                                                                                0)
@@ -175,21 +175,21 @@ plotIndNGS <-
     }
     
     ## Add Text in the plot
-    text(0, 0, mlab, cex = 1)
+    graphics::text(0, 0, mlab, cex = 1)
     
     ## Add Title
-    text(0, 2.75, label, cex = 1.05)
+    graphics::text(0, 2.75, label, cex = 1.05)
     
     ## Add Legend
-    legend(
+    graphics::legend(
       "bottomright", legend = tlist, lty = ltylist, lwd = 2, col = clist, bty = "n",
       cex = 0.75
     )
     
     ## Parameters
-    par(op)
+    graphics::par(op)
     
     ## Close png
     if (!missing(file))
-      dev.off()
+      grDevices::dev.off()
   }

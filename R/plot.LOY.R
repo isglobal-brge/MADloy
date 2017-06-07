@@ -49,27 +49,27 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
    xx <- data[, 1]
    yy <- data[, 2]  
    d <- xx - yy
-   plot.default(ss, d, type = "n", xlab = "Individuals", ylab = "Mean coverage difference (mY region - Reference)")
-   points(ss, d, col = mycol, pch = 16, ...)
+   graphics::plot.default(ss, d, type = "n", xlab = "Individuals", ylab = "Mean coverage difference (mY region - Reference)")
+   graphics::points(ss, d, col = mycol, pch = 16, ...)
   }
   if(attr(x, "type")=="LRR") {
     ss <- 1:length(data)
     d <- x$data
-    plot.default(ss, d, type = "n", xlab = "Individuals", 
+    graphics::plot.default(ss, d, type = "n", xlab = "Individuals", 
                  ylab = "Offset-adjusted trimmed mean normalized mLRR-Y")
-    points(ss, d, col = mycol, pch = 16, ...)
+    graphics::points(ss, d, col = mycol, pch = 16, ...)
   }
-  legend(pos.leg, leg.lab, pch = 16, col = col.lab, horiz=TRUE, cex=0.8)
+  graphics::legend(pos.leg, leg.lab, pch = 16, col = col.lab, horiz=TRUE, cex=0.8)
   alt <- x$class%in%c("LOY", "XYY")
   if (any(alt) & print.labels) {
    if (requireNamespace("wordcloud", quietly = TRUE)) {
     wordcloud::textplot(x = ss[alt], y = d[alt], words = tools::file_path_sans_ext(labels[alt]), 
                         cex = cex.label, new = FALSE, xlim=c(min(ss), max(ss)), ylim=c(min(d[alt]), max(d[alt])))
    } else {
-    text(ss[alt], jitter(d[alt]), tools::file_path_sans_ext(labels[alt]),
+    graphics::text(ss[alt], jitter(d[alt]), tools::file_path_sans_ext(labels[alt]),
          cex = cex.label, adj = 0)
    }
   }  
-  abline(h=0, lty=2, col="red")
+  graphics::abline(h=0, lty=2, col="red")
 } 
 
