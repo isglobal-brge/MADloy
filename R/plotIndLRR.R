@@ -79,7 +79,7 @@ plotIndLRR <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, ...) {
    plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ...)
    rect(7e6, max(lrr.target, na.rm=TRUE), 25e6, min(lrr.target, na.rm=TRUE), col="MistyRose", border="white")
   }
-  points(pos.target, lrr.target, pch=16, cex=0.7, col="ligthblue")
+  points(pos.target, lrr.target, pch=16, cex=0.7, col="brown")
   title(tt)
   abline(h=0, col="red", lty=2, lwd=3)
   hh <- x$target[[sample]]$summary
