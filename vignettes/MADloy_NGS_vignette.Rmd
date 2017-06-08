@@ -146,7 +146,7 @@ plot(PRADres)
 Let us verify whether the subject having the lowest coverage is a having a LOY. The id of that sample can be retrived by executing: 
 
 ```{r, lowest_coverage}
-dd <- getSummary(PRADres)
+dd <- MADloy:::getSummary(PRADres)
 id.tcga.low <- substr(rownames(dd)[which.min(dd[,1])], 6, 21)
 id.tcga.low
 ```

@@ -18,7 +18,7 @@ plotNIG <- function(object, tit){
   pp <- pars$param
   pvals <- GeneralizedHyperbolic::pnig(x, pp[1], pp[2], pp[3], pp[4])
   ss <- seq(min(x), max(x), len=100)
-  graphics::plot.default(stats::ecdf(x), xlab="LRR", main="")
+  stats::plot.ecdf(stats::ecdf(x), xlab="LRR", main="")
   ss.norm <- stats::pnorm(ss, mean=mean(x), sd=stats::sd(x))
   ss.nig <- GeneralizedHyperbolic::pnig(ss, pp[1], pp[2], pp[3], pp[4])
   ss.ecdf <- stats::ecdf(x)(ss)

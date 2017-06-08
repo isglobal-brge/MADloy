@@ -30,9 +30,9 @@ In this vignettes we are going to illustrate how to process SNP array data. In t
 
 ```{r, fitNIG, echo=FALSE, message = FALSE, warning=FALSE, fig.cap="Empirical cumulative distribution function (ecdf) of the observed data and ecdf estimated using NIG and Normal models of reference LRR in PRAD data of TCGA project."}
 library(MADloy)
-load("C:/Juan/CREAL/GitHub/PRADdata/pradLOY.rda")
-lrr <- getSummary(pradLOY)
-plotNIG(lrr[,2], tit="PRAD data of TCGA")
+data(PRADres)
+lrr <- MADloy:::getSummary(PRADres)
+plotNIG(PRADres, tit="PRAD data of TCGA")
 ``` 
 
 
@@ -90,7 +90,7 @@ However, when thousands of samples are analyzed a proper statistical method must
 Let us illustrate how to visualize the data using 89 CEU HapMap samples.  Already pre-processed data can be retrieved into your ``R`` session from the `MADloyHapMapAll` data set that is included in the package by simply typing: 
 
 ```{r, MADloy_3}
-data(MADloy_HapMapAll)
+data(MADloyHapMapAll)
 MADloyHapMapAll
 ```
 Data can be visually inspected by using the generic `plot` function. This function depicts the mean difference between the LLR of Y chromosome and the reference region that is performed in order to control for possible technical artifacts. As previously mention, the reference is consider the autosomes and LRR is summarized by using the trimmed mean in order to remove the effect of having any gain or lose in the genome. Notice that this reference chromosome can be changed by the user. 
@@ -102,7 +102,7 @@ plot(MADloyHapMapAll)
 This figure shows several samples having LOY (those in the -2, -4 range of Y-axis) that correspond to female samples. Of course, these are not real LOY events since females are expected to show this pattern. Let us pay attention in the male individuals that are also available as a data example in our package. We have selected 23 male samples whose pre-processed LLR that can be get into ``R``by:
 
 ```{r, MADloy_4}
-data(MADloy_HapMapMale)
+data(MADloyHapMapMale)
 MADloyHapMapMale
 ```
 The plot is obtained by
@@ -191,20 +191,20 @@ plot(call.blca, pos.leg="topright")
 The plot shows samples having a LOY event as well as gains. This can be verified by having a look at the LRR data in chromosome Y. We have incorporated different text files into the package having the LRR information of samples `TCGA-CF-A3MI-01A` and `TCGA-E7-A6ME-01A`
 
 ```{r, show_NAsamples}
-PathBlcaLRR <- system.file("extdata", package = "MADloy")
-list.files(PathBlcaLRR, pattern=".txt")
+PathBLCALRR <- system.file("extdata", package = "MADloy")
+list.files(PathBLCALRR, pattern=".txt")
 ```
 
 The plot of LRR in mLRR-Y region of the sample `TCGA-CF-A3MI-01A` indicates that this is a real gain
 
 ```{r, plot_gain, fig.show='hold', fig.cap = "Plot of a LOY object obtained from SNP array data"}
-plotIndSNP(file.path(PathBlcaLRR, "TCGA-CF-A3MI-01A.txt"))
+plotIndSNP(file.path(PathBLCALRR, "TCGA-CF-A3MI-01A.txt"))
 ```
 
 On the other hand, the same plot of the sample `TCGA-E7-A6ME-01A` describes a LOY event
 
 ```{r, plot_loy, fig.show='hold', fig.cap = "Plot of a LOY object obtained from SNP array data"}
-plotIndSNP(file.path(PathBlcaLRR, "TCGA-E7-A6ME-01A.txt"))
+plotIndSNP(file.path(PathBLCALRR, "TCGA-E7-A6ME-01A.txt"))
 ```
 
 Notice that the function `plotIndSNP` can be used to visualize the mLRR-Y region by passing different inputs. In that case, we have provided the path and the name of the file containing the LRR data. Another option is to provide and object of class `MADloy` or a `data.frame` containing the rs, chromosome, position and LRR information.
