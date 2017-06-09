@@ -91,7 +91,7 @@ checkBdev <- function( object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol= 4, BAF
         n <- length(allfiles)
         cl <- data.frame(getLOY = allfiles)
         # process PAR regions -----------------------------------------
-        regions <- fread(system.file("data", paste0(hg, ".par.regions"), package = "MADloy"), header=T, skip=1, colClasses = c("character", "character", "numeric", "numeric"), showProgress = FALSE)
+        regions <- fread(system.file("extdata", "references", paste0(hg, ".par.regions"), package = "MADloy"), header=T, skip=1, colClasses = c("character", "character", "numeric", "numeric"), showProgress = FALSE)
         subset <- GenomicRanges::GRanges(seqnames = gsub("chr", "", object$par$regions[object$par$regions$chromosome == "Y"]$chromosome), ranges = IRanges::IRanges(start = object$par$regions[object$par$regions$chromosome == "Y"]$start, end = object$par$regions[object$par$regions$chromosome == "Y"]$end))
         
       }

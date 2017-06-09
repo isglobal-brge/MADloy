@@ -5,12 +5,12 @@
 \title{Plots the SNP data of an individual}
 \usage{
 plotIndSNP(x, sample, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
-  BAFCol = 5, offset = 0, ...)
+  BAFCol = 5, offset = 0, hg = "hg18", ...)
 }
 \arguments{
-\item{x}{A MADloy object from the \code{MADloy} functions.}
+\item{x}{A MADloy object from the \code{MADloy} functions or A single file path (APT platform and MAD platform).}
 
-\item{sample}{The identifier of a sample in the MADloy object.}
+\item{sample}{The identifier of a sample in the MADloy object when x is a MADloy object.}
 
 \item{rsCol}{Column of the MAD file with the name of the SNP.}
 
@@ -23,6 +23,8 @@ plotIndSNP(x, sample, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
 \item{BAFCol}{Column of the MAD file with the BAF information.}
 
 \item{offset}{offset applied to the msY region.}
+
+\item{hg}{Human genome build version. It can be "hg18", "hg19" or "GRCh38". Set by default to "hg18". Only used when a file path is given.}
 
 \item{...}{Any other graphical parameter.}
 }

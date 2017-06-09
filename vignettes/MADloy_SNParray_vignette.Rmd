@@ -31,7 +31,6 @@ In this vignettes we are going to illustrate how to process SNP array data. In t
 ```{r, fitNIG, echo=FALSE, message = FALSE, warning=FALSE, fig.cap="Empirical cumulative distribution function (ecdf) of the observed data and ecdf estimated using NIG and Normal models of reference LRR in PRAD data of TCGA project."}
 library(MADloy)
 data(PRADres)
-lrr <- MADloy:::getSummary(PRADres)
 plotNIG(PRADres, tit="PRAD data of TCGA")
 ``` 
 
@@ -117,28 +116,16 @@ We observe that all the points (that represent the mean value of LLR in mLRR-Y r
 
 Once samples are processed, an object of class `MADloy` is created. After that, one may want to detect those samples having an altered value in chromosome Y. These alteration can be either a LOY event or a gain. The calling is performed by using the function `getLOY`. This function uses Normal Inverse Gaussian (NIG) distribution to model LRR. Model parameters are estimated by using trimmed mean LRR in the autosomes that serve as the reference. Trimmed mean aims to remove those values in autosomal regions having copy number alterations. Then, the probability that LRR in the mLRR-Y region belongs to the reference distribution is assessed by using the cummulative NIG distribution. The main manuscript furter describes how these methods are implemented.
 
-Let us start by illustrating how to detect LOY events in samples from TCGA. We have donwladed .... (** Marcos describir **) . Once .txt files have been created, the data is processed by using `madloy` function as previously described:
+Let us start by illustrating how to detect LOY events in samples from TCGA. We have donwladed .... (** Marcos describir **) . Once .txt files have been created, the data is processed by using `madloy` function as previously described. This processed object can be loaded from the `MADloy` package using the `data` function as follows:
 
-```{r, process_BLCA, eval=FALSE}
-BLCA <- madloy("c:/Juan/CREAL/GitHub/BLCAdata/rawData/")
-``` 
-
-This processed object can be loaded from our `BRGEdata` package. The package can be installed from Bioconductor.
-
-```{r, get_BLCA, eval=FALSE}
-library(BRGEdata)
-data(BLCA)
+```{r, get_BLCA}
+data("BLCAres")
 ```
-
-**To be removed: ** So far it can be loaded from
-```{r, getBLCA_no}
-load("C:/Juan/CREAL/GitHub/BLCAdata/blcaLOY.rda")
-``` 
 
 First, let's have a look at the summarized data of LRR in mLRR-Y region and in the autosomal choromosomes that are used as the reference ones
 
 ```{r, lrr_ref_mLRR-Y}
-lrr.summary <- getSummary(blcaLOY)
+lrr.summary <- MADloy:::getSummary(BLCAres)
 head(lrr.summary)
 ```
 
@@ -172,8 +159,7 @@ abline(h=0, lty=2, col="red")
 The calling that also incorporates the normalization procedure can be performed by computing:
 
 ```{r, BLCA_analysis}
-n <- length(blcaLOY$par$files)
-call.blca <- getLOY(blcaLOY, offset= 0.46, pval.sig=0.05/n)
+call.blca <- getLOY(BLCAres)
 call.blca
 ```
 
@@ -185,9 +171,6 @@ And the figure to visually inspect the alterations in Y chormosoem are be obtain
 plot(call.blca, pos.leg="topright")
 ```
 
-
-
-
 The plot shows samples having a LOY event as well as gains. This can be verified by having a look at the LRR data in chromosome Y. We have incorporated different text files into the package having the LRR information of samples `TCGA-CF-A3MI-01A` and `TCGA-E7-A6ME-01A`
 
 ```{r, show_NAsamples}
@@ -198,13 +181,13 @@ list.files(PathBLCALRR, pattern=".txt")
 The plot of LRR in mLRR-Y region of the sample `TCGA-CF-A3MI-01A` indicates that this is a real gain
 
 ```{r, plot_gain, fig.show='hold', fig.cap = "Plot of a LOY object obtained from SNP array data"}
-plotIndSNP(file.path(PathBLCALRR, "TCGA-CF-A3MI-01A.txt"))
+plotIndSNP(file.path(PathBLCALRR, "TCGA-CF-A3MI-01A.txt"), LRRCol = 5, BAFCol = 4)
 ```
 
 On the other hand, the same plot of the sample `TCGA-E7-A6ME-01A` describes a LOY event
 
 ```{r, plot_loy, fig.show='hold', fig.cap = "Plot of a LOY object obtained from SNP array data"}
-plotIndSNP(file.path(PathBLCALRR, "TCGA-E7-A6ME-01A.txt"))
+plotIndSNP(file.path(PathBLCALRR, "TCGA-E7-A6ME-01A.txt"), LRRCol = 5, BAFCol = 4)
 ```
 
 Notice that the function `plotIndSNP` can be used to visualize the mLRR-Y region by passing different inputs. In that case, we have provided the path and the name of the file containing the LRR data. Another option is to provide and object of class `MADloy` or a `data.frame` containing the rs, chromosome, position and LRR information.

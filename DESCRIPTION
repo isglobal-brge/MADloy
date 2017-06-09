@@ -1,21 +1,22 @@
 Package: MADloy
 Type: Package
 Title: Package to detect mosaic LOY from SNP array data
-Version: 0.9.5-30
+Version: 0.9.5-31
 Date: 2017-05-25
 Author: Marcos Lopez-Sanchez and Juan R Gonzalez
 Maintainer: Juan R Gonzalez <jrgonzalez@creal.cat>
 Depends:
     data.table,
+    GenomicRanges,
     R (>= 3.2.0),
 Imports:
     BiocGenerics,
     ecolitk,
     GeneralizedHyperbolic,
     GenomeInfoDb,
-    GenomicRanges,
     gplots,
     IRanges,
+    methods,
     mixtools,
     parallel,
     plotrix,
