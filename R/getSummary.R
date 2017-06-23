@@ -14,8 +14,8 @@
 getSummary <- function(object) {
   
   if (inherits(object, "MADseqLOY")) {
-    targetAvg <- sapply(object$target, "[[", "summaryTargetCoverage")
-    refAvg <- sapply(object$reference, "[[", "summaryTargetCoverage")
+    targetAvg <- sapply(object$target, "[[", "medianTargetCoverage")
+    refAvg <- sapply(object$reference, "[[", "medianTargetCoverage")
     avg <- cbind(targetAvg, refAvg)
     targetChr <- as.character(GenomeInfoDb::seqnames(object$par$target.region))
     refChr <- as.character(GenomeInfoDb::seqnames(object$par$ref.region))

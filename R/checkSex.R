@@ -21,6 +21,10 @@
 #' checkSex(filepath, mc.cores=20)}
 checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.cores, trim = 0.2, quiet=FALSE) {
   
+  lrr2ploidy <- function(x) 2*exp(3*x/2)
+  ploidy2lrr <- function(x) 2*log(x/2)/3
+  ploidy <- c(0.001, 1, 2, 3, 4, 5)
+  lrrploidy <- ploidy2lrr(ploidy)
   getXY <- function(x, rsCol, ChrCol, PosCol, LRRCol, trim){
     dat <- data.table::fread(x, showProgress = FALSE, sep="\t")
     data.table::setnames(dat, colnames(dat[, c(rsCol, ChrCol, PosCol, LRRCol), with = F]), 
@@ -74,8 +78,31 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
   res <- parallel::mclapply(X = allfiles, FUN = getXY, rsCol = rsCol, ChrCol = ChrCol, 
                                   PosCol = PosCol, LRRCol = LRRCol, mc.cores = mc.cores, trim=trim)
   
-  res2 <- do.call(rbind, res)
-  rownames(res2) <- basename(files)
-  res2 <- as.data.frame(apply(res2, 2, unlist))
-  return(res2)
+  data <- do.call(rbind, res)
+  rownames(data) <- basename(files)
+  data <- as.data.frame(apply(data, 2, unlist))
+  
+  ## Clustering
+
+  centers <- rbind(c(lrrploidy[3], lrrploidy[1]), c(lrrploidy[2], lrrploidy[2]))
+  kmeansres <- kmeans(lrr2ploidy(data), centers = lrr2ploidy(centers))
+  offsetY <- median(x[ kmeansres$cluster == 2 , ]$Y) - lrrploidy[2]
+  offsetX <- median(x[ kmeansres$cluster == 1 , ]$X) - lrrploidy[3]
+
+  tmp <- data
+  tmp$X <- ploidy2lrr(lrr2ploidy(tmp$X) + (2-lrr2ploidy(offsetX)))
+  tmp$Y <- tmp$Y - offsetY
+
+  kmeansres <- kmeans(lrr2ploidy(data), centers = lrr2ploidy(centers))
+  class <- as.factor(ifelse(kmeansres$cluster == 1, "FEMALE", "MALE"))
+
+  par <- list()
+  par$trim <- trim
+  par$offsetY <- offsetY
+  par$offsetX <- offsetX
+  par$files <- files
+  
+  res <- list(data=data, class=class, par=par)
+  class(res) <- "checkSex"
+  return(res)
 } 
