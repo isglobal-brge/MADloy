@@ -30,5 +30,5 @@ This function draws the LRR data for an individual
 }
 \examples{
 \dontrun{
-plotindLRR(resMADloy, "SAMPLE")}
+plotindLRR(resMADloy, 'SAMPLE')}
 }

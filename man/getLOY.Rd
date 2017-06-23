@@ -22,7 +22,7 @@ m-LRR region is expected to be centered at O.}
 \item{...}{Other parameters.}
 }
 \value{
-An object of class "LOY" that summarizes the LOY events detected in
+An object of class 'LOY' that summarizes the LOY events detected in
   the analyzed samples
 }
 \description{

@@ -30,8 +30,8 @@ This argument tries to control the effect of having CNVs across genome. Default 
 By default is FALSE.}
 }
 \value{
-A data.frame object that summarizes the LRR in chrX and chrY in
-  the analyzed samples.
+A checkSex object that contains the trimmed mean LRR in chrX and chrY in
+  the analyzed samples, and its classification as males and females in the class variableinside the object.
 }
 \description{
 Check sex for SNP array samples

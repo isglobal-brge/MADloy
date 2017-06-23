@@ -18,7 +18,7 @@ regions. By default is the region chrY:2694521-59034049 (hg19/GRCh37) but it can
 changed.}
 
 \item{ref.region}{If declared, the chromosome or region to be compared with the Y 
-region in UCSC style (i.e. "chr21" or "chr21:1000-10000").}
+region in UCSC style (i.e. 'chr21' or 'chr21:1000-10000').}
 
 \item{rsCol}{The position of the column with the SNP identifier.}
 
@@ -36,7 +36,7 @@ is set to 1.}
 \item{quiet}{Should the function not inform about the status of the process. 
 By default is FALSE.}
 
-\item{hg}{Human genome build version. It can be "hg18", "hg19" or "GRCh38". Set by default to "hg18".}
+\item{hg}{Human genome build version. It can be 'hg18', 'hg19' or 'GRCh38'. Set by default to 'hg18'.}
 
 \item{...}{Other parameters.}
 }

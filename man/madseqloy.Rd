@@ -19,7 +19,7 @@ regions. By default is the region chrY:2694521-59034049 but it can be
 changed.}
 
 \item{ref.region}{First chromosome or region to be compared with the Y
-region in UCSC style (i.e. "chr22" or "chr21:1000-10000").}
+region in UCSC style (i.e. 'chr22' or 'chr21:1000-10000').}
 
 \item{mc.cores}{umber of cores to be used with this function. If there are
 more cores than samples, the number of cores will be limited to the number
@@ -34,9 +34,9 @@ By default is set to 1.}
 \item{...}{Other parameters of the read.targets function.}
 }
 \value{
-The returned value is an object of "MADseqLOY" class with three lists,
-  one regarding the target region coverage called "target", another regarding the
-  reference regions to be compared against called "reference"  and finally one with the parameters used in the query.
+The returned value is an object of 'MADseqLOY' class with three lists,
+  one regarding the target region coverage called 'target', another regarding the
+  reference regions to be compared against called 'reference'  and finally one with the parameters used in the query.
 }
 \description{
 MADseqLOY check all the bams in a given folder, by using the target regions

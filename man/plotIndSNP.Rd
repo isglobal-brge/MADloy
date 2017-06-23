@@ -24,7 +24,7 @@ plotIndSNP(x, sample, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
 
 \item{offset}{offset applied to the msY region.}
 
-\item{hg}{Human genome build version. It can be "hg18", "hg19" or "GRCh38". Set by default to "hg18". Only used when a file path is given.}
+\item{hg}{Human genome build version. It can be 'hg18', 'hg19' or 'GRCh38'. Set by default to 'hg18'. Only used when a file path is given.}
 
 \item{...}{Any other graphical parameter.}
 }
@@ -36,5 +36,5 @@ This function draws the LRR and BAF data for an individual
 }
 \examples{
 \dontrun{
-plotindSNP(resMADloy, "SAMPLE")}
+plotindSNP(resMADloy, 'SAMPLE')}
 }
