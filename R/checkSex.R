@@ -87,14 +87,14 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
     
     centers <- rbind(c(lrrploidy[3], lrrploidy[1]), c(lrrploidy[2], lrrploidy[2]))
     kmeansres <- stats::kmeans(lrr2ploidy(data), centers = lrr2ploidy(centers))
-    offsetY <- stats::median(data()[kmeansres$cluster == 2, ]$Y) - lrrploidy[2]
+    offsetY <- stats::median(data[kmeansres$cluster == 2, ]$Y) - lrrploidy[2]
     offsetX <- stats::median(data[kmeansres$cluster == 1, ]$X) - lrrploidy[3]
     
     tmp <- data
     tmp$X <- ploidy2lrr(lrr2ploidy(tmp$X) + (2 - lrr2ploidy(offsetX)))
     tmp$Y <- tmp$Y - offsetY
     
-    kmeansres <- stats::kmeans(lrr2ploidy(data), centers = lrr2ploidy(centers))
+    kmeansres <- stats::kmeans(lrr2ploidy(tmp), centers = lrr2ploidy(centers))
     class <- as.factor(ifelse(kmeansres$cluster == 1, "FEMALE", "MALE"))
     
     par <- list()
