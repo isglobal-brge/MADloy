@@ -13,8 +13,8 @@
 #' This argument tries to control the effect of having CNVs across genome. Default is 0.2.
 #' @param quiet Should the function not inform about the status of the process. 
 #'   By default is FALSE.
-#' @return A data.frame object that summarizes the LRR in chrX and chrY in
-#'   the analyzed samples.
+#' @return A checkSex object that contains the trimmed mean LRR in chrX and chrY in
+#'   the analyzed samples, and its classification as males and females in the class variableinside the object.
 #' @export
 #' @examples
 #' \dontrun{
