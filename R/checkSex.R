@@ -89,7 +89,7 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
     kmeansres <- try(stats::kmeans(lrr2ploidy(data), 
                                    centers = lrr2ploidy(centers)),
                      TRUE)
-    if (!inherits(x, "try-error")) {
+    if (!inherits(kmeansres, "try-error")) {
       offsetY <- stats::median(data[kmeansres$cluster == 2, ]$Y) - lrrploidy[2]
       offsetX <- stats::median(data[kmeansres$cluster == 1, ]$X) - lrrploidy[3]
     
