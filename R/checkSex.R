@@ -103,7 +103,8 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
     else {
       offsetY <- stats::median(data$Y) - lrrploidy[2]
       offsetX <- 0
-      class <- as.factor(rep("MALE", length(data$Y)))
+      class <- factor(rep("MALE", length(data$Y)), 
+                      levels=c("FEMALE", "MALE"))
       warning("All samples have the same gender status.")
     }
     
