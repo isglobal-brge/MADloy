@@ -16,6 +16,7 @@ processBam <- function(file, targets, subset) {
     reads <- methods::as(reads, "RangedData")[as.character(GenomeInfoDb::seqnames(subset))]
     targets <- methods::as(targets, "RangedData")[as.character(GenomeInfoDb::seqnames(subset))]
     coverage <- TEQC::coverage.target(reads = reads, targets = targets)
+    coverage$coverageAll <- NULL
     coverage$medianTargetCoverage <- stats::median(coverage$coverageTarget[[1]])
     return(coverage)
 }

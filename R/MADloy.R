@@ -23,6 +23,7 @@
 #'   is set to 1.
 #' @param quiet Should the function not inform about the status of the process. 
 #'   By default is FALSE.
+#' @param hg Human genome build version. It can be 'hg18', 'hg19' or 'GRCh38'. Set by default to 'hg18'.
 #' @param ... Other parameters.
 #' @return A MADloy object that contains the LRR means for all the files 
 #'   analyzed.

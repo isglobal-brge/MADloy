@@ -20,6 +20,7 @@
 #'   By default is FALSE.
 #' @param skip Number of lines to be skipped in the targets file if necessary.
 #'   By default is set to 1.
+#' @param hg Human genome build version. It can be 'hg18', 'hg19' or 'GRCh38'. Set by default to 'hg19'.
 #' @param ... Other parameters of the read.targets function.
 #'   
 #' @return The returned value is an object of 'MADseqLOY' class with three lists,
@@ -31,16 +32,24 @@
 #' madseqloy(files=bamFile, reference=targetFile, skip=0)}
 
 
-madseqloy <- function(files, exomeTargets, target.region = "chrY:2694521-59034049", 
-    ref.region = "chr22", mc.cores, quiet = FALSE, skip = 2, ...) {
+madseqloy <- function(files, exomeTargets, target.region, 
+    ref.region = "chr22", mc.cores, quiet = FALSE, skip = 2, hg = "hg19", ...) {
     
+    # Check hg version and name
+    if (!hg %in% c("hg18", "hg19", "hg38")) stop("The human genome release in the hg field should be one of the following ones: 'hg18', 'hg19' or 'hg38'.")
+    chrSizes <- fread(system.file("extdata", "references", paste0(hg, ".chrom.sizes"), package = "MADloy"), header=T, skip="#", colClasses = c("character", "numeric"), showProgress = FALSE)
+    regions <- fread(system.file("extdata", "references", paste0(hg, ".par.regions"), package = "MADloy"), header=T, skip=1, colClasses = c("character", "character", "numeric", "numeric"), showProgress = FALSE)
+    
+  
     # Check target and reference regions -----------------------------------------
-    if (missing(target.region)) 
-        message("Targeted region set to chrY:2694521-59034049 by default\n")
+    if (missing(target.region))
+        target.region <- paste0("chrY:", regions[regions$type == "msY"]$start, ":",
+                                regions[regions$type == "msY"]$end)
+        message("Targeted region set to ", target.region, " by default\n")
     queryA <- unlist(strsplit(x = target.region, split = "[:, -]", perl = T))
     if (is.na(queryA[2]) | is.na(queryA[3])) {
         subsetA <- GenomicRanges::GRanges(seqnames = queryA[1], ranges = IRanges::IRanges(start = 1, 
-            end = 3e+08))
+            end = chrSizes[chrSizes$chromosome == gsub("chr", "", queryA[1])]$size))
     } else {
         subsetA <- GenomicRanges::GRanges(seqnames = queryA[1], ranges = IRanges::IRanges(start = as.numeric(queryA[2]), 
             end = as.numeric(queryA[3])))
@@ -50,7 +59,7 @@ madseqloy <- function(files, exomeTargets, target.region = "chrY:2694521-5903404
     queryB <- unlist(strsplit(x = ref.region, split = "[:, -]", perl = T))
     if (is.na(queryB[2]) | is.na(queryB[3])) {
         subsetB <- GenomicRanges::GRanges(seqnames = queryB[1], ranges = IRanges::IRanges(start = 1, 
-            end = 3e+08))
+            end = chrSizes[chrSizes$chromosome == gsub("chr", "", queryA[1])]$size))
     } else {
         subsetB <- GenomicRanges::GRanges(seqnames = queryB[1], ranges = IRanges::IRanges(start = as.numeric(queryB[2]), 
             end = as.numeric(queryB[3])))
@@ -132,7 +141,7 @@ madseqloy <- function(files, exomeTargets, target.region = "chrY:2694521-5903404
         subset = subsetB, mc.cores = mc.cores)
     names(targetCov) <- names(refCov) <- basename(allfiles)
     par <- list(targets = targets, target.region = subsetA, ref.region = subsetB, 
-        files = basename(allfiles))
+        files = basename(allfiles), hg = hg)
     coverages <- list(target = targetCov, reference = refCov, par = par)
     class(coverages) <- "MADseqLOY"
     return(coverages)
