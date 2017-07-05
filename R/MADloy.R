@@ -38,7 +38,7 @@ madloy <- function(files, target.region,
                    mc.cores, quiet = FALSE, hg="hg18", ...) {
   
   # Check hg version and name
-  if (!hg %in% c("hg18", "hg19", "hg38")) stop("The human genome release in the hg field should be one of the following ones: 'hg18', 'hg19' or 'hg38'.")
+  if (!hg %in% c("hg18", "hg19", "GRCh38")) stop("The human genome release in the hg field should be one of the following ones: 'hg18', 'hg19' or 'GRCh38'.")
   chrSizes <- fread(system.file("extdata", "references", paste0(hg, ".chrom.sizes"), package = "MADloy"), header=T, skip="#", colClasses = c("character", "numeric"), showProgress = FALSE)
   regions <- fread(system.file("extdata", "references", paste0(hg, ".par.regions"), package = "MADloy"), header=T, skip=1, colClasses = c("character", "character", "numeric", "numeric"), showProgress = FALSE)
   
