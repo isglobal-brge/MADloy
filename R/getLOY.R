@@ -1,9 +1,6 @@
 #' Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data
 #' 
 #' @param object A MADloy or MADseqLOY object.
-#' @param offset Offset value of SNP array data in the LRR of chromosome Y. That is, value to
-#' guarantee that mean LRR at chrmosome Y is centered at 0.  Default 0 since LRR at 
-#' m-LRR region is expected to be centered at O. 
 #' @param k Number of groups. Only necessary in NGS data.
 #' @param cutoff cutoff value. Only necessari in NGS data.
 #' @param pval.sig pval.sig p-value treshold to be used in the classification test.
@@ -16,7 +13,7 @@
 #' \dontrun{
 #' getLOY(resMADseqLOY)
 #' getLOY(resMADloy)}
-getLOY <- function(object, offset, pval.sig, k, cutoff, ...) {
+getLOY <- function(object, pval.sig, k, cutoff, ...) {
     
     if (inherits(object, "MADseqLOY") | inherits(object, "MADloy")) {
         x <- getSummary(object)
@@ -100,32 +97,34 @@ getLOY <- function(object, offset, pval.sig, k, cutoff, ...) {
         attr(ans, "type") <- "Coverage"
         class(ans) <- "LOY"
     } else {
-        xx <- cbind(target, reference)
-        if (missing(offset)) 
-            offset <- stats::median(target)
+        
         if (missing(pval.sig)) 
             pval.sig <- 0.05/length(target)
-        norm.lrr <- target - reference - offset
         
+        norm.lrr <- object$mLRRY
+        reference <- unlist(lapply(egcut$reference, "[[", "summary"))
+        reference.qc <- reference[!is.na(norm.lrr)]
         
-        sds <- sapply(object$reference, "[[", "sd")
-        reference.qc <- reference[!sds > 2 * mean(sds)]
+        sds <- unlist(lapply(egcut$reference, "[[", "sd"))
+        
         
         pars <- GeneralizedHyperbolic::nigFit(reference.qc)
         # pars <- fBasics:::nigFit(ref, trace=FALSE) pp <- pars@fit$estimate
         pp <- pars$param
         
         ff <- function(x, param) {
-            if (x > 0) 
+            if (x > 0 & !is.na(x)) 
                 ans <- try(GeneralizedHyperbolic::pnig(x, param[1], param[2], param[3], 
                   param[4], lower = FALSE), TRUE) else ans <- try(GeneralizedHyperbolic::pnig(x, param[1], param[2], param[3], 
                 param[4], lower = TRUE), TRUE)
+            if (is.na(x))
+                ans <- NA
             if (inherits(ans, "try-error")) 
                 ans <- NA
             return(ans)
         }
         
-        pvals <- sapply(norm.lrr, ff, param = pp)
+        pvals <<- sapply(norm.lrr, ff, param = pp)
         
         threshold <- stats::median(sds[!sds > 2 * mean(sds)])
         cl <- ifelse(pvals > pval.sig | abs(norm.lrr) < threshold, "normal", "altered")

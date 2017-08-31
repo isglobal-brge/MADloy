@@ -1,8 +1,8 @@
 Package: MADloy
 Type: Package
 Title: Package to detect mosaic LOY from SNP array data
-Version: 0.9.5-31
-Date: 2017-05-25
+Version: 0.9.6-01
+Date: 2017-08-31
 Author: Marcos Lopez-Sanchez and Juan R Gonzalez
 Maintainer: Juan R Gonzalez <jrgonzalez@creal.cat>
 Depends:
@@ -30,7 +30,7 @@ Description: This packages is a suit of functions to perform association analysi
              the LRR and BAF information of required genomic regions, and a function to perform 
              calling based on Negative Inverse Gaussian distribution that properly fits LRR data.
 License: GPL (>= 2)
-URL: http://www.creal.cat/brge and http://www.creal.cat/jrgonzalez/software.htm
+URL: https://github.com/isglobal-brge/MADloy and http://brge.isglobal.org
 VignetteBuilder: knitr
 Suggests:
     knitr,
