@@ -1,7 +1,7 @@
 #' Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data
 #' 
 #' @param object A MADloy or MADseqLOY object.
-#' @param k Number of groups. Only necessary in NGS data.
+#' @param k Number of groups. Recomended to force LOY, normal, XYY
 #' @param cutoff cutoff value. Only necessari in NGS data.
 #' @param pval.sig pval.sig p-value treshold to be used in the classification test.
 #' @param ... Other parameters.
@@ -97,43 +97,49 @@ getLOY <- function(object, pval.sig, k, cutoff, ...) {
         attr(ans, "type") <- "Coverage"
         class(ans) <- "LOY"
     } else {
-        
+        if (missing(k))
+          k <- 2
         if (missing(pval.sig)) 
             pval.sig <- 0.05/length(target)
         
         norm.lrr <- object$mLRRY
-        reference <- unlist(lapply(egcut$reference, "[[", "summary"))
-        reference.qc <- reference[!is.na(norm.lrr)]
+        reference <- unlist(lapply(object$reference, "[[", "summary"))
         
-        sds <- unlist(lapply(egcut$reference, "[[", "sd"))
+        y <- norm.lrr - reference
+        y.na <- is.na(y) 
+        y[y.na] <- 0
+        ans <- try(MixGHD::MCGHD(y, G=k, ...), TRUE)
+        if (inherits(ans, "try-error")) 
+          stop("Model does not converge: change initial parameters")
         
+        ratio <- norm.lrr/reference
+        cl <- ans@map
         
-        pars <- GeneralizedHyperbolic::nigFit(reference.qc)
-        # pars <- fBasics:::nigFit(ref, trace=FALSE) pp <- pars@fit$estimate
-        pp <- pars$param
-        
-        ff <- function(x, param) {
-            if (x > 0 & !is.na(x)) 
-                ans <- try(GeneralizedHyperbolic::pnig(x, param[1], param[2], param[3], 
-                  param[4], lower = FALSE), TRUE) else ans <- try(GeneralizedHyperbolic::pnig(x, param[1], param[2], param[3], 
-                param[4], lower = TRUE), TRUE)
-            if (is.na(x))
-                ans <- NA
-            if (inherits(ans, "try-error")) 
-                ans <- NA
-            return(ans)
+        if (k<=2) {
+          tt <- stats::aggregate(ratio ~ as.factor(cl), FUN = mean)
+          o <- order(tt[, 2])
+          alt <- which.max(abs(tt[, 2] - 1))
+          if (tt[alt, 2] > 1) {
+            labs <- c("normal", "LOY")
+          } else {
+            labs <- c("XYY", "normal")
+          }
+          cl <- factor(cl, labels = labs[o])
+          probs <- matrix(ans@z, ncol=3)
+        } else {
+          tt <- stats::aggregate(ratio ~ as.factor(cl), FUN = mean)
+          o <- order(tt[, 2])
+          cl <- factor(cl, labels = c("LOY", "normal", "XYY")[o])
+          probs <- matrix(ans@z, ncol=2)
         }
         
-        pvals <<- sapply(norm.lrr, ff, param = pp)
+        # mprob <- apply(probs, 1, max)
+        # cl[cl != "normal" & mprob < cutoff] <- "normal"
         
-        threshold <- stats::median(sds[!sds > 2 * mean(sds)])
-        cl <- ifelse(pvals > pval.sig | abs(norm.lrr) < threshold, "normal", "altered")
-        cl[cl == "altered" & norm.lrr > 0] <- "XYY"
-        cl[cl == "altered" & norm.lrr < 0] <- "LOY"
-        par <- object$par
-        par$offset <- offset
-        par$pval.sig <- pval.sig
-        ans <- list(class = cl, prob = pvals, data = norm.lrr, ref = reference, par = par)
+        
+        par <- ans@par
+        ans <- list(class = cl, prob = probs, data = norm.lrr, 
+                    ref = reference, par = par)
         attr(ans, "type") <- "LRR"
         class(ans) <- "LOY"
     }
