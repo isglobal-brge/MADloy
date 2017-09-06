@@ -105,14 +105,14 @@ getLOY <- function(object, pval.sig, k, cutoff, ...) {
         norm.lrr <- object$mLRRY
         reference <- unlist(lapply(object$reference, "[[", "summary"))
         
-        y <- norm.lrr - reference
+        y <- norm.lrr
         y.na <- is.na(y) 
         y[y.na] <- 0
-        ans <- try(MixGHD::MCGHD(y, G=k, ...), TRUE)
+        ans <<- try(MixGHD::MCGHD(y, G=k, ...), TRUE)
         if (inherits(ans, "try-error")) 
           stop("Model does not converge: change initial parameters")
         
-        ratio <- norm.lrr/reference
+        ratio <- x[, 1]/x[, 2]
         cl <- ans@map
         
         if (k<=2) {
@@ -125,12 +125,12 @@ getLOY <- function(object, pval.sig, k, cutoff, ...) {
             labs <- c("XYY", "normal")
           }
           cl <- factor(cl, labels = labs[o])
-          probs <- matrix(ans@z, ncol=3)
+          probs <- matrix(ans@z, ncol=2)
         } else {
           tt <- stats::aggregate(ratio ~ as.factor(cl), FUN = mean)
           o <- order(tt[, 2])
           cl <- factor(cl, labels = c("LOY", "normal", "XYY")[o])
-          probs <- matrix(ans@z, ncol=2)
+          probs <- matrix(ans@z, ncol=3)
         }
         
         # mprob <- apply(probs, 1, max)
