@@ -124,16 +124,17 @@ getLOY <- function(object, pval.sig, k, cutoff, ...) {
             return(ans)
         }
         
-        pvals <<- sapply(norm.lrr, ff, param = pp)
+        pvals <- sapply(norm.lrr, ff, param = pp)
         
         threshold <- stats::median(sds[!sds > 2 * mean(sds)])
         cl <- ifelse(pvals > pval.sig | abs(norm.lrr) < threshold, "normal", "altered")
         cl[cl == "altered" & norm.lrr > 0] <- "XYY"
         cl[cl == "altered" & norm.lrr < 0] <- "LOY"
+        cl.o <- factor(ans$class, levels=c("normal", "LOY", "XYY"))
         par <- object$par
         par$offset <- offset
         par$pval.sig <- pval.sig
-        ans <- list(class = cl, prob = pvals, data = norm.lrr, ref = reference, par = par)
+        ans <- list(class = cl.o, prob = pvals, data = norm.lrr, ref = reference, par = par)
         attr(ans, "type") <- "LRR"
         class(ans) <- "LOY"
     }

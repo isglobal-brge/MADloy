@@ -28,7 +28,7 @@ Description: This packages is a suit of functions to perform association analysi
              format (e.g. having snp_name, chromosome, position, LRR, BAF and genotype). There are             
              functions to perform quality control of samples, functions to process raw data and extract
              the LRR and BAF information of required genomic regions, and a function to perform 
-             calling based on Negative Inverse Gaussian distribution that properly fits LRR data.
+             calling based on Normal Inverse Gaussian distribution that properly fits LRR data.
 License: GPL (>= 2)
 URL: https://github.com/isglobal-brge/MADloy and http://brge.isglobal.org
 VignetteBuilder: knitr

@@ -11,7 +11,7 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
     }
     
     
-    nclass <- length(unique(x$class))
+    nclass <- length(levels(x$class))
     
     if (nclass == 1) {
         mycol <- colors[2]
