@@ -30,7 +30,7 @@
 #' \dontrun{
 #' checkBdev(filepath, mc.cores=2)}
 checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAFCol = 5, 
-    top = 0.9, bot = 0.1, trim = 0.1, mc.cores, quiet = FALSE, hg = "hg18", pval.sig = 0.05, 
+    top = 0.7, bot = 0.3, trim = 0.1, mc.cores, quiet = FALSE, hg = "hg18", pval.sig = 0.05, 
     ...) {
     
     # two-sample t-test from
@@ -101,11 +101,9 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
                 regions <- fread(system.file("extdata", "references", paste0(hg, 
                   ".par.regions"), package = "MADloy"), header = T, skip = 1, colClasses = c("character", 
                   "character", "numeric", "numeric"), showProgress = FALSE)
-                subset <- GenomicRanges::GRanges(seqnames = gsub("chr", "", object$par$regions[object$par$regions$chromosome == 
-                  "Y"]$chromosome), ranges = IRanges::IRanges(start = object$par$regions[object$par$regions$chromosome == 
-                  "Y"]$start, end = object$par$regions[object$par$regions$chromosome == 
-                  "Y"]$end))
-                
+                subset <- GenomicRanges::GRanges(seqnames = gsub("chr", "", regions[regions$chromosome == "Y"]$chromosome), 
+                                                 ranges = IRanges::IRanges(start = regions[regions$chromosome == "Y"]$start,
+                                                                           end = regions[regions$chromosome == "Y"]$end))
             }
         }
         if (!quiet) 
