@@ -124,7 +124,7 @@ getLOY <- function (object, offset, pval.sig, ...)
     par$offset <- offset
     par$pval.sig <- pval.sig
     ans <- list(class = cl.o, prob = pvals, data = norm.lrr, 
-                par = par)
+                par.model = par, par=object$par)
     attr(ans, "type") <- "LRR"
     class(ans) <- "LOY"
   }
