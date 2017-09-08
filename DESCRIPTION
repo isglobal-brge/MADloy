@@ -12,7 +12,7 @@ Depends:
 Imports:
     BiocGenerics,
     ecolitk,
-    MixGHD,
+    GeneralizedHyperbolic,
     GenomeInfoDb,
     gplots,
     IRanges,
