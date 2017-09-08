@@ -130,7 +130,7 @@ getLOY <- function(object, pval.sig, k, cutoff, ...) {
         cl <- ifelse(pvals > pval.sig | abs(norm.lrr) < threshold, "normal", "altered")
         cl[cl == "altered" & norm.lrr > 0] <- "XYY"
         cl[cl == "altered" & norm.lrr < 0] <- "LOY"
-        cl.o <- factor(ans$class, levels=c("normal", "LOY", "XYY"))
+        cl.o <- factor(cl, levels=c("normal", "LOY", "XYY"))
         par <- object$par
         par$offset <- offset
         par$pval.sig <- pval.sig
