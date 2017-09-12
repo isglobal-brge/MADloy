@@ -4,7 +4,7 @@
 #' interest.
 #' 
 #' @param file File path of the MAD file to be processed.
-#' @param query Region of interest to check the LRR in rangedData format.
+#' @param regions Regions of chromosomes X and Y in data.frame. See system.file("extdata", "references") for more info on these regions.
 #' @param rsCol Column of the MAD file with the name of the SNP.
 #' @param ChrCol Column of the MAD file with the chromosome information.
 #' @param PosCol Column of the MAD file with the position information.
@@ -19,7 +19,7 @@
 #' @examples
 #' \dontrun{
 #' processBdevMAD(file=file.path, query=rangedDataROI, rsCol=1, chrCol=2, PosCol=3, LRRCol=4)}
-processBdevMAD <- function(file, query, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top, 
+processBdevMAD <- function(file, regions, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top, 
     bot, trim) {
     
     dat <- data.table::fread(file, showProgress = FALSE, sep = "\t")
@@ -29,24 +29,26 @@ processBdevMAD <- function(file, query, rsCol, ChrCol, PosCol, LRRCol, BAFCol, t
     Bdevsummary <- list()
     if (xy){
       # PAR1
-      sel <- dat[which(dat$Chr == as.character(GenomeInfoDb::seqnames(query[1])) & 
-                         dat$Position > BiocGenerics::start(query[1]) & dat$Position < BiocGenerics::end(query[1]))]
+      sel <- dat[which(dat$Chr %in% c("XY", "25") & dat$Position > regions[regions$chromosome == "X" & 
+              regions$type == "PAR1"]$start & dat$Position < regions[regions$chromosome == "X" & 
+              regions$type == "PAR1"]$end & dat$B.Allele.Freq >= bot & dat$B.Allele.Freq <= top, BAFCol)]
       Bdevsummary$PAR1$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
       Bdevsummary$PAR1$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
-      Bdevsummary$PAR1$Pl <- mean(2 * exp(1.5 * sel$Log.R.Ratio), na.rm = T, trim = trim)
-      Bdevsummary$PAR1$Plsd <- stats::sd(2 * exp(1.5 * sel$Log.R.Ratio), na.rm = T)
+      Bdevsummary$PAR1$Pl <- mean(PloidyCalc(sel$Log.R.Ratio), na.rm = T, trim = trim)
+      Bdevsummary$PAR1$Plsd <- stats::sd(PloidyCalc(sel$Log.R.Ratio), na.rm = T)
       Bdevsummary$PAR1$n <- nrow(sel)
       # PAR2
-      sel <- dat[which(dat$Chr == as.character(GenomeInfoDb::seqnames(query[2])) & 
-                         dat$Position > BiocGenerics::start(query[2]) & dat$Position < BiocGenerics::end(query[2]) & 
-                         dat$B.Allele.Freq <= top & dat$B.Allele.Freq >= bot)]
+      sel <- dat[which(dat$Chr %in% c("XY", "25") & 
+                         dat$Position > regions[regions$chromosome == "X" & regions$type == "PAR2"]$start & dat$Position < regions[regions$chromosome == "X" & regions$type == "PAR2"]$end & dat$B.Allele.Freq >= bot & dat$B.Allele.Freq <= top, BAFCol)]
+      
       Bdevsummary$PAR2$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
       Bdevsummary$PAR2$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
-      Bdevsummary$PAR2$Pl <- mean(2 * exp(1.5 * sel$Log.R.Ratio), na.rm = T, trim = trim)
-      Bdevsummary$PAR2$Plsd <- stats::sd(2 * exp(1.5 * sel$Log.R.Ratio), na.rm = T)
+      Bdevsummary$PAR2$Pl <- mean(PloidyCalc(sel$Log.R.Ratio), na.rm = T, trim = trim)
+      Bdevsummary$PAR2$Plsd <- stats::sd(PloidyCalc(sel$Log.R.Ratio), na.rm = T)
       Bdevsummary$PAR2$n <- nrow(sel)  
+    } else {
+      warning("No PAR1 or PAR2 probes are available in file", file, " to measure Bdeviation")
+      Bdevsummary <- NA
     }
-    
-    
     return(Bdevsummary)
 }

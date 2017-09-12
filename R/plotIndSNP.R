@@ -9,6 +9,8 @@
 #' @param PosCol Column of the MAD file with the position information.
 #' @param LRRCol Column of the MAD file with the LRR information.
 #' @param BAFCol Column of the MAD file with the BAF information.
+#' @param offset offset value to adjust msY region LRR. By default is set to 0.
+#' @param scaleY Should the LRR in msY region be scaled to simulate a diploid region - ploidy(msY)+1. By default is set to TRUE.
 #' @param ... Any other graphical parameter.
 #' 
 #' @return A data table with the results for all samples in columns
@@ -16,9 +18,10 @@
 #' @examples
 #' \dontrun{
 #' plotindSNP(resMADloy, "SAMPLE")}
-plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=5, offset=0,...) {
+plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=5, offset=0, scaleY=TRUE, ...) {
   if (inherits(x, "MADloy") | inherits(x, "MADloyBdev")) {
-    
+    LRRCalc <- function(x) log(x/2)/1.5
+    PloidyCalc <- function(x) 2*exp(1.5*x)
     samples <- x$par$files
     paths <- x$par$path
     regions <- x$par$regions
@@ -38,21 +41,25 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=
     if (xy){
       xysel <- c(grep("^XY", (dat[, ChrCol])), grep("^23", (dat[, ChrCol])))
       datxy <- dat[xysel, ]
+      selPAR1 <- datxy[, PosCol] <= as.numeric(regions[regions$chromosome == "X" & regions$type == "PAR1"]$end)
+      selPAR2 <- datxy[, PosCol] >= as.numeric(regions[regions$chromosome == "X" & regions$type == "PAR2"]$start) & datxy[, PosCol] <= as.numeric(regions[regions$chromosome == "X" & regions$type == "PAR2"]$end)
     }
     dat <- dat[o, ]
+    ## Scale LRR of the msY region to have ploidy = 2 = 1(Y) + 1(constant)
+    if (scaleY) dat[dat$Position >= regions[regions$type=="msY"]$start & dat$Position <= regions[regions$type=="msY"]$end, LRRCol] <- log((PloidyCalc(dat[dat$Position >= regions[regions$type=="msY"]$start & dat$Position <= regions[regions$type=="msY"]$end, LRRCol])+1)/2)
     par(mar = c(5, 5, 4, 5) + 0.1)
-    plot(dat[, PosCol], dat[, LRRCol]+offset, ylim = c(-5, 5), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(1, as.numeric(regions[3, 4])), ...)
+    plot(dat[, PosCol], dat[, LRRCol]+offset, ylim = c(-2, 2), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(1, as.numeric(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$end)), ...)
     if (xy){
-      points(datxy[datxy[, PosCol] <= as.numeric(regions[2, 4]), PosCol], datxy[datxy[, PosCol] <= as.numeric(regions[2, 4]), LRRCol], pch =".", cex = 2, col=1)
-      points(datxy[datxy[, PosCol] >= as.numeric(regions[4, 3]) & datxy[, PosCol] <= as.numeric(regions[4, 4]), PosCol]-as.numeric(regions[3,4])+as.numeric(regions[3,3]), datxy[datxy[, PosCol] >= as.numeric(regions[4, 3]) & datxy[, PosCol] <= as.numeric(regions[4, 4]), LRRCol], pch =".", cex = 2, col=1)
+      points(datxy[selPAR1, PosCol], datxy[selPAR1, LRRCol], pch =".", cex = 2, col=1)
+      points(datxy[selPAR2, PosCol]-as.numeric(regions[regions$chromosome == "X" & regions$type == "PAR2"]$start)+as.numeric(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$start), datxy[selPAR2, LRRCol], pch =".", cex = 2, col=1)
     }
-    axis( 2, at = c(-5:5), labels = c("-5.0", "-4.0", "-3.0", "-2.0", "-1.0", "0.0", "1.0", "2.0", "3.0", "4.0", "5.0"), las = 1, col = "black", col.axis = "black")
-    abline(h=x$par$offset, col="orange", lty=2, lwd=2)
+    axis( 2, at = c(-2:2), labels = c("-2.0", "-1.0", "0.0", "1.0", "2.0"), las = 1, col = "black", col.axis = "black")
+    #abline(h=x$par$offset, col="orange", lty=2, lwd=2)
     par(new = TRUE)
     plot(dat[, PosCol], dat[, BAFCol], col = 2, pch = ".", cex = 2, ylab = "", xlab = "", main = "", axes = F, xlim=c(1, as.numeric(regions[3, 4])), ...)
     if (xy){
-      points(datxy[datxy[, PosCol] <= as.numeric(regions[2, 4]), PosCol], datxy[datxy[, PosCol] <= as.numeric(regions[2, 4]), BAFCol], pch =".", cex = 2, col=2)
-      points(datxy[datxy[, PosCol] >= as.numeric(regions[4, 3]) & datxy[, PosCol] <= as.numeric(regions[4, 4]), PosCol]-as.numeric(regions[3,4])+as.numeric(regions[3,3]), datxy[datxy[, PosCol] >= as.numeric(regions[4, 3]) & datxy[, PosCol] <= as.numeric(regions[4, 4]), BAFCol], pch =".", cex = 2, col=1)
+      points(datxy[selPAR1, PosCol], datxy[selPAR1, BAFCol], pch =".", cex = 2, col=2)
+      points(datxy[selPAR2, PosCol]-as.numeric(regions[regions$chromosome == "X" & regions$type == "PAR2"]$start)+as.numeric(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$start), datxy[selPAR2, BAFCol], pch =".", cex = 2, col=2)
     }
     abline(h=0.5, col=8)
     abline(h=c(0.33, 0.66), col=8)
@@ -62,15 +69,15 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=
     xaxis <- seq(0, max(dat[, PosCol], na.rm=T), by=25000000)
     axis( 1, at = xaxis, labels = as.character(round(xaxis/1000000, 1)), las = 1, col = "black", col.axis = "black")
     mtext("position (Mb)", side = 1, col = "black", line = 2.5)
-    rect(6671498, -0.01, 22919969, -0.03, col="green", border=NA)
-    rect(6671498, 1.01, 22919969, 1.03, col="green", border=NA)
-    abline(v=c(6671498, 22919969), lty=2, col="green")
-    rect(1, -0.01, 2709520, -0.03, col="Blue", border=NA)
-    rect(1, 1.01, 2709520, 1.03, col="Blue", border=NA)
-    abline(v=c(1, 2709520), lty=2, col="blue")
-    rect(57443438, -0.01, 57772954, -0.03, col="Blue", border=NA)
-    rect(57443438, 1.01, 57772954, 1.03, col="Blue", border=NA)
-    abline(v=c(57443438, 57772954), lty=2, col="blue")
+    rect(regions[regions$type=="msY"]$start, -0.01, regions[regions$type=="msY"]$end, -0.03, col="green", border=NA)
+    rect(regions[regions$type=="msY"]$start, 1.01, regions[regions$type=="msY"]$end, 1.03, col="green", border=NA)
+    abline(v=c(regions[regions$type=="msY"]$start, regions[regions$type=="msY"]$end), lty=2, col="green")
+    rect(regions[regions$chromosome == "Y" & regions$type == "PAR1"]$start, -0.01, regions[regions$chromosome == "Y" & regions$type == "PAR1"]$end, -0.03, col="Blue", border=NA)
+    rect(regions[regions$chromosome == "Y" & regions$type == "PAR1"]$start, 1.01, regions[regions$chromosome == "Y" & regions$type == "PAR1"]$end, 1.03, col="Blue", border=NA)
+    abline(v=c(regions[regions$chromosome == "Y" & regions$type == "PAR1"]$start, regions[regions$chromosome == "Y" & regions$type == "PAR1"]$end), lty=2, col="blue")
+    rect(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$start, -0.01, regions[regions$chromosome == "Y" & regions$type == "PAR2"]$end, -0.03, col="Blue", border=NA)
+    rect(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$start, 1.01, regions[regions$chromosome == "Y" & regions$type == "PAR2"]$end, 1.03, col="Blue", border=NA)
+    abline(v=c(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$start, regions[regions$chromosome == "Y" & regions$type == "PAR2"]$end), lty=2, col="blue")
     title(sample)
     title("Chromosome Y", line = 0.3)
   } else {
