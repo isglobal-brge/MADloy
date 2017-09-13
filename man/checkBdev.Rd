@@ -5,8 +5,9 @@
 \title{Check the B deviation values in PAR1 and PAR2 regions to check possible Loss of Y events in a folder or files.}
 \usage{
 checkBdev(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
-  BAFCol = 5, top = 0.9, bot = 0.1, trim = 0.1, mc.cores,
-  quiet = FALSE, hg = "hg18", pval.sig = 0.05, ...)
+  BAFCol = 5, top = 0.85, bot = 0.15, trim = 0.1, mc.cores,
+  quiet = FALSE, hg = "hg18", pval.sig = 0.05, bdev.threshold = 0.06,
+  ...)
 }
 \arguments{
 \item{object}{A LOY class object to check the LOY and uncertain samples or a single file path (APT platform and MAD platform), a vector of 
@@ -23,9 +24,9 @@ ready to be processed with MAD (MAD platform).}
 
 \item{BAFCol}{The position of the column with the BAF field.}
 
-\item{top}{Superior treshold to consider an heterozygous allele.}
+\item{top}{Superior treshold to consider an heterozygous allele. By default is set to 0.85.}
 
-\item{bot}{Inferior treshold to consider an heterozygous allele.}
+\item{bot}{Inferior treshold to consider an heterozygous allele. By default is set to 0.15.}
 
 \item{trim}{trim the fraction (0 to 0.5) of probes to be trimmed when summaryzing LRR.}
 
@@ -37,7 +38,9 @@ By default is FALSE.}
 
 \item{hg}{Human genome build version.}
 
-\item{pval.sig}{p-value treshold to be used in the classification test.}
+\item{pval.sig}{p-value treshold to be used in the classification test. By default is set to 0.05.}
+
+\item{bdev.threshold}{bdev threshold to determine if there is BAF split significant enough to call an altered region. By default is set to 0.05.}
 
 \item{...}{Other parameters.}
 }
@@ -48,7 +51,8 @@ A MADloyBdev object that contains the Bdev values for the two PAR regions for al
 \description{
 checkBdev checks the B deviation values of all the MAD files specified or in
 a path to check for possible Loss of Y events. The Bdev is computed by default for the 
-PAR1 and PAR2 regions.
+PAR1 and PAR2 regions. The minimum cellularity detected in losses is 26% (bdev.threshold=0.06) by default. Lower values of bdev.threshold can increase
+the detection of false positives.
 }
 \examples{
 \dontrun{

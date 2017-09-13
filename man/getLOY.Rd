@@ -4,7 +4,7 @@
 \alias{getLOY}
 \title{Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data}
 \usage{
-getLOY(object, offset, pval.sig, k, cutoff, ...)
+getLOY(object, offset, pval.sig, ...)
 }
 \arguments{
 \item{object}{A MADloy or MADseqLOY object.}
@@ -14,10 +14,6 @@ guarantee that mean LRR at chrmosome Y is centered at 0.  Default 0 since LRR at
 m-LRR region is expected to be centered at O.}
 
 \item{pval.sig}{pval.sig p-value treshold to be used in the classification test.}
-
-\item{k}{Number of groups. Only necessary in NGS data.}
-
-\item{cutoff}{cutoff value. Only necessari in NGS data.}
 
 \item{...}{Other parameters.}
 }

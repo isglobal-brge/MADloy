@@ -4,13 +4,13 @@
 \alias{processBdevMAD}
 \title{Process MAD file to obtain Bdev}
 \usage{
-processBdevMAD(file, query, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top, bot,
+processBdevMAD(file, regions, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top, bot,
   trim)
 }
 \arguments{
 \item{file}{File path of the MAD file to be processed.}
 
-\item{query}{Region of interest to check the LRR in rangedData format.}
+\item{regions}{Regions of chromosomes X and Y in data.frame. See system.file("extdata", "references") for more info on these regions.}
 
 \item{rsCol}{Column of the MAD file with the name of the SNP.}
 

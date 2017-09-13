@@ -1,3 +1,19 @@
+#' Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data
+#' 
+#' @param object A MADloy or MADseqLOY object.
+#' @param offset Offset value of SNP array data in the LRR of chromosome Y. That is, value to
+#' guarantee that mean LRR at chrmosome Y is centered at 0.  Default 0 since LRR at 
+#' m-LRR region is expected to be centered at O. 
+#' @param pval.sig pval.sig p-value treshold to be used in the classification test.
+#' @param ... Other parameters.
+#'   
+#' @return An object of class 'LOY' that summarizes the LOY events detected in
+#'   the analyzed samples
+#' @export
+#' @examples
+#' \dontrun{
+#' getLOY(resMADseqLOY)
+#' getLOY(resMADloy)}
 getLOY <- function (object, offset, pval.sig, ...) 
 {
   if (inherits(object, "MADseqLOY") | inherits(object, "MADloy")) {

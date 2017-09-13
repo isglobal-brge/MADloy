@@ -4,8 +4,8 @@
 \alias{madseqloy}
 \title{Check the loss of Y events in a given folder of .bam files}
 \usage{
-madseqloy(files, exomeTargets, target.region = "chrY:2694521-59034049",
-  ref.region = "chr22", mc.cores, quiet = FALSE, skip = 2, ...)
+madseqloy(files, exomeTargets, target.region, ref.region = "chr22", mc.cores,
+  quiet = FALSE, skip = 2, hg = "hg19", ...)
 }
 \arguments{
 \item{files}{A folder path where the .bam files are or a vector of file
@@ -30,6 +30,8 @@ By default is FALSE.}
 
 \item{skip}{Number of lines to be skipped in the targets file if necessary.
 By default is set to 1.}
+
+\item{hg}{Human genome build version. It can be 'hg18', 'hg19' or 'GRCh38'. Set by default to 'hg19'.}
 
 \item{...}{Other parameters of the read.targets function.}
 }
