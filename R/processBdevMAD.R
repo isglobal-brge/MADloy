@@ -21,7 +21,8 @@
 #' processBdevMAD(file=file.path, query=rangedDataROI, rsCol=1, chrCol=2, PosCol=3, LRRCol=4)}
 processBdevMAD <- function(file, regions, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top, 
     bot, trim) {
-    
+    lrr2ploidy <- function(x) 2 * exp(3 * x/2)
+    ploidy2lrr <- function(x) 2 * log(x/2)/3
     dat <- data.table::fread(file, showProgress = FALSE, sep = "\t")
     xy <- any(c("XY", "25") %in% unique(dat$Chr))
     data.table::setnames(dat, colnames(dat[, c(rsCol, ChrCol, PosCol, LRRCol, BAFCol), 
@@ -31,20 +32,24 @@ processBdevMAD <- function(file, regions, rsCol, ChrCol, PosCol, LRRCol, BAFCol,
       # PAR1
       sel <- dat[which(dat$Chr %in% c("XY", "25") & dat$Position > regions[regions$chromosome == "X" & 
               regions$type == "PAR1"]$start & dat$Position < regions[regions$chromosome == "X" & 
-              regions$type == "PAR1"]$end & dat$B.Allele.Freq >= bot & dat$B.Allele.Freq <= top, BAFCol)]
-      Bdevsummary$PAR1$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
-      Bdevsummary$PAR1$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
-      Bdevsummary$PAR1$Pl <- mean(PloidyCalc(sel$Log.R.Ratio), na.rm = T, trim = trim)
-      Bdevsummary$PAR1$Plsd <- stats::sd(PloidyCalc(sel$Log.R.Ratio), na.rm = T)
-      Bdevsummary$PAR1$n <- nrow(sel)
+              regions$type == "PAR1"]$end)]
+      selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top
+      Bdevsummary$PAR1$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$PAR1$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$PAR1$Pl <- mean(lrr2ploidy(sel$Log.R.Ratio), na.rm = T, trim = trim)
+      Bdevsummary$PAR1$Plsd <- stats::sd(lrr2ploidy(sel$Log.R.Ratio), na.rm = T)
+      Bdevsummary$PAR1$n <- sum(selhet)
+      Bdevsummary$PAR1$N <- nrow(sel)
       # PAR2
       sel <- dat[which(dat$Chr %in% c("XY", "25") & 
-                         dat$Position > regions[regions$chromosome == "X" & regions$type == "PAR2"]$start & dat$Position < regions[regions$chromosome == "X" & regions$type == "PAR2"]$end & dat$B.Allele.Freq >= bot & dat$B.Allele.Freq <= top, BAFCol)]
-      
-      Bdevsummary$PAR2$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
-      Bdevsummary$PAR2$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq), na.rm = T)
-      Bdevsummary$PAR2$Pl <- mean(PloidyCalc(sel$Log.R.Ratio), na.rm = T, trim = trim)
-      Bdevsummary$PAR2$Plsd <- stats::sd(PloidyCalc(sel$Log.R.Ratio), na.rm = T)
+                         dat$Position > regions[regions$chromosome == "X" & regions$type == "PAR2"]$start & 
+                         dat$Position < regions[regions$chromosome == "X" & regions$type == "PAR2"]$end)]
+      selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top
+      Bdevsummary$PAR2$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$PAR2$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$PAR2$Pl <- mean(lrr2ploidy(sel$Log.R.Ratio), na.rm = T, trim = trim)
+      Bdevsummary$PAR2$Plsd <- stats::sd(lrr2ploidy(sel$Log.R.Ratio), na.rm = T)
+      Bdevsummary$PAR2$n <- sum(selhet)
       Bdevsummary$PAR2$n <- nrow(sel)  
     } else {
       warning("No PAR1 or PAR2 probes are available in file", file, " to measure Bdeviation")

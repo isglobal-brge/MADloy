@@ -2,7 +2,8 @@
 #' 
 #' checkBdev checks the B deviation values of all the MAD files specified or in
 #' a path to check for possible Loss of Y events. The Bdev is computed by default for the 
-#' PAR1 and PAR2 regions.
+#' PAR1 and PAR2 regions. The minimum cellularity detected in losses is 26% (bdev.threshold=0.06) by default. Lower values of bdev.threshold can increase
+#' the detection of false positives.
 #' 
 #' @seealso \code{\link{getLOY}} to process results from \code{MADloy}
 #' @param object A LOY class object to check the LOY and uncertain samples or a single file path (APT platform and MAD platform), a vector of 
@@ -32,8 +33,28 @@
 #' checkBdev(filepath, mc.cores=2)}
 checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAFCol = 5, 
     top = 0.85, bot = 0.15, trim = 0.1, mc.cores, quiet = FALSE, hg = "hg18", pval.sig = 0.05, 
-    bdev.threshold = 0.05, ...) {
+    bdev.threshold = 0.06, ...) {
     
+    # two-sample t-test from
+    # https://stats.stackexchange.com/questions/30394/how-to-perform-two-sample-t-tests-in-r-by-inputting-sample-statistics-rather-tha
+    t.test2 <- function(m1, m2, s1, s2, n1, n2, m0 = 0, equal.variance = FALSE) {
+      if (equal.variance == FALSE) {
+        se <- sqrt((s1^2/n1) + (s2^2/n2))
+        # welch-satterthwaite df
+        df <- ((s1^2/n1 + s2^2/n2)^2)/((s1^2/n1)^2/(n1 - 1) + (s2^2/n2)^2/(n2 - 
+                                                                             1))
+      } else {
+        # pooled standard deviation, scaled by the sample sizes
+        se <- sqrt((1/n1 + 1/n2) * ((n1 - 1) * s1^2 + (n2 - 1) * s2^2)/(n1 + 
+                                                                          n2 - 2))
+        df <- n1 + n2 - 2
+      }
+      t <- (m1 - m2 - m0)/se
+      dat <- c(m1 - m2, se, t, 2 * stats::pt(-abs(t), df))
+      names(dat) <- c("Difference of means", "Std Error", "t", "p-value")
+      return(dat)
+    }
+  
     # Check input-----------------------------------------------------------------
     
     if (missing(object)) {
@@ -43,9 +64,9 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
             if (!quiet) 
                 message("Processing the files in the LOY object")
             allfiles <- file.path(object$par$path, object$par$files)[object$prob <= 
-                0.05/length(object$par$files)]
+                0.05/length(object$par$files) & !is.na(object$prob)]
             n <- length(object$par$files)
-            cl <- data.frame(orig = object$class[object$prob <= 0.05/n])
+            cl <- data.frame(orig = object$class[object$prob <= 0.05/n & !is.na(object$prob)])
             # process PAR regions -----------------------------------------
             regions <- object$par$regions
         } else {
@@ -117,11 +138,11 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
     cl$BdevPAR2 <- round(unlist(PAR2$Bdev), 3)
     cl$class <- ifelse(PAR1$Bdev > bdev.threshold & PAR2$Bdev > bdev.threshold & PAR1$Pl < 2, "LOY", "normal")
     cl$class[PAR1$Bdev > bdev.threshold & PAR2$Bdev > bdev.threshold & PAR1$Pl > 2 ] <- "XYY"
-    cl$cellPAR2 <- cl$cellPAR1 <- rep(0, nrow(cl))
-    cl$cellPAR1[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevPAR1[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevPAR1[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
-    cl$cellPAR2[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevPAR2[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevPAR2[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
-    cl$cellPAR1[cl$class == "XYY" & !is.na(cl$class)] <- round((2*cl$BdevPAR1[cl$class == "XYY" & !is.na(cl$class)])/(0.5-cl$BdevPAR1[cl$class == "XYY" & !is.na(cl$class)])*100, 2)
-    cl$cellPAR2[cl$class == "XYY" & !is.na(cl$class)] <- round((2*cl$BdevPAR2[cl$class == "XYY" & !is.na(cl$class)])/(0.5-cl$BdevPAR2[cl$class == "XYY" & !is.na(cl$class)])*100, 2)
+    cl$BdevCellPAR2 <- cl$BdevCellPAR1 <- rep(0, nrow(cl))
+    cl$BdevCellPAR1[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevPAR1[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevPAR1[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
+    cl$BdevCellPAR2[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevPAR2[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevPAR2[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
+    cl$BdevCellPAR1[cl$class == "XYY" & !is.na(cl$class)] <- round((2*cl$BdevPAR1[cl$class == "XYY" & !is.na(cl$class)])/(0.5-cl$BdevPAR1[cl$class == "XYY" & !is.na(cl$class)])*100, 2)
+    cl$BdevCellPAR2[cl$class == "XYY" & !is.na(cl$class)] <- round((2*cl$BdevPAR2[cl$class == "XYY" & !is.na(cl$class)])/(0.5-cl$BdevPAR2[cl$class == "XYY" & !is.na(cl$class)])*100, 2)
     cl$balanced <- ifelse(PARstat$p.value > pval.sig * 10/nrow(PARstat), "balancedPAR", 
         "unbalancedPAR")
     cl$balanced[cl$orig == "LOY" & PARstat$p.value < pval.sig/n & PAR1$Pl > PAR2$Pl] <- "LOYq"
