@@ -1,6 +1,6 @@
-#' Plots the SNP data of an individual
+#' Plots the SNP data of chromosome Y for an individual
 #' 
-#' This function draws the LRR and BAF data for an individual
+#' This function draws the LRR and BAF data of chromosome Y for an individual analyzed with madloy or checkBdev
 #' 
 #' @param x A MADloy object from the \code{MADloy} functions.
 #' @param sample The identifier of a sample in the MADloy object.
