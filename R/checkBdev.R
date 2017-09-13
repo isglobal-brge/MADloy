@@ -54,7 +54,9 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
       names(dat) <- c("Difference of means", "Std Error", "t", "p-value")
       return(dat)
     }
-  
+    lrr2ploidy <- function(x) 2 * exp(3 * x/2)
+    ploidy2lrr <- function(x) 2 * log(x/2)/3
+    
     # Check input-----------------------------------------------------------------
     
     if (missing(object)) {
