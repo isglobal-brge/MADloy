@@ -134,10 +134,15 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
     PARstat <- data.frame(t(sapply(data, function(x) {
         t.test2(x$PAR1$Pl, x$PAR2$Pl, x$PAR1$Plsd, x$PAR2$Plsd, x$PAR1$n, x$PAR2$n, equal.variance = FALSE)
     })))
+    
+    cl$LRRPAR1 <- ploidy2lrr(PAR1$Pl)
+    cl$LRRPAR2 <- ploidy2lrr(PAR2$Pl)
     cl$BdevPAR1 <- round(unlist(PAR1$Bdev), 3)
     cl$BdevPAR2 <- round(unlist(PAR2$Bdev), 3)
     cl$class <- ifelse(PAR1$Bdev > bdev.threshold & PAR2$Bdev > bdev.threshold & PAR1$Pl < 2, "LOY", "normal")
     cl$class[PAR1$Bdev > bdev.threshold & PAR2$Bdev > bdev.threshold & PAR1$Pl > 2 ] <- "XYY"
+    cl$LRRCellPAR1 <- abs(2-unlist(PAR1$Pl))*100
+    cl$LRRCellPAR2 <- abs(2-unlist(PAR2$Pl))*100
     cl$BdevCellPAR2 <- cl$BdevCellPAR1 <- rep(0, nrow(cl))
     cl$BdevCellPAR1[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevPAR1[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevPAR1[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
     cl$BdevCellPAR2[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevPAR2[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevPAR2[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
