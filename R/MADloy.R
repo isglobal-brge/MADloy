@@ -43,10 +43,11 @@ madloy <- function(files, target.region,
   regions <- fread(system.file("extdata", "references", paste0(hg, ".par.regions"), package = "MADloy"), header=T, skip=1, colClasses = c("character", "character", "numeric", "numeric"), showProgress = FALSE)
   
   # Check target and reference regions -----------------------------------------
-  if (missing(target.region))
+  if (missing(target.region)) {
     msy <- regions[regions$type == "msY", ]
     target.region <- paste0("chr", msy[,1], ":", msy[,3], "-", msy[,4])
     message(paste0("Targeted region set to ",  target.region, " by default"))
+  }
   queryA <- unlist(strsplit(x = target.region, split = "[:, -]", perl = T))
   if (is.na(queryA[2]) | is.na(queryA[3])) {
     subsetA <- GenomicRanges::GRanges(seqnames = gsub("chr", "", queryA[1]), ranges = IRanges::IRanges(start = 1, 

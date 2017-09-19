@@ -46,7 +46,7 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=
     }
     dat <- dat[o, ]
     ## Scale LRR of the msY region to have ploidy = 2 = 1(Y) + 1(constant)
-    if (scaleY) dat[dat$Position >= regions[regions$type=="msY"]$start & dat$Position <= regions[regions$type=="msY"]$end, LRRCol] <- log((lrr2ploidy(dat[dat$Position >= regions[regions$type=="msY"]$start & dat$Position <= regions[regions$type=="msY"]$end, LRRCol])+1)/2)
+    if (scaleY) dat[dat$Position >= regions[regions$type=="msY"]$start & dat$Position <= regions[regions$type=="msY"]$end, LRRCol] <- 2*log((lrr2ploidy(dat[dat$Position >= regions[regions$type=="msY"]$start & dat$Position <= regions[regions$type=="msY"]$end, LRRCol])+1)/2)/3
     par(mar = c(5, 5, 4, 5) + 0.1)
     plot(dat[, PosCol], dat[, LRRCol]+offset, ylim = c(-2, 2), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(1, as.numeric(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$end)), ...)
     if (xy){
