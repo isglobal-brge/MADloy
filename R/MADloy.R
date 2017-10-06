@@ -13,6 +13,13 @@
 #'   changed.
 #' @param ref.region If declared, the chromosome or region to be compared with the Y 
 #'   region in UCSC style (i.e. "chr21" or "chr21:1000-10000").
+#' @param qc.sds Theshold to perform quality control of samples using the reference
+#' region/chromosome. The default value is 0.28. It implies that samples having 
+#' LRR standard deviation larger that this value in the reference chromosome will be
+#' removed from the analyses. This value is taken from 
+#' www.illumina.com/content/dam/illumina-marketing/documents/products/appnotes/appnote_cnv_loh.pdf)
+#' If NULL the cutoff for considering a good quality sample is estimated as 
+#' 2 times the standard deviation of all samples.
 #' @param rsCol The position of the column with the SNP identifier.
 #' @param ChrCol The position of the column with the Chromosome field.
 #' @param PosCol The position of the column with the Position field.
@@ -32,7 +39,7 @@
 #' \dontrun{
 #' madloy(filepath, mc.cores=2)}
 madloy <- function(files, target.region, 
-                   ref.region="Autosomes",
+                   ref.region="Autosomes", qc.sds=0.28,
                    rsCol = 1, ChrCol = 2, PosCol = 3, 
                    LRRCol = 4, trim=0.05, offset, 
                    mc.cores, quiet = FALSE, hg="hg18", ...) {
@@ -140,7 +147,11 @@ madloy <- function(files, target.region,
            offset
   
   sds <- sapply(refLRR, "[[", "sd")
-  ref.qc <- sds > 2*mean(sds)
+  if (is.null(qc.sds)){
+    qc.sds <- 2 * mean(sds)
+  }  
+  
+  ref.qc <- sds > qc.sds
   mLRRY[ref.qc] <- NA
   
   LRRsummary <- list(mLRRY = mLRRY,

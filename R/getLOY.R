@@ -107,8 +107,9 @@ getLOY <- function (object, offset, pval.sig, ...)
       pval.sig <- 0.05/length(target)
     # norm.lrr <- target - reference - offset
     norm.lrr <- object$mLRRY
+    
     sds <- sapply(object$reference, "[[", "sd")
-    reference.qc <- reference[!sds > 2 * mean(sds)] 
+    reference.qc <- reference[!is.na(norm.lrr)]
     
     pars <- GeneralizedHyperbolic:::nigFit(reference.qc)
     pp <- pars$param
@@ -135,6 +136,7 @@ getLOY <- function (object, offset, pval.sig, ...)
                  "normal", "altered")
     cl[cl == "altered" & norm.lrr > 0] <- "XYY"
     cl[cl == "altered" & norm.lrr < 0] <- "LOY"
+    cl[is.na(reference)] <- NA
     cl.o <- factor(cl, levels=c("normal", "LOY", "XYY"))
     par <- object$par
     par$offset <- offset

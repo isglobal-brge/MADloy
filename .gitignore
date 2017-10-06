@@ -5,3 +5,5 @@
 .Rbuildignore
 vignettes/.Rhistory
 MADloy.Rproj
+
+*/*cache
