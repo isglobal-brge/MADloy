@@ -4,7 +4,7 @@ subtitle: "Marcos Lopez-Sanchez and Juan R. Gonzalez"
 author: |
   | Institute for Global Health (ISGlobal), Barcelona, Spain
   | Bioinformatics Research Group in Epidemiolgy (BRGE)
-  | (<http://www.creal.cat/brge.htm>)
+  | (<http://brge.isglobal.org>)
 date: "`r format(Sys.Date(), '%d %B %Y')`"
 package: "`r paste('MADloy', packageVersion('MADloy'))`"
 output:    
