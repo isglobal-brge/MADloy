@@ -1,18 +1,22 @@
 #' @export
-print.LOY <- function(x, ...) {
-    # p <- unlist(x$estim[1])
-    # se <- x$se[1] ci <- c(p - 1.96 * se, p + 1.96 * se)
-    
-    cat("\n")
-    cat("Object of class LOY \n")
-    cat("---------------------------- \n")
-    cat("Number of normal samples:", sum(x$class == "normal", na.rm=TRUE), "\n")
-    cat("Number of LOY:", sum(x$class == "LOY", na.rm=TRUE), "\n")
-    cat("Number of XYY:", sum(x$class == "XYY", na.rm=TRUE), "\n")
-    cat("Number of samples do not pass QC:", sum(is.na(x$class)))
-    cat("\n")
-    
-    # TODO adapt to MADloy processed objects cat('Estimated proportion of LOY (CI
-    # 95%):', round(p * 100, 1), '(', round(ci[1] * 100, 1), '-', round(ci[2] * 100,
-    # 1), ') \n')
+print.LOY <- function(x, method="MADloy", ...) {
+  
+  if (method=="MADloy")
+    data <- x$MADloy
+  else if (method=="Fosberg")
+    data <- x$Fosberg
+  else
+    stop("method should be either 'MADloy' or 'Fosberg'")
+       
+  cat("\n")
+  cat("Object of class LOY \n")
+  cat("---------------------------- \n")
+  cat("Number of normal samples:", sum(data == "normal", 
+                                       na.rm=TRUE), "\n")
+  cat("Number of LOY:", sum(data == "LOY", 
+                            na.rm=TRUE), "\n")
+  cat("Number of XYY:", sum(data == "XYY", 
+                            na.rm=TRUE), "\n")
+  cat("Number of samples do not pass QC:", sum(is.na(data)))
+  cat("\n")
 }
