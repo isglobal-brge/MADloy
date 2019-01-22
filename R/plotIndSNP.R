@@ -18,19 +18,20 @@
 #' @examples
 #' \dontrun{
 #' plotindSNP(resMADloy, "SAMPLE")}
-plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=5, offset=0, scaleY=TRUE, ...) {
+plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=5, offset=0, scaleY=FALSE, ...) {
   if (inherits(x, "MADloy") | inherits(x, "MADloyBdev")) {
     lrr2ploidy <- function(x) 2 * exp(3 * x/2)
     ploidy2lrr <- function(x) 2 * log(x/2)/3
     samples <- x$par$files
+    samplenames <- tools::file_path_sans_ext(samples)
     paths <- x$par$path
     regions <- x$par$regions
     if(is.numeric(sample)){
       ss <- samples[sample]
       pp <- paths[sample]
     } else {
-      if (sample%in%tools::file_path_sans_ext(samples)) {
-        ii <- which(sample==tools::file_path_sans_ext(samples))
+      if (sample%in%samplenames) {
+        ii <- which(sample==samplenames)
         ss <- samples[ii]
         pp <- paths[ii]
       } else stop("The selected sample has not been processed")
@@ -46,7 +47,10 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=
     }
     dat <- dat[o, ]
     ## Scale LRR of the msY region to have ploidy = 2 = 1(Y) + 1(constant)
-    if (scaleY) dat[dat$Position >= regions[regions$type=="msY"]$start & dat$Position <= regions[regions$type=="msY"]$end, LRRCol] <- 2*log((lrr2ploidy(dat[dat$Position >= regions[regions$type=="msY"]$start & dat$Position <= regions[regions$type=="msY"]$end, LRRCol])+1)/2)/3
+    if (scaleY) {
+      dat[dat$Position >= regions[regions$type=="msY"]$start & dat$Position <= regions[regions$type=="msY"]$end, LRRCol] <- 2*log((lrr2ploidy(dat[dat$Position >= regions[regions$type=="msY"]$start & dat$Position <= regions[regions$type=="msY"]$end, LRRCol])+1)/2)/3
+      dat[dat$Position >= regions[regions$type=="XTR" & regions$chromosome == "Y"]$start & dat$Position <= regions[regions$type=="XTR" & regions$chromosome == "Y"]$end, LRRCol] <- 2*log((lrr2ploidy(dat[dat$Position >= regions[regions$type=="XTR" & regions$chromosome == "Y"]$start & dat$Position <= regions[regions$type=="XTR" & regions$chromosome == "Y"]$end, LRRCol])-1)/2)/3
+    }
     par(mar = c(5, 5, 4, 5) + 0.1)
     plot(dat[, PosCol], dat[, LRRCol]+offset, ylim = c(-2, 2), las = 1, pch =".", cex = 2, col = 1, ylab = "",xlab = "", main = "", xaxt="n", yaxt="n", xlim=c(1, as.numeric(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$end)), ...)
     if (xy){
@@ -78,6 +82,10 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=
     rect(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$start, -0.01, regions[regions$chromosome == "Y" & regions$type == "PAR2"]$end, -0.03, col="Blue", border=NA)
     rect(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$start, 1.01, regions[regions$chromosome == "Y" & regions$type == "PAR2"]$end, 1.03, col="Blue", border=NA)
     abline(v=c(regions[regions$chromosome == "Y" & regions$type == "PAR2"]$start, regions[regions$chromosome == "Y" & regions$type == "PAR2"]$end), lty=2, col="blue")
+    rect(regions[regions$chromosome == "Y" & regions$type == "XTR"]$start, -0.01, regions[regions$chromosome == "Y" & regions$type == "XTR"]$end, -0.03, col="Orange", border=NA)
+    rect(regions[regions$chromosome == "Y" & regions$type == "XTR"]$start, 1.01, regions[regions$chromosome == "Y" & regions$type == "XTR"]$end, 1.03, col="Orange", border=NA)
+    abline(v=c(regions[regions$chromosome == "Y" & regions$type == "XTR"]$start, regions[regions$chromosome == "Y" & regions$type == "XTR"]$end), lty=2, col="Orange")
+    
     title(sample)
     title("Chromosome Y", line = 0.3)
   } else {

@@ -29,11 +29,12 @@ processBdevMAD <- function(file, regions, rsCol, ChrCol, PosCol, LRRCol, BAFCol,
         with = F]), c("Name", "Chr", "Position", "Log.R.Ratio", "B.Allele.Freq"))
     Bdevsummary <- list()
     if (xy){
+      Bdevsummary$check <- "PAR"
       # PAR1
       sel <- dat[which(dat$Chr %in% c("XY", "25") & dat$Position > regions[regions$chromosome == "X" & 
               regions$type == "PAR1"]$start & dat$Position < regions[regions$chromosome == "X" & 
               regions$type == "PAR1"]$end)]
-      selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top
+      selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top & !is.na(sel$B.Allele.Freq)
       Bdevsummary$PAR1$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
       Bdevsummary$PAR1$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
       Bdevsummary$PAR1$Pl <- mean(lrr2ploidy(sel$Log.R.Ratio), na.rm = T, trim = trim)
@@ -44,16 +45,80 @@ processBdevMAD <- function(file, regions, rsCol, ChrCol, PosCol, LRRCol, BAFCol,
       sel <- dat[which(dat$Chr %in% c("XY", "25") & 
                          dat$Position > regions[regions$chromosome == "X" & regions$type == "PAR2"]$start & 
                          dat$Position < regions[regions$chromosome == "X" & regions$type == "PAR2"]$end)]
-      selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top
+      selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top & !is.na(sel$B.Allele.Freq)
       Bdevsummary$PAR2$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
       Bdevsummary$PAR2$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
       Bdevsummary$PAR2$Pl <- mean(lrr2ploidy(sel$Log.R.Ratio), na.rm = T, trim = trim)
       Bdevsummary$PAR2$Plsd <- stats::sd(lrr2ploidy(sel$Log.R.Ratio), na.rm = T)
       Bdevsummary$PAR2$n <- sum(selhet)
-      Bdevsummary$PAR2$n <- nrow(sel)  
+      Bdevsummary$PAR2$N <- nrow(sel)
+      # X
+      selPAR1 <- dat$Chr == "X" &
+                       dat$Position > regions[regions$chromosome == "X" & regions$type == "PAR1"]$start & 
+                       dat$Position < regions[regions$chromosome == "X" & regions$type == "PAR1"]$end &
+                       !is.na(dat$Chr) & !is.na(dat$Position)
+      selPAR2 <- dat$Chr == "X" &
+                       dat$Position > regions[regions$chromosome == "X" & regions$type == "PAR2"]$start & 
+                       dat$Position < regions[regions$chromosome == "X" & regions$type == "PAR2"]$end &
+                       !is.na(dat$Chr) & !is.na(dat$Position)
+      selXTR <- dat$Chr == "X" &
+                      dat$Position > regions[regions$chromosome == "X" & regions$type == "XTR"]$start & 
+                      dat$Position < regions[regions$chromosome == "X" & regions$type == "XTR"]$end &
+                      !is.na(dat$Chr) & !is.na(dat$Position)
+      sel <- dat[dat$Chr == "X" & !(selPAR1 | selPAR2 | selXTR) & !is.na(dat$Chr) & !is.na(dat$Position)]
+      selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top & !is.na(sel$B.Allele.Freq)
+      Bdevsummary$fsX$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$fsX$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$fsX$Pl <- mean(lrr2ploidy(sel$Log.R.Ratio), na.rm = T, trim = trim)
+      Bdevsummary$fsX$Plsd <- stats::sd(lrr2ploidy(sel$Log.R.Ratio), na.rm = T)
+      Bdevsummary$fsX$n <- sum(selhet)
+      Bdevsummary$fsX$N <- nrow(sel)
+      # XTR
+      sel <- dat[which(dat$Chr %in% c("X", "23") & 
+                         dat$Position > regions[regions$chromosome == "X" & regions$type == "XTR"]$start & 
+                         dat$Position < regions[regions$chromosome == "X" & regions$type == "XTR"]$end)]
+      selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top & !is.na(sel$B.Allele.Freq)
+      Bdevsummary$XTR$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$XTR$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$XTR$Pl <- mean(lrr2ploidy(sel$Log.R.Ratio), na.rm = T, trim = trim)
+      Bdevsummary$XTR$Plsd <- stats::sd(lrr2ploidy(sel$Log.R.Ratio), na.rm = T)
+      Bdevsummary$XTR$n <- sum(selhet, na.rm=T)
+      Bdevsummary$XTR$N <- nrow(sel)  
     } else {
-      warning("No PAR1 or PAR2 probes are available in file", file, " to measure Bdeviation")
-      Bdevsummary <- NA
+      warning("No PAR1 or PAR2 probes are available in file", file, " to measure Bdeviation. Using only XTR region to measure Bdeviation.")
+      Bdevsummary$check <- "XTR"
+      # X
+      selPAR1 <- dat$Chr == "X" &
+        dat$Position > regions[regions$chromosome == "X" & regions$type == "PAR1"]$start & 
+        dat$Position < regions[regions$chromosome == "X" & regions$type == "PAR1"]$end &
+        !is.na(dat$Chr) & !is.na(dat$Position)
+      selPAR2 <- dat$Chr == "X" &
+        dat$Position > regions[regions$chromosome == "X" & regions$type == "PAR2"]$start & 
+        dat$Position < regions[regions$chromosome == "X" & regions$type == "PAR2"]$end &
+        !is.na(dat$Chr) & !is.na(dat$Position)
+      selXTR <- dat$Chr == "X" &
+        dat$Position > regions[regions$chromosome == "X" & regions$type == "XTR"]$start & 
+        dat$Position < regions[regions$chromosome == "X" & regions$type == "XTR"]$end &
+        !is.na(dat$Chr) & !is.na(dat$Position)
+      sel <- dat[dat$Chr == "X" & !(selPAR1 | selPAR2 | selXTR) & !is.na(dat$Chr) & !is.na(dat$Position)]
+      selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top & !is.na(sel$B.Allele.Freq)
+      Bdevsummary$fsX$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$fsX$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$fsX$Pl <- mean(lrr2ploidy(sel$Log.R.Ratio), na.rm = T, trim = trim)
+      Bdevsummary$fsX$Plsd <- stats::sd(lrr2ploidy(sel$Log.R.Ratio), na.rm = T)
+      Bdevsummary$fsX$n <- sum(selhet)
+      Bdevsummary$fsX$N <- nrow(sel)
+      # XTR
+      sel <- dat[which(dat$Chr %in% c("X", "23") & 
+                         dat$Position > regions[regions$chromosome == "X" & regions$type == "XTR"]$start & 
+                         dat$Position < regions[regions$chromosome == "X" & regions$type == "XTR"]$end)]
+      selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top
+      Bdevsummary$XTR$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$XTR$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
+      Bdevsummary$XTR$Pl <- mean(lrr2ploidy(sel$Log.R.Ratio), na.rm = T, trim = trim)
+      Bdevsummary$XTR$Plsd <- stats::sd(lrr2ploidy(sel$Log.R.Ratio), na.rm = T)
+      Bdevsummary$XTR$n <- sum(selhet, na.rm=T)
+      Bdevsummary$XTR$N <- nrow(sel)  
     }
     return(Bdevsummary)
 }

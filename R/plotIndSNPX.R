@@ -73,6 +73,9 @@ plotIndSNPX <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol
     rect(regions[regions$chromosome == "X" & regions$type == "PAR2"]$start, -0.01, regions[regions$chromosome == "X" & regions$type == "PAR2"]$end, -0.03, col="Blue", border=NA)
     rect(regions[regions$chromosome == "X" & regions$type == "PAR2"]$start, 1.01, regions[regions$chromosome == "X" & regions$type == "PAR2"]$end, 1.03, col="Blue", border=NA)
     abline(v=c(regions[regions$chromosome == "X" & regions$type == "PAR2"]$start, regions[regions$chromosome == "X" & regions$type == "PAR2"]$end), lty=2, col="blue")
+    rect(regions[regions$chromosome == "X" & regions$type == "XTR"]$start, -0.01, regions[regions$chromosome == "X" & regions$type == "XTR"]$end, -0.03, col="Orange", border=NA)
+    rect(regions[regions$chromosome == "X" & regions$type == "XTR"]$start, 1.01, regions[regions$chromosome == "X" & regions$type == "XTR"]$end, 1.03, col="Orange", border=NA)
+    abline(v=c(regions[regions$chromosome == "X" & regions$type == "XTR"]$start, regions[regions$chromosome == "X" & regions$type == "XTR"]$end), lty=2, col="Orange")
     title(sample)
     title("Chromosome X", line = 0.3)
   } else {

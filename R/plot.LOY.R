@@ -49,7 +49,7 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
         xx <- data[, 1]
         yy <- data[, 2]
         d <- xx - yy
-        graphics::plot.default(ss, d, type = "n", xlab = "Individuals", ylab = "Mean coverage difference (mY region - Reference)")
+        graphics::plot.default(ss, d, type = "n", xlab = "Individuals", ylab = "Mean coverage difference (mY region - Reference)", main = main)
         graphics::points(ss, d, col = mycol, pch = 16, ...)
     }
     if (attr(x, "type") == "LRR") {

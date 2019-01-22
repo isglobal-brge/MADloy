@@ -59,12 +59,12 @@ getLOY <- function (object, coef=3, ...)
   tt <- getThreshold(norm.lrr)
   fosb <- relevel(cut(norm.lrr, c(-Inf, tt, Inf),
               labels=c("LOY", "normal")),2)
-  
-  ans <- data.frame(MADloy = cl.f, Fosberg = fosb,
+  ans <- list()
+  ans$res <- data.frame(MADloy = cl.f, Fosberg = fosb,
                     continous = norm.lrr)
- 
-  attr(ans, "type") <- "LRR"
-  class(ans) <- c("LOY", "data.frame")
+  ans$par <- object$par
+  attr(ans$res, "type") <- "LRR"
+  class(ans) <- "LOY"
   
   ans
 }

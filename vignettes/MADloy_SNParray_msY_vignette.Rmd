@@ -1,0 +1,136 @@
+---
+title: "Supplementary Material: assessing msY region coords"
+author: "Juan R Gonzalez, Marcos Lopez, Pere Puig, Tonu Esko, Luis A Perez-Jurado"
+output:
+  BiocStyle::html_document:
+    toc_depth: 2
+  BiocStyle::pdf_document:
+    fig_caption: yes
+    toc_depth: 2
+---
+
+# Getting started
+
+```{r style, echo=FALSE, message=FALSE, warning=FALSE, results="asis"}
+library("knitr")
+#options(width=100)
+opts_chunk$set(message = FALSE, error = TRUE, warning = TRUE, cache=TRUE)
+```
+
+Let us load required packages
+
+```{r, load_package}
+library(MADloy)
+```
+
+To assess the msY region used to detect LOY events reported in literature (chrY: 2,694,521–59,034,049, hg19/GRCh37), we will analyze some samples of the EGCUT dataset. Results obtained by calling LOY events accounting for this region will be compared with calling accounting for a more stringent msY (SmsY) region (chrY: 6,611,498-24,510,581, hg19/GRCh37) that is implemented in MADloy. The stringent msY region removes the XY transposed region located at the beginning of the msY (chrY: 2,694,521-6,611,497) that is also shared with chromosome X, and the heterochromatic region (chrY: 24,510,582-59,034,049) that is not analyzed in common SNP arrays.
+
+# EGCUT data
+
+## Check gender status
+
+
+```{r, check_gender, cache=TRUE}
+path.egcut <- "/home/SHARED/DATA/EGCUT/Anon_Data/rawData_anon"
+sex.egcut <- checkSex(path.egcut, mc.cores=15)
+```
+
+```{r, plot_gender_egcut}
+plot(sex.egcut)
+```
+
+```{r, filter_females}
+egcut.males <- sex.egcut$par$files[sex.egcut$class=="MALE"]
+```
+
+## Preprocess data
+
+Let us preprocess raw data files to get LRR information in the msY region, the SmsY region, and the autosomes
+
+```{r, process, cache=TRUE}
+egcut.msY <- madloy(egcut.males, trim=0.10, mc.cores=15, target.region = "chrY:2694521-59034049")
+
+egcut.SmsY <- madloy(egcut.males, trim=0.10, mc.cores=15)
+egcut.msY
+egcut.SmsY
+```
+
+As can be seen, the offset for both objects are different, with a lower values (-0.54) in the SmsY region than in the msY region (-0.38). This figure illustrate these differences in mLRR-Y among individuals for both regions. Those having values around 0 are considered to be normal. 
+
+```{r, plot_lrr_loy, fig.height=10}
+par(mfrow=c(2,1))
+plot(egcut.msY, ylim=c(-2, 1))
+title(main = "msY")
+plot(egcut.SmsY, ylim=c(-2, 1))
+title(main = "SmsY")
+```
+
+```{r, plot_samples, fig.height=10}
+par(mfrow=c(2,1))
+plotIndLRR(egcut.msY, sample="SAMPLE_21", ylim=c(-3,1))
+abline(v=c(2694521,59034049), col="green", lwd=2)
+plotIndSNP(egcut.msY, "SAMPLE_21")
+abline(v=c(2694521,59034049), col="yellow", lwd=2)
+```
+
+The plots represents SAMPLE_21 using the `plotIndLRR` funcion at the left side and `plotIndSNP` function at the right side.
+`plotIndLRR` function draws the LRR values of chrY and describes the median LRR values for all the autosomes (orange dashed line), expected zero value (red dashed line), and median LRR value for SmsY region (blue line). By adding vertical lines that delimites msY region (green lines), we can observe that it contains LRR values that are shared between chromosomes X and Y, and hence, have increased dosage. If we visually analyse the LRR values in the previous plots, we can observe that the SmsY region (Rose flanked by black bars) captures better the non-shared region of chromosome Y than the msY region (delimited by green bars).
+`plotIndSNP` function draws the LRR (black dots) and BAF values (red dots) of chrY and PAR regions - often labelled as chrXY or chr25. PAR regions are delimited between blue bars, while SmsY region is delimited between green bars. With this function, SmsY original LRR values are transformed by default to simulate that there are two chromosomes Y by calculating the original ploidy corresponding to the LRR values, adding one extra chromosome to this value, and recalculating LRR. BAF values are the original ones for all drawed regions. Two yellow bars were added to this plot delimitating the msY region. We can observe that the XY tranposed region (between yellow and green bars at the left) have a BAF values indicating that there are two different alleles that contribute to this region, and hence, should be removed from the msY region for the LOY analysis. In addition, the heterochromatin region (blank region between Mb 25-60) have few or none SNPs to analyze.
+
+## LOY calling
+
+The calling is performed by using `getLOY` function. Notice that by default the `offset` argument of this function corresponds to the median value of mLRR-Y in all individuals. The `pval.sig` argument that is used to control the false discovery rate. By default it is based on Bonferroni correction that is set by default. In addition to the calling, those samples with LRR values with twice the mean standard deviation will be discarded due to their quality. 
+
+```{r, calling, cache=TRUE}
+egcut.msY.call <- getLOY(egcut.msY)
+egcut.SmsY.call <- getLOY(egcut.SmsY)
+```
+
+```{r, plot_call_loy, fig.height=10}
+par(mfrow=c(2,1))
+plot(egcut.msY.call, ylim=c(-2, 1), print.labels=TRUE, main="msY")
+plot(egcut.SmsY.call, ylim=c(-2, 1), print.labels=TRUE, main="SmsY")
+```
+
+```{r, mLRRYsum, results="asis"}
+mLRRYsum <- data.frame("msY_mLRR-Y"=egcut.msY$mLRRY[egcut.msY.call$class == "LOY" & !is.na(egcut.msY.call$class)], "SmsY_mLRR-Y"=egcut.SmsY$mLRRY[egcut.SmsY.call$class == "LOY" & !is.na(egcut.SmsY.call$class)])
+mLRRYsum <- mLRRYsum[order(mLRRYsum$msY_mLRR.Y), ]
+mLRRYsum$difference <- mLRRYsum$msY_mLRR.Y - mLRRYsum$SmsY_mLRR.Y
+kable(mLRRYsum, caption="Differences in mLRR-Y values between msY and SmsY")
+```
+
+Althought the samples with a LOY event in the dataset are equally detected by using both msY and SmsY, the mLRR-Y values in the SmsY region are lower than in msY region, with differences up to 0.1 in mLRR-Y values for the analyzed samples.
+
+## Bdev assessing of the LOY classification
+
+In order to check the calling obtained by `getLOY`, we will check the B deviation in the PAR1 and PAR2 regions shared with chromosome X with the `checkBdev` function. The samples checked are those called by `getLOY` and the ones that does not pass the bonferroni correction but have a p-value lower than 0.05. 
+
+```{r checkBdev, echo=FALSE, message=FALSE, cache=TRUE}
+egcut.msY.Bdev <- checkBdev(egcut.msY.call, mc.cores=10, hg="hg18", bdev.threshold = 0.06, trim = 0.1)
+egcut.msY.Bdev
+egcut.SmsY.Bdev <- checkBdev(egcut.SmsY.call, mc.cores=10, hg="hg18", bdev.threshold = 0.06, trim = 0.1)
+egcut.SmsY.Bdev
+```
+
+We observe that there are two additional samples with nominal p-values above threshold that were analyzed with the checkBdev function,  one of which is a normal event, and the other belonging to SAMPLE_47 which has been classified as LOY event due to Bdeviation and negative LRR values.
+
+```{r checkBdev.table, result='asis'}
+knitr::kable(egcut.SmsY.Bdev$class[!rownames(egcut.SmsY.Bdev$class) %in% rownames(egcut.msY.Bdev$class), ], caption="checkBdev SmsY results")
+```
+
+We can compare the LRR and BAF plots for both samples SAMPLE_65 and SAMPLE_47:
+
+```{r, plot_samples2, fig.height=10}
+par(mfrow=c(2,1))
+plotIndSNP(egcut.msY, "SAMPLE_65")
+plotIndSNP(egcut.msY, "SAMPLE_47")
+```
+
+By comparing the plots of both samples, it can be discussed that both events are normal samples with skewed values. However, if the event was real (and validation is required) it would have been discarded using the msY region instead of the SmsY region.
+
+# Session information
+
+```{r, session_info, echo=FALSE}
+sessionInfo()
+```
+

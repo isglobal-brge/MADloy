@@ -2,9 +2,9 @@
 print.LOY <- function(x, method="MADloy", ...) {
   
   if (method=="MADloy")
-    data <- x$MADloy
+    data <- x$res$MADloy
   else if (method=="Fosberg")
-    data <- x$Fosberg
+    data <- x$res$Fosberg
   else
     stop("method should be either 'MADloy' or 'Fosberg'")
        

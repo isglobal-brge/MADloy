@@ -65,10 +65,10 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
         if (inherits(object, "LOY")) {
             if (!quiet) 
                 message("Processing the files in the LOY object")
-            allfiles <- file.path(object$par$path, object$par$files)[object$prob <= 
-                0.05/length(object$par$files) & !is.na(object$prob)]
+            allfiles <- file.path(object$par$path, object$par$files)
             n <- length(object$par$files)
-            cl <- data.frame(orig = object$class[object$prob <= 0.05/n & !is.na(object$prob)])
+            cl <- data.frame(orig = object$res$MADloy)
+            rownames(cl) <- tools:::file_path_sans_ext(object$par$files)
             # process PAR regions -----------------------------------------
             regions <- object$par$regions
         } else {
@@ -96,7 +96,7 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
                 }
                 allfiles <- object
                 n <- length(allfiles)
-                cl <- data.frame(orig = rep("LOY", length(allfiles)))
+                cl <- data.frame(orig = rep("Normal", length(allfiles)))
                 rownames(cl) <- basename(allfiles)
                 # process PAR regions -----------------------------------------
                 regions <- fread(system.file("extdata", "references", paste0(hg, 
@@ -129,34 +129,72 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
     par <- list(files = basename(allfiles), path = dirname(allfiles), cols = c(rsCol, 
         ChrCol, PosCol, LRRCol, BAFCol), top = top, bot = bot, hg = hg)
     
-    PAR1 <- data.frame(t(sapply(data, "[[", "PAR1")), stringsAsFactors = FALSE)
-    PAR1$Pl <- as.numeric(PAR1$Pl)
-    PAR2 <- data.frame(t(sapply(data, "[[", "PAR2")), stringsAsFactors = FALSE)
-    PAR2$Pl <- as.numeric(PAR2$Pl)
-    PARstat <- data.frame(t(sapply(data, function(x) {
+    if( any(sapply(data, "[[", "check") == "XTR")) {
+      fsX <- data.frame(t(sapply(data, "[[", "fsX")), stringsAsFactors = FALSE)
+      fsX$Pl <- as.numeric(fsX$Pl)
+      XTR <- data.frame(t(sapply(data, "[[", "XTR")), stringsAsFactors = FALSE)
+      XTR$Pl <- as.numeric(XTR$Pl)
+      
+      cl$hetfsX <- round(as.numeric(fsX$n) / as.numeric(fsX$N), 2)
+      cl$hetXTR <- round(as.numeric(XTR$n) / as.numeric(XTR$N), 2)
+      cl$LRRfsX <- ploidy2lrr(fsX$Pl)
+      cl$LRRXTR <- ploidy2lrr(XTR$Pl)
+      cl$BdevfsX <- round(unlist(fsX$Bdev), 3)
+      cl$BdevXTR <- round(unlist(XTR$Bdev), 3)
+      cl$class <- ifelse(XTR$Bdev > bdev.threshold & XTR$Pl < 2, "LOY", "normal")
+      cl$class[XTR$Bdev > bdev.threshold & XTR$Pl > 2 ] <- "XYY"
+      cl$class[X$Bdev > bdev.threshold & X$Pl > 2 ] <- "XXY"
+      cl$class[cl$hetfsX >= 0.10 ] <- "XAltered"
+      
+      cl$LRRCellXTR <- abs(2-unlist(XTR$Pl))*100
+      cl$BdevCellXTR <- rep(0, nrow(cl))
+      cl$BdevCellXTR[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevXTR[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevXTR[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
+      cl$BdevCellXTR[cl$class == "XYY" & !is.na(cl$class)] <- round((2*cl$BdevXTR[cl$class == "XYY" & !is.na(cl$class)])/(0.5-cl$BdevXTR[cl$class == "XYY" & !is.na(cl$class)])*100, 2)
+      Bdev <- list(class = cl, Bdev = data, par = par)
+    } else {
+      X <- data.frame(t(sapply(data, "[[", "X")), stringsAsFactors = FALSE)
+      X$PL <- as.numeric(X$PL)
+      PAR1 <- data.frame(t(sapply(data, "[[", "PAR1")), stringsAsFactors = FALSE)
+      PAR1$Pl <- as.numeric(PAR1$Pl)
+      PAR2 <- data.frame(t(sapply(data, "[[", "PAR2")), stringsAsFactors = FALSE)
+      PAR2$Pl <- as.numeric(PAR2$Pl)
+      XTR <- data.frame(t(sapply(data, "[[", "XTR")), stringsAsFactors = FALSE)
+      XTR$Pl <- as.numeric(XTR$Pl)
+      
+      PARstat <- data.frame(t(sapply(data, function(x) {
         t.test2(x$PAR1$Pl, x$PAR2$Pl, x$PAR1$Plsd, x$PAR2$Plsd, x$PAR1$n, x$PAR2$n, equal.variance = FALSE)
-    })))
-    
-    cl$LRRPAR1 <- ploidy2lrr(PAR1$Pl)
-    cl$LRRPAR2 <- ploidy2lrr(PAR2$Pl)
-    cl$BdevPAR1 <- round(unlist(PAR1$Bdev), 3)
-    cl$BdevPAR2 <- round(unlist(PAR2$Bdev), 3)
-    cl$class <- ifelse(PAR1$Bdev > bdev.threshold & PAR2$Bdev > bdev.threshold & PAR1$Pl < 2, "LOY", "normal")
-    cl$class[PAR1$Bdev > bdev.threshold & PAR2$Bdev > bdev.threshold & PAR1$Pl > 2 ] <- "XYY"
-    cl$LRRCellPAR1 <- abs(2-unlist(PAR1$Pl))*100
-    cl$LRRCellPAR2 <- abs(2-unlist(PAR2$Pl))*100
-    cl$BdevCellPAR2 <- cl$BdevCellPAR1 <- rep(0, nrow(cl))
-    cl$BdevCellPAR1[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevPAR1[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevPAR1[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
-    cl$BdevCellPAR2[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevPAR2[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevPAR2[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
-    cl$BdevCellPAR1[cl$class == "XYY" & !is.na(cl$class)] <- round((2*cl$BdevPAR1[cl$class == "XYY" & !is.na(cl$class)])/(0.5-cl$BdevPAR1[cl$class == "XYY" & !is.na(cl$class)])*100, 2)
-    cl$BdevCellPAR2[cl$class == "XYY" & !is.na(cl$class)] <- round((2*cl$BdevPAR2[cl$class == "XYY" & !is.na(cl$class)])/(0.5-cl$BdevPAR2[cl$class == "XYY" & !is.na(cl$class)])*100, 2)
-    cl$balanced <- ifelse(PARstat$p.value > pval.sig * 10/nrow(PARstat), "balancedPAR", 
-        "unbalancedPAR")
-    cl$balanced[cl$orig == "LOY" & PARstat$p.value < pval.sig/n & PAR1$Pl > PAR2$Pl] <- "LOYq"
-    cl$balanced[cl$orig == "LOY" & PARstat$p.value < pval.sig/n & PAR1$Pl < PAR2$Pl] <- "LOYp"
-    cl$balanced[cl$orig == "XYY" & PARstat$p.value < pval.sig/n & PAR1$Pl < PAR2$Pl] <- "XYYp"
-    cl$balanced[cl$orig == "XYY" & PARstat$p.value < pval.sig/n & PAR1$Pl < PAR2$Pl] <- "XYYq"
-    Bdev <- list(class = cl, prob = PARstat, Bdev = data, par = par)
+      })))
+      cl$LRRX <- ploidy2lrr(X$Pl)
+      cl$LRRPAR1 <- ploidy2lrr(PAR1$Pl)
+      cl$LRRPAR2 <- ploidy2lrr(PAR2$Pl)
+      cl$LRRXTR <- ploidy2lrr(XTR$Pl)
+      
+      cl$HetfsX
+      cl$BdevfsX <- round(unlist(X$Bdev), 3)
+      cl$BdevPAR1 <- round(unlist(PAR1$Bdev), 3)
+      cl$BdevPAR2 <- round(unlist(PAR2$Bdev), 3)
+      cl$BdevXTR <- round(unlist(XTR$Bdev), 3)
+      
+      cl$class <- ifelse(PAR1$Bdev > bdev.threshold & PAR2$Bdev > bdev.threshold & PAR1$Pl < 2, "LOY", "normal")
+      cl$class[PAR1$Bdev > bdev.threshold & PAR2$Bdev > bdev.threshold & PAR1$Pl > 2 ] <- "XYY"
+      cl$LRRCellPAR1 <- abs(2-unlist(PAR1$Pl))*100
+      cl$LRRCellPAR2 <- abs(2-unlist(PAR2$Pl))*100
+      cl$LRRCellXTR <- abs(2-unlist(XTR$Pl))*100
+      cl$BdevCellXTR <- cl$BdevCellPAR2 <- cl$BdevCellPAR1 <- rep(0, nrow(cl))
+      cl$BdevCellPAR1[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevPAR1[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevPAR1[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
+      cl$BdevCellPAR2[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevPAR2[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevPAR2[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
+      cl$BdevCellXTR[cl$class == "LOY" & !is.na(cl$class)] <- round((2*cl$BdevXTR[cl$class == "LOY" & !is.na(cl$class)])/(0.5+cl$BdevXTR[cl$class == "LOY" & !is.na(cl$class)])*100, 2)
+      cl$BdevCellPAR1[cl$class == "XYY" & !is.na(cl$class)] <- round((2*cl$BdevPAR1[cl$class == "XYY" & !is.na(cl$class)])/(0.5-cl$BdevPAR1[cl$class == "XYY" & !is.na(cl$class)])*100, 2)
+      cl$BdevCellPAR2[cl$class == "XYY" & !is.na(cl$class)] <- round((2*cl$BdevPAR2[cl$class == "XYY" & !is.na(cl$class)])/(0.5-cl$BdevPAR2[cl$class == "XYY" & !is.na(cl$class)])*100, 2)
+      cl$BdevCellXTR[cl$class == "XYY" & !is.na(cl$class)] <- round((2*cl$BdevXTR[cl$class == "XYY" & !is.na(cl$class)])/(0.5-cl$BdevXTR[cl$class == "XYY" & !is.na(cl$class)])*100, 2)
+      cl$balanced <- ifelse(PARstat$p.value > pval.sig * 10/nrow(PARstat), "balancedPAR", 
+                            "unbalancedPAR")
+      cl$balanced[cl$orig == "LOY" & PARstat$p.value < pval.sig/n & PAR1$Pl > PAR2$Pl] <- "LOYq"
+      cl$balanced[cl$orig == "LOY" & PARstat$p.value < pval.sig/n & PAR1$Pl < PAR2$Pl] <- "LOYp"
+      cl$balanced[cl$orig == "XYY" & PARstat$p.value < pval.sig/n & PAR1$Pl < PAR2$Pl] <- "XYYp"
+      cl$balanced[cl$orig == "XYY" & PARstat$p.value < pval.sig/n & PAR1$Pl < PAR2$Pl] <- "XYYq"
+      Bdev <- list(class = cl, prob = PARstat, Bdev = data, par = par)
+    }
     
     class(Bdev) <- "MADloyBdev"
     return(Bdev)
