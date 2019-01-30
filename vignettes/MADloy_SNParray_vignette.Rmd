@@ -54,7 +54,7 @@ The zipped file includes one file per sample in the required format to be proces
 In order to reproduce this vignette, decompress the .zip file in a folder and set this folder path in an R object (for instance `rawDataPath`). 
 
 ```{r, get_data_path}
-rawDataPath <- "temp/rawData"
+rawDataPath <- "/tmp/rawData"
 rawDataPath
 files <- dir(rawDataPath)
 length(files)
@@ -113,8 +113,8 @@ Second, some of the existing algorithms used to get LRR information do not norma
 
 `madloy` function processes raw data (e.g. separate files in pennCNV format of each sample) and provides the normalized median mLRR-Y value of each sample. The normalization procedure consists on considering technical artifacts that may affect the LRR values in the mLRR-Y region by removing: 
 
-> * The sample mean-trimmed LRR values in autosomes
-> * The median value of summarized mLRR-Y region of all samples 
+* The sample mean-trimmed LRR values in autosomes
+* The median value of summarized mLRR-Y region of all samples 
 
 
 The `madloy` function is designed to process LRR files and only requires the path where those files are located. Let us illustrate how to get summarized data of our illustrative example available at `LOYdata` package (see Getting Started section). NOTE: if `checkSex` is not executed, `files.males` should be replaced by `rawDataPath`
@@ -222,7 +222,7 @@ table(ex.Bdev$class)
 
 The resulting call show that only 4 samples have true LOY events. The samples classified as "other" can be visually inspected with the previouslly described `plotIndLRR`, `plotIndSNP` and `plotIndSNPX` functions to identify the events affecting these samples.
 
-```{r plot, fig.cap="OtherEvents"}
+```{r plotOther, fig.cap="OtherEvents", fig.width=14, fig.height=7}
 par(mfrow=c(1,2))
 plotIndSNPX(ex, "SAMPLE_47")
 plotIndSNP(ex, "SAMPLE_47")
