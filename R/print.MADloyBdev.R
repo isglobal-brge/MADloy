@@ -2,6 +2,8 @@
 print.MADloyBdev <- function(x, ...) {
     cat("Object of class MADloyBdev \n")
     cat("---------------------------- \n")
-    print(table(LRRClassification=as.character(x$class$orig), BdevClassification=x$class$class))
+    class <- as.factor(x$class)
+    names(class) <- tools:::file_path_sans_ext(x$par$files)
+    print(class)
     cat("\n")
 }

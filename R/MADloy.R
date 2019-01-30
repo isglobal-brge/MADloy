@@ -44,12 +44,14 @@ madloy <- function(files, target.region,
                    LRRCol = 4, trim=0.05, offset, 
                    mc.cores, quiet = FALSE, hg="hg18", ...) {
   
-  # Check hg version and name
+  # Check hg version and name --------------------------------------------------
+  
   if (!hg %in% c("hg18", "hg19", "GRCh38")) stop("The human genome release in the hg field should be one of the following ones: 'hg18', 'hg19' or 'GRCh38'.")
   chrSizes <- fread(system.file("extdata", "references", paste0(hg, ".chrom.sizes"), package = "MADloy"), header=T, skip="#", colClasses = c("character", "numeric"), showProgress = FALSE)
   regions <- fread(system.file("extdata", "references", paste0(hg, ".par.regions"), package = "MADloy"), header=T, skip=1, colClasses = c("character", "character", "numeric", "numeric"), showProgress = FALSE)
   
   # Check target and reference regions -----------------------------------------
+  
   if (missing(target.region)) {
     msy <- regions[regions$type == "msY", ]
     target.region <- paste0("chr", msy[,1], ":", msy[,3], "-", msy[,4])
@@ -133,18 +135,11 @@ madloy <- function(files, target.region,
   if (missing(offset))
    offset <- median(unlist(lapply(targetLRR, "[[", "summary"))) 
   
-  par <- list(files = basename(allfiles),
-              hg = hg,
-              path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol),
-              ref.region = subsetB,
-              regions = regions,
-              target.region = subsetA,  
-              trim = trim,
-              offset = offset)
-  
   mLRRY <- unlist(lapply(targetLRR, "[[", "summary")) -
            unlist(lapply(refLRR, "[[", "summary")) -
            offset
+  
+  # Check the standard deviation in target and reference LRR regions ------------------
   
   sds <- sapply(refLRR, "[[", "sd")
   if (is.null(qc.sds)){
@@ -153,6 +148,18 @@ madloy <- function(files, target.region,
   
   ref.qc <- sds > qc.sds
   mLRRY[ref.qc] <- NA
+  
+  # Generate output data --------------------------------------------------------------
+  
+  par <- list(files = basename(allfiles),
+              hg = hg,
+              path = dirname(allfiles), cols = c(rsCol, ChrCol, PosCol, LRRCol),
+              ref.region = subsetB,
+              regions = regions,
+              target.region = subsetA,  
+              trim = trim,
+              offset = offset,
+              QCremoved = ref.qc)
   
   LRRsummary <- list(mLRRY = mLRRY,
                      target = targetLRR, 

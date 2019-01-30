@@ -62,8 +62,9 @@ getLOY <- function (object, coef=3, ...)
   ans <- list()
   ans$res <- data.frame(MADloy = cl.f, Fosberg = fosb,
                     continous = norm.lrr)
+  ans$data <- object$mLRRY
   ans$par <- object$par
-  attr(ans$res, "type") <- "LRR"
+  attr(ans$data, "type") <- "LRR"
   class(ans) <- "LOY"
   
   ans
