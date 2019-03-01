@@ -1,10 +1,13 @@
 ---
 title: "`MADloy`: Detecting mosaic loss of Y events using genotype-array-intensity data"
 subtitle: "Marcos Lopez-Sanchez and Juan R. Gonzalez"
-author: |
-  | Institute for Global Health (ISGlobal), Barcelona, Spain
-  | Bioinformatics Research Group in Epidemiolgy (BRGE)
-  | (<http://brge.isglobal.org>)
+author:
+  - name: Marcos Lopez-Sanchez
+    email: marcos.lopez-sanchez@upf.edu
+    affiliation: Department of Genetics, University Pompeu Fabra (UPF)
+  - name: Juan R Gonzalez
+    email: juanr.gonzalez@isglobal.org
+    affiliation: Institute for Global Health (ISGlobal), Barcelona, Spain Bioinformatics Research Group in Epidemiolgy (BRGE)(http://brge.isglobal.org)
 date: "`r format(Sys.Date(), '%d %B %Y')`"
 package: "`r paste('MADloy', packageVersion('MADloy'))`"
 output:    
@@ -18,22 +21,25 @@ vignette: >
   %\VignetteIndexEntry{`MADloy`: Detecting mosaic loss of Y events (LOY) on SNP and NGS data}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
+bibliography: madloy.bib
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache=TRUE)
+```{r setup, include=FALSE, fig.dim=c(5,5), comment=""}
+knitr::opts_chunk$set(cache=TRUE, message = FALSE,
+                      warning = FALSE)
 ```
 
 # Introduction
 
 `MADloy` is a package to detect mosaic loss of chromosome Y (LOY) events from genotype-array-intensity data. This vignette illustrates how to obtain summarized log R ratio (LRR) values of SNPs probes in the male-specific region of chromosome Y (mLRR-Y) of a set of samples, and checking the putative LOY events with B Allele Frequency (BAF) values of SNP probes in the pseudoautosomal regions (PAR1, PAR2) and X-transposed region (XTR) on chromosome X. The mLRR-Y is located in the 56-Mb region between PAR1 and PAR2 on chromosome Y (chrY:2,694,521-59,034,049, hg19/GRCh37).  The median value of mLRR-Y can be use as a quantitative proxy of LOY, but checking Bdev in shared regions with chromosome X is necessary to assess calling. Downstream association analyses can be performed by regressing median mLRR-Y values with quantitative (e.g. age, gene expression, ...) or qualitative (e.g., case/control, smoking, ...) traits. The p-values of those regression models can be used values to establish correlations between LOY and traits. 
-Previous strategy considers mLRR-Y as a surrogate of LOY status. Here we also illustrate how to perform calling (e.g LOY/normal/XYY) to stablish whether an individual is carrying an alteration in chromosome Y or not. We use ~~Normal Inverse Gaussian (NIG) distribution which is able to model data that is obtained from the ratio of two values (e.g. LRR). The model parameters are estimated by using the trimmed mean LRR from the autosomes. Then, the values in the target region of chromosome Y are tested to provide evidences against the null hypothesis that corresponds to the case of having data from the reference. The analysis of real data reveals that the ~~NIG model~~ perfectly fits the observed mLRR-Y distribution, while the normal model is not.~~
+
+Previous strategy considers mLRR-Y as a surrogate of LOY status. Here we illustrate how to perform calling (e.g LOY/normal/XYY) to stablish whether an individual is carrying an alteration in chromosome Y or not using the methodology described in @caceresEDY that uses a method to deal with the non-symetric nature of the mLRR-Y data 
 
 # Getting started
 
 You can install `MADloy` from Github by typing 
 
-```{r eval=FALSE}
+```{r install_madloy, eval=FALSE}
 devtools::install_github("isglobal-brge/MADloy")
 ```
 
@@ -44,17 +50,17 @@ library(MADloy)
 ```
 
 ```{r setParameters, show = FALSE}
-options(mc.cores=detectCores())
+options(mc.cores=detectCores()-1)
 ```
 
-We have prepared a set of data files including 124 males and 2 females to be used as an illustrative example about how to get mLRR-Y data of each sample. Files and data have been anonymized and belong to individuals from general population. These files can be downloaded from this link [LOYdata](https://goo.gl/tZu2Pt) - https://goo.gl/tZu2Pt. 
+We have prepared a set of data files including 124 reported males and 2 females to be used as an illustrative example about how to get mLRR-Y data of each sample. Files and data have been anonymized and belong to individuals from general population belonging to Estonian Biobank (EGCUT). These files can be downloaded from this link [LOYdata](https://goo.gl/tZu2Pt) - https://goo.gl/tZu2Pt. 
 
 The zipped file includes one file per sample in the required format to be processed with `MADloy` package. This format is described in the next section. 
 
 In order to reproduce this vignette, decompress the .zip file in a folder and set this folder path in an R object (for instance `rawDataPath`). 
 
 ```{r, get_data_path}
-rawDataPath <- "/tmp/rawData"
+rawDataPath <- "C:/Juan/CREAL/MADloy/vignette/rawData"
 rawDataPath
 files <- dir(rawDataPath)
 length(files)
@@ -71,7 +77,7 @@ The function `madloy` processes individual SNP array data in [pennCNV format](ht
 
 LOY association studies are performed only using male samples. Obviously, clinical data can be used to filter such individuals. However, in some ocassions there are errors in those databases that can be detected by using genomic data. The function `checkSex` can be used to further verify that there are no female samples in our data. Let us perform this filtering using the test data. 
 
-```{r, check_sex, cache=TRUE}
+```{r, check_sex}
 sex <- checkSex(rawDataPath)
 ```
 This function only requires the path containing the raw data in pennCNV format. By default the function is assuming that the LRR information is in column number 4. This can be changed through the argument `LRRCol`. Notice that this function speed up the process by changing the argument `mc.cores`.
@@ -95,7 +101,7 @@ These samples can be identified
 sex$par$files[sex$class=="FEMALE"]
 ```
 
-and removed from the next analyses by selecting the files corresponding to males samples:
+as we can observe, there two reported female samples are classified as "FEMALE" and we also detect some discrepancies in other two samples that were reported as "MALE" while their genetic data indicates the contrary. Those samples are removed from downstream analysis since this is a normal QC step in genetic studies:
 
 ```{r, remove_females}
 files.males <- sex$par$files[sex$class!="FEMALE"]
@@ -107,7 +113,7 @@ files.males <- sex$par$files[sex$class!="FEMALE"]
 
 Summarized (median) mLRR-Y data is used as a proxy of LOY events. The median mLRR-Y value can be affected by several artifacts that have to be corrected before analyzing mLRR-Y data. First, it can be a systematic bias in the mLRR-Y due to the fact that the overall intensity of LRR distribution shifted slightly away from 0 in the whole array. This issue is addressed by normalizing the median mLRR-Y data using the LRR intensity in the autosomes (reference). In particular, we propose to compute the 5% trimmed-mean of LRR to avoid regions having copy number alterations.  This parameter can be tuned to take into account the different nature of the data we are dealing with. As an example, studies in cancer are expected to have individuals with large number of aneuploidies. Therefore, the trimmed value of the LRR may be increased up to, for instance, 25%. 
 
-Second, some of the existing algorithms used to get LRR information do not normalize the intensity of mLRR-Y to be 0. They provide values close to -0.46 indicating that only 1 copy is present in males (e.g ploidy is equal to 1) and hence, the LRR is centered at 2/3log(1/2) = `r round(2/3*log(1/2),2)`. We address this issue by shifting the observed values of mLRR-Y towards 0 by removing the median value of the mLRR-Y in all individuals.  
+Second, some of the existing algorithms used to get LRR information do not normalize the intensity of mLRR-Y to be 0. They provide values close to -0.46 indicating that only 1 copy is present in males (e.g ploidy is equal to 1) and hence, the LRR is centered at $\frac{2}{3}\log(1/2)$ = `r round(2/3*log(1/2),2)`. We address this issue by shifting the observed values of mLRR-Y towards 0 by removing the median value of the mLRR-Y in all individuals.  
 
 ## Get summarized mLRR-Y data
 
@@ -119,7 +125,7 @@ Second, some of the existing algorithms used to get LRR information do not norma
 
 The `madloy` function is designed to process LRR files and only requires the path where those files are located. Let us illustrate how to get summarized data of our illustrative example available at `LOYdata` package (see Getting Started section). NOTE: if `checkSex` is not executed, `files.males` should be replaced by `rawDataPath`
 
-```{r, madloy_example, cache=TRUE}
+```{r, madloy_example}
 ex <- madloy(files.males)
 ```
 
@@ -134,12 +140,12 @@ We observe that LRR data has been summarized in a target and a reference region.
 
 By default the human genome reference is `hg18` that can be changed in the argument `hg`. The package also contains files encoding the required information to retrieve summarized data in X and Y PAR regions, XTR region, p and q arms, and msY region that are used to better describe the characteristics of LOY samples.
 
-The LRR data of the reference is summarized by using the trimmed-mean. The argument `trim` controls the fraction of probes (e.g. LRR values) that are removed from each end before the mean is computed (0 to 0.5). This is a robust summary of LRR in a given region since it takes into account possible regions in the genome having CNV alterations. By default 5% of probes are trimed. This values is recommended to be increased, for instance, when analyzing cancer data where a large number of alterations is expected to be found. In case of being interested in summaryzing LRR data by using the median value, `trim` should be set equal to 0.5.  
+The LRR data of the reference is summarized by using the trimmed-mean. The argument `trim` of `madloy` function controls the fraction of probes (e.g. LRR values) that are removed from each end before the mean is computed (0 to 0.5). This is a robust summary of LRR in a given region since it takes into account possible regions in the genome having CNV alterations. By default 5% of probes are trimed. This values is recommended to be increased, for instance, when analyzing cancer data where a large number of alterations are expected. In case of being interested in summaryzing LRR data by using the median value, `trim` should be set equal to 0.5.  
 
 
 ## Quality control
 
-Samples with bad quality, that is, having large variability in the LRR data are recommended to do not be included in the analysis. Therefore, the function returns NA values of summarized mLRR-Y for those samples having LRR standard deviation larger than 0.28 in the reference chromosome as recommended here: www.illumina.com/content/dam/illumina-marketing/documents/products/appnotes/appnote_cnv_loh.pdf. This value can be changed by setting 'qc.sds' argument to the desired value. If missing, samples having LRR larget than 2 times the LRR standard deviation of all samples are removed from the analysis.
+Samples with bad quality, that is, having large variability in the LRR data are recommended to do not be included in the analysis. Therefore, the function returns NA values of summarized mLRR-Y for those samples having LRR standard deviation larger than 0.28 in the reference chromosome as recommended here: www.illumina.com/content/dam/illumina-marketing/documents/products/appnotes/appnote_cnv_loh.pdf. This value can be changed by setting `qc.sds` argument from `madloy` function to the desired value. If missing, samples having LRR larget than 2 times the LRR standard deviation of all samples are removed from the analysis.
 
 
 ```{r qc}
@@ -150,21 +156,19 @@ ex$par$files[ex$par$QCremoved]
 
 Data can be visually inspected by using the generic `plot` function. This function depicts the mean difference between the LLR of Y chromosome and the reference region that is performed in order to control for possible technical artifacts. As previously mentioned, the reference is consider the autosomes and LRR is summarized by using the trimmed mean in order to remove the effect of having any gain or lose in the genome. Notice that this reference chromosome can be changed by the user. 
 
-```{r, fig.show='hold',  fig.cap = "Plot of MADloy object of males samples"}
+```{r, fig.show='hold',  fig.cap = "Plot of MADloy object of EGCUT males samples"}
 plot(ex, print.labels=TRUE, threshold=-0.3)
 ```
 
 
-This figure shows several samples that may have a LOY event (those in the -.2, -.8 range 
-of Y-axis). These samples can be further analyzed by looking at the mLRR-Y region to verify whether they are real 
-LOY rearrangements as described in the next section. 
+This figure shows four samples that could have a LOY event (those in the -.2, -.8 range of Y-axis). Visual inspection of the mLRR-Y region can be used to verify whether they are real LOY rearrangements as we are describing in the next section. 
 
 
 # Visualizing mLRR-Y region of a single sample
 
 We can visually inspect the information of mLRR-Y region (e.g., one by one sample) and decide whether a given individuals is having a LOY or not. This can be performed either by using  `plotIndSNP` or `plotIndLRR` functions. Let's create these plot of a given sample having a normalized mLRR-Y value around 0 (i.e SAMPLE_1) with the `plotIndLRR` function. The figure represents the expected values of normal LRR at 0 (red line). However, as previously mentioned, depending the algorithm used to get LRR in the mLRR-Y region these values can be centered around -0.46 indicating that only 1 chromosome is present in males. Orange line represents the median value of mLRR-Y in the subset of analyzed samples. This is the value that must be considered as the reference to indicate whether the mLRR-Y is a LOY event or not.  
 
-```{r, plotSample1_LRR,  fig.cap="LRR in the mLRR-Y region (shaded) of SAMPLE_1 from the illustrative example"}
+```{r, plotSample1-LRR,  fig.cap="LRR in the mLRR-Y region (shaded) of SAMPLE_1 from EGCUT data"}
 plotIndLRR(ex, sample="SAMPLE_1")
 ```
 
@@ -191,13 +195,13 @@ The plots indicate that both samples are probably carrying a LOY because the LRR
 
 # Calling LOY
 
-So far, calling LOY is based on assuming that experimental variation in mLRR-Y is distributed in a non-skewed fashion. Forsberg et al. (2014) propose to generate the expected experimental background noise of mLRR-Y data using a symmetrical distribution. They impose the observed variation in the positive tail of the mLRR-Y distribution into a reflected negative tail by mirroring over median value of mLRR-Y the data observed in the positive tail. However, this approach has some drawbacks such as: 1) LRR is a ratio of two variables and hence, normallity cannot be assumed, 2) it is expected that large values of mLRR-Y indicates the existence of XYY cases 3) LRR data is normally skweed. In order to overcome these diffitulties, ~~we propose to use Negative Inverse Gaussian distribution, a very flexile model that has been proposed to model skewed data and ratio of variables. This figure illustrates how the NIG model perfectly fits the observed data, while the normal model is not~~.
+Calling LOY is currently based on assuming that experimental variation in mLRR-Y is distributed in a non-skewed fashion. @forsberg2014mosaic propose to generate the expected experimental background noise of mLRR-Y data using a symmetrical distribution. They impose the observed variation in the positive tail of the mLRR-Y distribution into a reflected negative tail by mirroring over median value of mLRR-Y the data observed in the positive tail. However, this approach has some drawbacks since it is expected that large values of mLRR-Y indicates the existence of XYY cases as observed with cancer patients in @caceres2019extreme. In order to overcome this diffitulties and to account for the posibility of having  XYY individuals, we first set a calling threshold of XYY status, following this equation
 
-```{r, fitNIG, echo=FALSE, message = FALSE, warning=FALSE, fig.cap="Empirical cumulative distribution function (ecdf) of the observed data and ecdf estimated using NIG and Normal models of reference LRR."}
-plotNIG(ex, tit="LRR distribution of illustrative example")
-``` 
+$$\text{mLRRy} < \text{median} + 1.2 \times \text{IQR}(\text{mLRRy})$$
 
-The calling is performed by using `getLOY` function. This function classifies the samples according the method that we propose, the method proposed by Forsberg et al. (2014) and by considering mLRR-Y as a continuous variable. By default, the classification showed is obtained with the proposed method.~~has an argument called 'pval.sig' argument that is used to control the false discovery rate. By default it is based on Bonferroni correction~~.
+for the symmetric distribution that is obtained by reflecting the positive side of the centered mLRR-Y distribution around its maximum. LOY status is then called with the negative value of the XYY threshold.
+
+The calling is performed by using `getLOY` function. This function classifies the samples according the method that we propose, the method proposed by @forsberg2014mosaic that considers mLRR-Y as a continuous surrogate variable of LOY. 
 
 ```{r getLOY}
 ex.call <- getLOY(ex)
@@ -217,10 +221,21 @@ To assess the LOY events detected with the mLRRY values and increase conficende 
 ```{r checkBdev}
 ex.Bdev <- checkBdev(ex.call)
 ex.Bdev
-table(ex.Bdev$class)
 ```
 
-The resulting call show that only 4 samples have true LOY events. The samples classified as "other" can be visually inspected with the previouslly described `plotIndLRR`, `plotIndSNP` and `plotIndSNPX` functions to identify the events affecting these samples.
+The resulting call show that only 4 samples have true LOY events. 
+
+```{r samples_LOY}
+getSamples(ex.Bdev, type="LOY")
+```
+
+The samples classified as "other" are:
+
+```{r samples_other}
+getSamples(ex.Bdev, type="other")
+```
+
+can be visually inspect those samples (using `plotIndLRR`, `plotIndSNP` and `plotIndSNPX` functions)  to identify their type of rearrangements. Let's illustrate three of them
 
 ```{r plotOther, fig.cap="OtherEvents", fig.width=14, fig.height=7}
 par(mfrow=c(1,2))

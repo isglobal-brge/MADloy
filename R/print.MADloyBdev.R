@@ -4,6 +4,6 @@ print.MADloyBdev <- function(x, ...) {
     cat("---------------------------- \n")
     class <- as.factor(x$class)
     names(class) <- tools:::file_path_sans_ext(x$par$files)
-    print(class)
+    print(table(class))
     cat("\n")
 }
