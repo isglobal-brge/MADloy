@@ -80,6 +80,7 @@ LOY association studies are performed only using male samples. Obviously, clinic
 ```{r, check_sex}
 sex <- checkSex(rawDataPath)
 ```
+
 This function only requires the path containing the raw data in pennCNV format. By default the function is assuming that the LRR information is in column number 4. This can be changed through the argument `LRRCol`. Notice that this function speed up the process by changing the argument `mc.cores`.
 
 The function `checkSex` returns an object that can be plotted by using the generic function `plot`. The figure depicts the LRR in both X and Y chromosomes. 

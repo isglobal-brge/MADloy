@@ -1,6 +1,6 @@
-#' Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data
+#' Detection algorithm to detect Loss of Y events in MADloy data
 #' 
-#' @param object A MADloy or MADseqLOY object.
+#' @param object A MADloy object.
 #' @param coef this determines how far the outliers are considered.
 #' @param ... Other parameters.
 #'   
@@ -9,16 +9,10 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' getLOY(resMADseqLOY)
 #' getLOY(resMADloy)}
 getLOY <- function (object, coef=3, ...) 
 {
-  if (inherits(object, "MADseqLOY") | inherits(object, "MADloy")) {
-    if (inherits(object, "MADseqLOY"))
-        stop("method should be implemented (bi-normal or outlier)")
-    x <- MADloy:::getSummary(object)
-  }
-  else {
+  if (inherits(object, "MADloy")) {
     x <- object
   }
   target <- x[, 1]
@@ -27,9 +21,9 @@ getLOY <- function (object, coef=3, ...)
   norm.lrr <- object$mLRRY
 
   findOutliers <- function(x, coef=coef) {
-    upperq <- quantile(x, 0.75, na.rm=TRUE)
-    lowerq <- quantile(x, 0.25, na.rm=TRUE)
-    iqr <- IQR(x, na.rm=TRUE)
+    upperq <- stats::quantile(x, 0.75, na.rm=TRUE)
+    lowerq <- stats::quantile(x, 0.25, na.rm=TRUE)
+    iqr <- stats::IQR(x, na.rm=TRUE)
     # we identify extreme outliers
     extreme.threshold.upper <- (iqr * coef) + upperq
     extreme.threshold.lower <- lowerq - (iqr * coef)
@@ -40,10 +34,10 @@ getLOY <- function (object, coef=3, ...)
   
   getThreshold <- function(x, ...)
   {
-    den <- density(x[!is.na(x)], bw="SJ", ...)
+    den <- stats::density(x[!is.na(x)], bw="SJ", ...)
     m <- den$x[which(den$y==max(den$y))]
     xx <- x[x>=m]
-    x.99 <- quantile(xx, 0.99, na.rm=TRUE)
+    x.99 <- stats::quantile(xx, 0.99, na.rm=TRUE)
     ans <- m - x.99
     ans
   }
@@ -57,7 +51,7 @@ getLOY <- function (object, coef=3, ...)
   cl.f <- factor(cl, levels=c("normal", "LOY", "XYY"))
             
   tt <- getThreshold(norm.lrr)
-  fosb <- relevel(cut(norm.lrr, c(-Inf, tt, Inf),
+  fosb <- stats::relevel(cut(norm.lrr, c(-Inf, tt, Inf),
               labels=c("LOY", "normal")),2)
   ans <- list()
   ans$res <- data.frame(MADloy = cl.f, Fosberg = fosb,

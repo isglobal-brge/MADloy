@@ -71,12 +71,12 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
               allfiles <- file.path(object$par$path, object$par$files)[!object$par$QCremoved]
               n <- length(object$par$files[!object$par$QCremoved])
               cl <- data.frame(orig = object$res$MADloy[!object$par$QCremoved])
-              rownames(cl) <- tools:::file_path_sans_ext(object$par$files[!object$par$QCremoved])  
+              rownames(cl) <- tools::file_path_sans_ext(object$par$files[!object$par$QCremoved])  
             } else {
               allfiles <- file.path(object$par$path, object$par$files)
               n <- length(object$par$files)
               cl <- data.frame(orig = object$res$MADloy)
-              rownames(cl) <- tools:::file_path_sans_ext(object$par$files)  
+              rownames(cl) <- tools::file_path_sans_ext(object$par$files)  
             }
             # process PAR regions -----------------------------------------
             regions <- object$par$regions

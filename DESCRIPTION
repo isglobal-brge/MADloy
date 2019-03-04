@@ -1,27 +1,22 @@
 Package: MADloy
 Type: Package
 Title: Package to detect mosaic LOY from SNP array data
-Version: 1.0.0
-Date: 2018-06-09
+Version: 1.0.1
+Date: 2019-03-04
 Author: Marcos Lopez-Sanchez and Juan R Gonzalez
 Maintainer: Juan R Gonzalez <juanr.gonzalez@isglobal.org>
 Depends:
     data.table,
-    GenomicRanges,
     R (>= 3.2.0),
 Imports:
     BiocGenerics,
-    ecolitk,
-    GeneralizedHyperbolic,
     GenomeInfoDb,
-    gplots,
+    GenomicRanges,
+    graphics,
     IRanges,
-    methods,
-    mixtools,
     parallel,
-    plotrix,
-    Rsamtools,
-    TEQC,
+    stats,
+    utils,
     wordcloud
 Description: This packages is a suit of functions to perform association analysis of
              mosaic LOY and quantitative or continuous outcomes. It uses SNP array data in pennCNV
@@ -36,4 +31,5 @@ Suggests:
     knitr,
     rmarkdown
 LazyData: FALSE
-RoxygenNote: 6.0.1
+Encoding: UTF-8
+RoxygenNote: 6.1.1

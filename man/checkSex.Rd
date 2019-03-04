@@ -4,8 +4,8 @@
 \alias{checkSex}
 \title{Check sex for SNP array samples}
 \usage{
-checkSex(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.cores,
-  trim = 0.2, quiet = FALSE)
+checkSex(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
+  mc.cores, trim = 0.2, quiet = FALSE)
 }
 \arguments{
 \item{files}{A single file path (APT platform and MAD platform), a vector of 

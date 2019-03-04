@@ -8,7 +8,7 @@
 #' @param ChrCol Column of the MAD file with the chromosome information.
 #' @param PosCol Column of the MAD file with the position information.
 #' @param LRRCol Column of the MAD file with the LRR information.
-#'   
+#' @param ... Other parameters to be passed to the graphics::plot function.   
 #' @return A data table with the results for all samples in columns
 #' @export
 #' @examples
@@ -72,18 +72,18 @@ plotIndLRR <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, ...) {
                                         BiocGenerics::start(subsetA) & dat$Position < BiocGenerics::end(subsetA))]
   
   if (max(lrr.target, na.rm=TRUE)<1){
-    plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ylim=c(min(lrr.target, na.rm=TRUE), 1), ...)
-    uu <- par("usr")
+    graphics::plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ylim=c(min(lrr.target, na.rm=TRUE), 1), ...)
+    uu <- graphics::par("usr")
   }  
   else {
-   plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ...)
-    uu <- par("usr")
+    graphics::plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ...)
+    uu <- graphics::par("usr")
   }
-  rect(7e6, uu[4], 25e6, uu[3], col="MistyRose")
-  points(pos.target, lrr.target, pch=16, cex=0.7, col="brown")
-  title(tt)
-  abline(h=0, col="red", lty=2, lwd=2)
-  abline(h=x$par$offset, col="orange", lty=2, lwd=2)
+  graphics::rect(7e6, uu[4], 25e6, uu[3], col="MistyRose")
+  graphics::points(pos.target, lrr.target, pch=16, cex=0.7, col="brown")
+  graphics::title(tt)
+  graphics::abline(h=0, col="red", lty=2, lwd=2)
+  graphics::abline(h=x$par$offset, col="orange", lty=2, lwd=2)
   hh <- x$target[[ss]]$summary
-  segments(7e6, hh, 25e6, col="blue", lwd=3)
+  graphics::segments(7e6, hh, 25e6, col="blue", lwd=3)
 }

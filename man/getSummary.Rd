@@ -2,23 +2,21 @@
 % Please edit documentation in R/getSummary.R
 \name{getSummary}
 \alias{getSummary}
-\title{Get summary values from MADseqLOY or MADloy objects}
+\title{Get summary values from a MADloy object}
 \usage{
 getSummary(object)
 }
 \arguments{
-\item{object}{A MADloy or MADseqLOY object from the \code{MADloy} or 
-\code{MADseqLOY} functions.}
+\item{object}{A MADloy object from the \code{MADloy} function.}
 }
 \value{
-A data table with the results for all samples in columns
+A data table with the results for all samples in columns.
 }
 \description{
-This function retrieves the summary values from the MADloy or MADseqLOY
-objects and prepares the data to be analyzed for LOY events.
+This function retrieves the summary values from a MADloy 
+object and prepares the data to be analyzed for LOY events.
 }
 \examples{
 \dontrun{
-getSummary(resMADloy)
-getSummary(resMADseqLOY)}
+getSummary(resMADloy)}
 }

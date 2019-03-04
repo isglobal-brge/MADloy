@@ -4,8 +4,8 @@
 \alias{plotIndSNP}
 \title{Plots the SNP data of chromosome Y for an individual}
 \usage{
-plotIndSNP(x, sample, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
-  BAFCol = 5, offset = 0, scaleY = TRUE, ...)
+plotIndSNP(x, sample, rsCol = 1, ChrCol = 2, PosCol = 3,
+  LRRCol = 4, BAFCol = 5, offset = 0, scaleY = FALSE, ...)
 }
 \arguments{
 \item{x}{A MADloy object from the \code{MADloy} functions.}

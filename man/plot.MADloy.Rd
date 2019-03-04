@@ -4,15 +4,21 @@
 \alias{plot.MADloy}
 \title{Plot of MADloy object}
 \usage{
-\method{plot}{MADloy}(x, labels, print.labels = FALSE, threshold = -0.6,
-  cex.label = 0.8, ...)
+\method{plot}{MADloy}(x, labels, print.labels = FALSE,
+  threshold = -0.6, cex.label = 0.8, ...)
 }
 \arguments{
-\item{print.labels}{should sample labels be showed}
+\item{x}{a MADloy object.}
 
-\item{threshold}{threshold to draw sample labels}
+\item{labels}{a character vector with the samples labels.}
 
-\item{cex.label}{size of the labels}
+\item{print.labels}{should sample labels be showed.}
+
+\item{threshold}{threshold to draw sample labels.}
+
+\item{cex.label}{size of the labels.}
+
+\item{...}{Other graphical parameters.}
 }
 \description{
 This function plots the summarized LRR of a set of samples

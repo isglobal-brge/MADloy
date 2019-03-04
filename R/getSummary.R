@@ -1,27 +1,16 @@
-#' Get summary values from MADseqLOY or MADloy objects
+#' Get summary values from a MADloy object
 #' 
-#' This function retrieves the summary values from the MADloy or MADseqLOY
-#' objects and prepares the data to be analyzed for LOY events.
+#' This function retrieves the summary values from a MADloy 
+#' object and prepares the data to be analyzed for LOY events.
 #' 
-#' @param object A MADloy or MADseqLOY object from the \code{MADloy} or 
-#'   \code{MADseqLOY} functions.
+#' @param object A MADloy object from the \code{MADloy} function.
 #'   
-#' @return A data table with the results for all samples in columns
+#' @return A data table with the results for all samples in columns.
 #' @examples
 #' \dontrun{
-#' getSummary(resMADloy)
-#' getSummary(resMADseqLOY)}
+#' getSummary(resMADloy)}
 getSummary <- function(object) {
-  
-  if (inherits(object, "MADseqLOY")) {
-    targetAvg <- sapply(object$target, "[[", "summaryTargetCoverage")
-    refAvg <- sapply(object$reference, "[[", "summaryTargetCoverage")
-    avg <- cbind(targetAvg, refAvg)
-    targetChr <- as.character(GenomeInfoDb::seqnames(object$par$target.region))
-    refChr <- as.character(GenomeInfoDb::seqnames(object$par$ref.region))
-    colnames(avg) <- c(paste0("summaryCov_", targetChr), paste0("summaryCov_", refChr))
-  }
-  
+
   if (inherits(object, "MADloy")) {
     targetAvg <- sapply(object$target, "[[", "summary")
     refAvg <- sapply(object$reference, "[[", "summary")

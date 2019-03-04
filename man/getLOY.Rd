@@ -2,18 +2,14 @@
 % Please edit documentation in R/getLOY.R
 \name{getLOY}
 \alias{getLOY}
-\title{Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data}
+\title{Detection algorithm to detect Loss of Y events in MADloy data}
 \usage{
-getLOY(object, offset, pval.sig, ...)
+getLOY(object, coef = 3, ...)
 }
 \arguments{
-\item{object}{A MADloy or MADseqLOY object.}
+\item{object}{A MADloy object.}
 
-\item{offset}{Offset value of SNP array data in the LRR of chromosome Y. That is, value to
-guarantee that mean LRR at chrmosome Y is centered at 0.  Default 0 since LRR at 
-m-LRR region is expected to be centered at O.}
-
-\item{pval.sig}{pval.sig p-value treshold to be used in the classification test.}
+\item{coef}{this determines how far the outliers are considered.}
 
 \item{...}{Other parameters.}
 }
@@ -22,10 +18,9 @@ An object of class 'LOY' that summarizes the LOY events detected in
   the analyzed samples
 }
 \description{
-Detection algorithm to detect Loss of Y events in MADloy or MADseqLOY data
+Detection algorithm to detect Loss of Y events in MADloy data
 }
 \examples{
 \dontrun{
-getLOY(resMADseqLOY)
 getLOY(resMADloy)}
 }

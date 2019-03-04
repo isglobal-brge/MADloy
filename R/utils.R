@@ -5,7 +5,7 @@ doc_date <- function()
 
 pkg_ver <- function(name) 
 {
-  paste(name, packageVersion(name))
+  paste(name, utils::packageVersion(name))
 }
 
 #! Return the samples names in a MADloy object

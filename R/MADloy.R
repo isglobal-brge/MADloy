@@ -133,7 +133,7 @@ madloy <- function(files, target.region,
   names(targetLRR) <- names(refLRR) <- basename(allfiles)
   
   if (missing(offset))
-   offset <- median(unlist(lapply(targetLRR, "[[", "summary"))) 
+   offset <- stats::median(unlist(lapply(targetLRR, "[[", "summary"))) 
   
   mLRRY <- unlist(lapply(targetLRR, "[[", "summary")) -
            unlist(lapply(refLRR, "[[", "summary")) -

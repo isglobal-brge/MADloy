@@ -12,7 +12,7 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
   data <- x$data
   
   if (missing(labels)) {
-    labels <- tools:::file_path_sans_ext(rownames(x$res))
+    labels <- tools::file_path_sans_ext(rownames(x$res))
   }
     
   nclass <- length(levels(class))
@@ -43,14 +43,7 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
         col.lab <- colors
     }
     
-    if (attr(data, "type") == "Coverage") {
-        ss <- 1:nrow(data)
-        xx <- data[, 1]
-        yy <- data[, 2]
-        d <- xx - yy
-        graphics::plot.default(ss, d, type = "n", xlab = "Individuals", ylab = "Mean coverage difference (mY region - Reference)", main = main)
-        graphics::points(ss, d, col = mycol, pch = 16, ...)
-    } else if (attr(data, "type") == "LRR") {
+    if (attr(data, "type") == "LRR") {
         ss <- 1:length(data)
         d <- x$data
         graphics::plot.default(ss, d, type = "n", xlab = "Individuals", ylab = "Offset-adjusted trimmed mean normalized mLRR-Y")

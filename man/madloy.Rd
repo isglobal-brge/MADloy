@@ -4,9 +4,9 @@
 \alias{madloy}
 \title{Check the mean LRR values in msY region to detect Loss of Y events in a folder or files.}
 \usage{
-madloy(files, target.region, ref.region = "Autosomes", rsCol = 1,
-  ChrCol = 2, PosCol = 3, LRRCol = 4, trim = 0.05, offset, mc.cores,
-  quiet = FALSE, hg = "hg18", ...)
+madloy(files, target.region, ref.region = "Autosomes", qc.sds = 0.28,
+  rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, trim = 0.05,
+  offset, mc.cores, quiet = FALSE, hg = "hg18", ...)
 }
 \arguments{
 \item{files}{A single file path (APT platform and MAD platform), a vector of 
@@ -19,6 +19,14 @@ changed.}
 
 \item{ref.region}{If declared, the chromosome or region to be compared with the Y 
 region in UCSC style (i.e. "chr21" or "chr21:1000-10000").}
+
+\item{qc.sds}{Theshold to perform quality control of samples using the reference
+region/chromosome. The default value is 0.28. It implies that samples having 
+LRR standard deviation larger that this value in the reference chromosome will be
+removed from the analyses. This value is taken from 
+www.illumina.com/content/dam/illumina-marketing/documents/products/appnotes/appnote_cnv_loh.pdf)
+If NULL the cutoff for considering a good quality sample is estimated as 
+2 times the standard deviation of all samples.}
 
 \item{rsCol}{The position of the column with the SNP identifier.}
 

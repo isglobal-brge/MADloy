@@ -4,8 +4,8 @@
 \alias{processBdevMAD}
 \title{Process MAD file to obtain Bdev}
 \usage{
-processBdevMAD(file, regions, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top, bot,
-  trim)
+processBdevMAD(file, regions, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top,
+  bot, trim)
 }
 \arguments{
 \item{file}{File path of the MAD file to be processed.}

@@ -6,8 +6,8 @@
 \usage{
 checkBdev(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
   BAFCol = 5, top = 0.85, bot = 0.15, trim = 0.1, mc.cores,
-  quiet = FALSE, hg = "hg18", pval.sig = 0.05, bdev.threshold = 0.06,
-  ...)
+  quiet = FALSE, hg = "hg18", pval.sig = 0.05,
+  bdev.threshold = 0.06, ...)
 }
 \arguments{
 \item{object}{A LOY class object to check the LOY and uncertain samples or a single file path (APT platform and MAD platform), a vector of 
