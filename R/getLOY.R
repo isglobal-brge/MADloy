@@ -1,6 +1,6 @@
 #' Detection algorithm to detect Loss of Y events in MADloy data
 #' 
-#' @param object A MADloy object.
+#' @param x A MADloy object.
 #' @param coef this determines how far the outliers are considered.
 #' @param ... Other parameters.
 #'   
@@ -10,15 +10,16 @@
 #' @examples
 #' \dontrun{
 #' getLOY(resMADloy)}
-getLOY <- function (object, coef=3, ...) 
+getLOY <- function (x, coef=3, ...) 
 {
-  if (inherits(object, "MADloy")) {
-    x <- object
-  }
-  target <- x[, 1]
-  reference <- x[, 2]
+  if (!inherits(x, "MADloy"))
+    stop("x must be an object of class 'MADloy'")
   
-  norm.lrr <- object$mLRRY
+  xx <- getSummary(x)
+  target <- xx[,1]
+  reference <- xx[, 2]
+  
+  norm.lrr <- x$mLRRY
 
   findOutliers <- function(x, coef=coef) {
     upperq <- stats::quantile(x, 0.75, na.rm=TRUE)
@@ -56,8 +57,8 @@ getLOY <- function (object, coef=3, ...)
   ans <- list()
   ans$res <- data.frame(MADloy = cl.f, Fosberg = fosb,
                     continous = norm.lrr)
-  ans$data <- object$mLRRY
-  ans$par <- object$par
+  ans$data <- x$mLRRY
+  ans$par <- x$par
   attr(ans$data, "type") <- "LRR"
   class(ans) <- "LOY"
   

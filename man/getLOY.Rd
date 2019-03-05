@@ -4,10 +4,10 @@
 \alias{getLOY}
 \title{Detection algorithm to detect Loss of Y events in MADloy data}
 \usage{
-getLOY(object, coef = 3, ...)
+getLOY(x, coef = 3, ...)
 }
 \arguments{
-\item{object}{A MADloy object.}
+\item{x}{A MADloy object.}
 
 \item{coef}{this determines how far the outliers are considered.}
 
