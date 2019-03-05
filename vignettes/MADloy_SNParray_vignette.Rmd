@@ -236,7 +236,7 @@ The samples classified as "other" are:
 getSamples(ex.Bdev, type="other")
 ```
 
-can be visually inspect those samples (using `plotIndLRR`, `plotIndSNP` and `plotIndSNPX` functions)  to identify their type of rearrangements. Let's illustrate three of them
+can be visually inspect those samples (using `plotIndLRR`, `plotIndSNP` and `plotIndSNPX` functions)  to identify their type of rearrangements. Let's illustrate three of them:
 
 ```{r plotOther, fig.cap="OtherEvents", fig.width=14, fig.height=7}
 par(mfrow=c(1,2))
@@ -250,3 +250,8 @@ plotIndSNPX(ex, "SAMPLE_98")
 plotIndSNP(ex, "SAMPLE_98")
 ```
 
+"SAMPLE_47" belongs to an XY individual with a contamination of a non-related XX sample of 12\% aprox of the whole sample. This can be seen in non-shared regions of chromosome X by the presence of three-band clusters in bottom and top regions of B Allele Frequency values (red points). This contamination can generate a false LOY call due to reduction in expected probe intensity for msY specific probes.
+
+"SAMPLE_89" belongs to an XY individual with a contamination of a non-related XY sample of 50\% aprox. of the whole sample. This can be seen in the heterozygous band in non-shared regions of chromosome X (deviated upwards due to the decrease in intensity), the presence of three-band BAF centered at 0.5 in shared regions of chromosome X and Y, and a high number of heterozygous probes in non-shared region of chromosome Y.
+
+"SAMPLE_98" belongs to an XY individual with a contamination of a non-related XY sample of 38\% aprox. of the whole sample. This can be seen in the BAF split in non-shared regions of chromosome X without the presence of the central band indicative of three diferent chromosomes, and the presence of the BAF split in PAR regions.
