@@ -46,7 +46,9 @@ plot.LOY <- function(x, labels, colors = c("red", "blue", "darkgreen"), pos.leg 
     if (attr(data, "type") == "LRR") {
         ss <- 1:length(data)
         d <- x$data
-        graphics::plot.default(ss, d, type = "n", xlab = "Individuals", ylab = "Offset-adjusted trimmed mean normalized mLRR-Y")
+        graphics::plot.default(ss, d, type = "n", xlab = "Individuals", 
+                               ylab = "Offset-adjusted trimmed mean normalized mLRR-Y",
+                               ...)
         graphics::points(ss, d, col = mycol, pch = 16, ...)
     }
   
