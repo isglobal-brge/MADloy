@@ -211,7 +211,23 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
       cl$balanced[cl$orig == "XYY" & PARstat$p.value < pval.sig/n & PAR1$Pl < PAR2$Pl] <- "XYYq"
       Bdev <- list(class = cl$class, data = cl, prob = PARstat, Bdev = data, par = par)
     }
+
+# Merge both information (JRG - 22nd May)        
+    dat1 <- data.frame(MADthres = object$res$MADloy,
+                       Fosberg = object$res$Fosberg, 
+                       mLRR = object$res$continous)
+    rownames(dat1) <- gsub(".txt", "", rownames(object$res))
+    dat2 <- data.frame(orig=Bdev$data$orig, class=Bdev$data$class)
+    rownames(dat2) <- gsub(".txt", "", rownames(Bdev$data))
     
-    class(Bdev) <- "MADloyBdev"
-    return(Bdev)
+    ans <- merge(dat1, dat2, by="row.names", all.x=TRUE)
+    ans$MADloy <- ans$class
+    ans$MADloy[is.na(ans$class)] <- ans$MADthres[is.na(ans$class)]
+    ans$MADloy <- relevel(ans$MADloy, ref="normal")
+    rownames(ans) <- ans$Row.names
+    names(ans)[1] <- "id"
+    
+    out <- list(calling=ans, Bdev=Bdev)
+    class(out) <- "MADloyBdev"
+    return(out)
 }

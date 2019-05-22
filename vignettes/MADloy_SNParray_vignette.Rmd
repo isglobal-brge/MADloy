@@ -33,7 +33,7 @@ knitr::opts_chunk$set(cache=TRUE, message = FALSE,
 
 `MADloy` is a package to detect mosaic loss of chromosome Y (LOY) events from genotype-array-intensity data. This vignette illustrates how to obtain summarized log R ratio (LRR) values of SNPs probes in the male-specific region of chromosome Y (mLRR-Y) of a set of samples, and checking the putative LOY events with B Allele Frequency (BAF) values of SNP probes in the pseudoautosomal regions (PAR1, PAR2) and X-transposed region (XTR) on chromosome X. The mLRR-Y is located in the 56-Mb region between PAR1 and PAR2 on chromosome Y (chrY:2,694,521-59,034,049, hg19/GRCh37).  The median value of mLRR-Y can be use as a quantitative proxy of LOY, but checking Bdev in shared regions with chromosome X is necessary to assess calling. Downstream association analyses can be performed by regressing median mLRR-Y values with quantitative (e.g. age, gene expression, ...) or qualitative (e.g., case/control, smoking, ...) traits. The p-values of those regression models can be used values to establish correlations between LOY and traits. 
 
-Previous strategy considers mLRR-Y as a surrogate of LOY status. Here we illustrate how to perform calling (e.g LOY/normal/XYY) to stablish whether an individual is carrying an alteration in chromosome Y or not using the methodology described in @caceresEDY that uses a method to deal with the non-symetric nature of the mLRR-Y data 
+Previous strategy considers mLRR-Y as a surrogate of LOY status @forsberg2014mosaic. Here we illustrate how to perform calling (e.g LOY/normal/XYY) to stablish whether an individual is carrying an alteration in chromosome Y or not using the methodology described in @gonzalezMADloy that uses a new method to thresholding mLRR-Y data and incorporates information about B-deviation to reduce missclassification and, hence, improve statistical power.
 
 # Getting started
 
@@ -49,7 +49,8 @@ Then the package is loaded as usual
 library(MADloy)
 ```
 
-```{r setParameters, show = FALSE}
+```{r setParameters, echo = FALSE}
+library(parallel)
 options(mc.cores=detectCores()-1)
 ```
 
@@ -196,7 +197,7 @@ The plots indicate that both samples are probably carrying a LOY because the LRR
 
 # Calling LOY
 
-Calling LOY is currently based on assuming that experimental variation in mLRR-Y is distributed in a non-skewed fashion. @forsberg2014mosaic propose to generate the expected experimental background noise of mLRR-Y data using a symmetrical distribution. They impose the observed variation in the positive tail of the mLRR-Y distribution into a reflected negative tail by mirroring over median value of mLRR-Y the data observed in the positive tail. However, this approach has some drawbacks since it is expected that large values of mLRR-Y indicates the existence of XYY cases as observed with cancer patients in @caceres2019extreme. In order to overcome this diffitulties and to account for the posibility of having  XYY individuals, we first set a calling threshold of XYY status, following this equation
+Calling LOY is currently based on assuming that experimental variation in mLRR-Y is distributed in a non-skewed fashion. @forsberg2014mosaic propose to generate the expected experimental background noise of mLRR-Y data using a symmetrical distribution. They impose the observed variation in the positive tail of the mLRR-Y distribution into a reflected negative tail by mirroring over median value of mLRR-Y the data observed in the positive tail. However, this approach has some drawbacks since it is expected that large values of mLRR-Y indicates the existence of XYY cases as observed with cancer patients in @gonzalezMADloy. In order to overcome this diffitulties and to account for the posibility of having  XYY individuals, we first set a calling threshold of XYY status, following this equation
 
 $$\text{mLRRy} < \text{median} + 1.2 \times \text{IQR}(\text{mLRRy})$$
 
@@ -224,7 +225,15 @@ ex.Bdev <- checkBdev(ex.call)
 ex.Bdev
 ```
 
-The resulting call show that only 4 samples have true LOY events. 
+
+The resulting call show that 4 samples have true LOY events which are confirmed with b-deviation information. We can have a look a the entire information used to process b-deviation data ans see, for instance, why some samples have been called as 'discordant' 
+
+```{r checkBdev2}
+ex.Bdev$Bdev$data[1:5,]
+```
+
+
+The sample ids having LOY can be obtained by:
 
 ```{r samples_LOY}
 getSamples(ex.Bdev, type="LOY")
@@ -255,3 +264,5 @@ plotIndSNP(ex, "SAMPLE_98")
 "SAMPLE_89" belongs to an XY individual with a contamination of a non-related XY sample of 50\% aprox. of the whole sample. This can be seen in the heterozygous band in non-shared regions of chromosome X (deviated upwards due to the decrease in intensity), the presence of three-band BAF centered at 0.5 in shared regions of chromosome X and Y, and a high number of heterozygous probes in non-shared region of chromosome Y.
 
 "SAMPLE_98" belongs to an XY individual with a contamination of a non-related XY sample of 38\% aprox. of the whole sample. This can be seen in the BAF split in non-shared regions of chromosome X without the presence of the central band indicative of three diferent chromosomes, and the presence of the BAF split in PAR regions.
+
+# References
