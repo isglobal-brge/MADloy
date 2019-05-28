@@ -147,7 +147,9 @@ The LRR data of the reference is summarized by using the trimmed-mean. The argum
 
 ## Quality control
 
-Samples with bad quality, that is, having large variability in the LRR data are recommended to do not be included in the analysis. Therefore, the function returns NA values of summarized mLRR-Y for those samples having LRR standard deviation larger than 0.28 in the reference chromosome as recommended here: www.illumina.com/content/dam/illumina-marketing/documents/products/appnotes/appnote_cnv_loh.pdf. This value can be changed by setting `qc.sds` argument from `madloy` function to the desired value. If missing, samples having LRR larget than 2 times the LRR standard deviation of all samples are removed from the analysis.
+Samples with bad quality, that is, having large variability in the LRR data are recommended to do not be included in the analysis. `madloy` function returns NA values of summarized mLRR-Y for those samples having LRR standard deviation larger than 0.28 in the reference chromosome as recommended here: www.illumina.com/content/dam/illumina-marketing/documents/products/appnotes/appnote_cnv_loh.pdf. 
+
+**IMPORTANT NOTE**: This value is the default and correspond to Illumina arrays. If analyzing Affymetrix arrays, or you expect to have data with large variability, set the argument `qc.sds` of `madloy` function to the desired value. Sometimes it is complicated to know which is the expected variability in the arrays. In that case, set the argument `qc.sds=NULL` to remove from the analysis those samples having LRR in target region (chrY:2,694,521-59,034,049, hg19/GRCh37) larger than 2 times the LRR standard deviation of autosomes.
 
 
 ```{r qc}

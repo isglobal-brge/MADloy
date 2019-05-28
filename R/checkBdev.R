@@ -217,12 +217,13 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
                        Fosberg = object$res$Fosberg, 
                        mLRR = object$res$continous)
     rownames(dat1) <- gsub(".txt", "", rownames(object$res))
-    dat2 <- data.frame(orig=Bdev$data$orig, class=Bdev$data$class)
+    dat2 <- data.frame(orig=Bdev$data$orig, class=Bdev$data$class,
+                       classBdev = Bdev$data$classBdev)
     rownames(dat2) <- gsub(".txt", "", rownames(Bdev$data))
     
     ans <- merge(dat1, dat2, by="row.names", all.x=TRUE)
-    ans$MADloy <- ans$class
-    ans$MADloy[is.na(ans$class)] <- ans$MADthres[is.na(ans$class)]
+    ans$MADloy <- ans$classBdev
+    ans$MADloy[is.na(ans$MADloy)] <- ans$MADthres[is.na(ans$MADloy)]
     ans$MADloy <- relevel(ans$MADloy, ref="normal")
     rownames(ans) <- ans$Row.names
     names(ans)[1] <- "id"
