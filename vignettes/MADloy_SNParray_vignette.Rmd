@@ -54,7 +54,7 @@ library(parallel)
 options(mc.cores=detectCores()-1)
 ```
 
-We have prepared a set of data files including 124 reported males and 2 females to be used as an illustrative example about how to get mLRR-Y data of each sample. Files and data have been anonymized and belong to individuals from general population belonging to Estonian Biobank (EGCUT). These files can be downloaded from this link [LOYdata](https://goo.gl/tZu2Pt) - https://goo.gl/tZu2Pt. 
+We have prepared a set of data files including 124 reported males and 2 females to be used as an illustrative example about how to get mLRR-Y data of each sample. Files and data have been anonymized and belong to individuals from general population. These files can be downloaded from this link [LOYdata](https://goo.gl/tZu2Pt) - https://goo.gl/tZu2Pt. 
 
 The zipped file includes one file per sample in the required format to be processed with `MADloy` package. This format is described in the next section. 
 
