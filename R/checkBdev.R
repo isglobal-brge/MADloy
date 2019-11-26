@@ -224,7 +224,8 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
     ans <- merge(dat1, dat2, by="row.names", all.x=TRUE)
     ans$MADloy <- ans$class
     ans$MADloy[is.na(ans$class)] <- ans$MADthres[is.na(ans$class)]
-    ans$MADloy <- relevel(ans$MADloy, ref="normal")
+    print(table(ans$MADloy))
+#    ans$MADloy <- relevel(ans$MADloy, ref="normal")
     rownames(ans) <- ans$Row.names
     names(ans)[1] <- "id"
     
