@@ -17,7 +17,8 @@ getSummary <- function(object) {
     avg <- cbind(targetAvg, refAvg)
     targetChr <- as.character(GenomeInfoDb::seqnames(object$par$target.region))
     refChr <- as.character(GenomeInfoDb::seqnames(object$par$ref.region))
-    if ( identical(refChr, as.character(1:22))) refChr <- "Autosomes"
+    if ( identical(sort(refChr), sort(as.character(1:22))) ) refChr <- "Autosomes"
+    else if ( length(refChr) > 1 )refChr <- "Ref_Region"
     colnames(avg) <- c(paste0("summaryLRR_", targetChr), paste0("summaryLRR_", refChr))
   }
   return(avg)

@@ -31,5 +31,6 @@ interest.
 }
 \examples{
 \dontrun{
-processMAD(file=file.path, query=rangedDataROI, rsCol=2, chrCol=3, PosCol=4, LRRCol=5)}
+    processMAD(file=file.path, query=rangedDataROI, rsCol=2, chrCol=3, PosCol=4, LRRCol=5)
+}
 }

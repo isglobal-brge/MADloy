@@ -4,8 +4,7 @@
 \alias{plot.MADloy}
 \title{Plot of MADloy object}
 \usage{
-\method{plot}{MADloy}(x, labels, print.labels = FALSE,
-  threshold = -0.6, cex.label = 0.8, ...)
+\method{plot}{MADloy}(x, labels, print.labels = FALSE, threshold = -0.6, cex.label = 0.8, ...)
 }
 \arguments{
 \item{x}{a MADloy object.}

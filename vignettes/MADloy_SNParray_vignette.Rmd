@@ -140,7 +140,7 @@ ex
 
 We observe that LRR data has been summarized in a target and a reference region. By default the target region corresponds to the mLRR-Y region and the reference region (the one used to normalized LRR in the target region) corresponds to autosomal chromosomes. The arguments `target.region` and `ref.region` can be used to change those values. This information has to be passed in UCSC format (e.g. "chr21" or "chr21:1000-10000"). 
 
-By default the human genome reference is `hg18` that can be changed in the argument `hg`. The package also contains files encoding the required information to retrieve summarized data in X and Y PAR regions, XTR region, p and q arms, and msY region that are used to better describe the characteristics of LOY samples.
+By default the human genome reference is `GRCh38` that can be changed in the argument `hg`. The package also contains files encoding the required information to retrieve summarized data in X and Y PAR regions, XTR region, p and q arms, and msY region that are used to better describe the characteristics of LOY samples.
 
 The LRR data of the reference is summarized by using the trimmed-mean. The argument `trim` of `madloy` function controls the fraction of probes (e.g. LRR values) that are removed from each end before the mean is computed (0 to 0.5). This is a robust summary of LRR in a given region since it takes into account possible regions in the genome having CNV alterations. By default 5% of probes are trimed. This values is recommended to be increased, for instance, when analyzing cancer data where a large number of alterations are expected. In case of being interested in summaryzing LRR data by using the median value, `trim` should be set equal to 0.5.  
 

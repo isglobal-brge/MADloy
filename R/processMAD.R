@@ -15,7 +15,10 @@
 #' @import data.table
 #' @examples
 #' \dontrun{
-#' processMAD(file=file.path, query=rangedDataROI, rsCol=2, chrCol=3, PosCol=4, LRRCol=5)}
+#'     processMAD(file=file.path, query=rangedDataROI, rsCol=2, chrCol=3, PosCol=4, LRRCol=5)
+#' }
+#' @importFrom magrittr %>%
+#' @importFrom dplyr arrange
 processMAD <- function(file, query, rsCol, ChrCol, PosCol, LRRCol, trim=0.1) {
   
   dat <- data.table::fread(file, showProgress = FALSE, sep = "\t")
@@ -26,12 +29,15 @@ processMAD <- function(file, query, rsCol, ChrCol, PosCol, LRRCol, trim=0.1) {
   if( length(query) == 1 ) {
     LRRsummary$summary <- mean(dat$Log.R.Ratio[which(dat$Chr == as.character(GenomeInfoDb::seqnames(query)) & dat$Position > BiocGenerics::start(query) & dat$Position < BiocGenerics::end(query))], na.rm = T, trim=trim)
     LRRsummary$sd <- stats::sd(dat$Log.R.Ratio[which(dat$Chr == as.character(GenomeInfoDb::seqnames(query)) & dat$Position > BiocGenerics::start(query) & dat$Position < BiocGenerics::end(query))], na.rm = T)
-  } else if( identical(as.character(GenomeInfoDb::seqnames(query)), as.character(1:22))){
+  } else if( identical(sort(as.character(GenomeInfoDb::seqnames(query))), sort(as.character(1:22)))){
     LRRsummary$summary <- mean(dat$Log.R.Ratio[which(dat$Chr %in% as.character(1:22))], na.rm = T, trim=trim)
     LRRsummary$sd <- stats::sd(dat$Log.R.Ratio[which(dat$Chr %in% as.character(1:22))], na.rm = T)
   } else {
-    LRRsummary$summary <- mean(dat$Log.R.Ratio[which(apply(sapply(query, function(x) dat$Chr == as.character(GenomeInfoDb::seqnames(x)) & dat$Position > BiocGenerics::start(x) & dat$Position < BiocGenerics::end(x)), 1, any))], na.rm = T, trim=trim)
-    LRRsummary$sd <- stats::sd(dat$Log.R.Ratio[which(apply(sapply(query, function(x) dat$Chr == as.character(GenomeInfoDb::seqnames(x)) & dat$Position > BiocGenerics::start(x) & dat$Position < BiocGenerics::end(x)), 1, any))], na.rm = T)
+    #..# LRRsummary$summary <- mean(dat$Log.R.Ratio[which(apply(sapply(query, function(x) dat$Chr == as.character(GenomeInfoDb::seqnames(x)) & dat$Position > BiocGenerics::start(x) & dat$Position < BiocGenerics::end(x), simplify = F), 1, any))], na.rm = T, trim=trim)
+    df_query <- GenomeInfoDb::as.data.frame(query) %>% arrange(factor(seqnames, levels = labels(GenomeInfoDb::seqnames(query))))
+    LRRsummary$summary <- mean( dat$Log.R.Ratio[ which( Reduce( "+", apply( df_query, 1, function(x) dat$Chr==as.character(x["seqnames"]) & between(dat$Position, as.integer(x["start"])+1, as.integer(x["end"])-1), simplify=F)) == 1)], na.rm = T, trim=trim)
+    #..# LRRsummary$sd <- stats::sd(dat$Log.R.Ratio[which(apply(sapply(query, function(x) dat$Chr == as.character(GenomeInfoDb::seqnames(x)) & dat$Position > BiocGenerics::start(x) & dat$Position < BiocGenerics::end(x)), 1, any))], na.rm = T)
+    LRRsummary$sd <- stats::sd(dat$Log.R.Ratio[ which( Reduce( "+", apply( df_query, 1, function(x) dat$Chr==as.character(x["seqnames"]) & between(dat$Position, as.integer(x["start"])+1, as.integer(x["end"])-1), simplify=F)) == 1)], na.rm = T)
   }
   
   return(LRRsummary)

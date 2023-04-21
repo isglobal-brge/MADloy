@@ -1,6 +1,6 @@
 #Obtained from https://www.ncbi.nlm.nih.gov/grc/human GRCh37.p13
 chromosome	type	start	end
-Y	PAR1	10001	2649520 2917959
+Y	PAR1	10001	2649520
 X	PAR1	60001	2699520
 Y	PAR2	59034050	59363566
 X	PAR2	154931044	155260560

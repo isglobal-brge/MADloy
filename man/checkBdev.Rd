@@ -4,10 +4,23 @@
 \alias{checkBdev}
 \title{Check the B deviation values in PAR1 and PAR2 regions to check possible Loss of Y events in a folder or files.}
 \usage{
-checkBdev(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4,
-  BAFCol = 5, top = 0.85, bot = 0.15, trim = 0.1, mc.cores,
-  quiet = FALSE, hg = "hg18", pval.sig = 0.05,
-  bdev.threshold = 0.06, ...)
+checkBdev(
+  object,
+  rsCol = 1,
+  ChrCol = 2,
+  PosCol = 3,
+  LRRCol = 4,
+  BAFCol = 5,
+  top = 0.85,
+  bot = 0.15,
+  trim = 0.1,
+  mc.cores,
+  quiet = FALSE,
+  hg = "GRCh38",
+  pval.sig = 0.05,
+  bdev.threshold = 0.06,
+  ...
+)
 }
 \arguments{
 \item{object}{A LOY class object to check the LOY and uncertain samples or a single file path (APT platform and MAD platform), a vector of 
@@ -36,7 +49,7 @@ is set to 1.}
 \item{quiet}{Should the function not inform about the status of the process. 
 By default is FALSE.}
 
-\item{hg}{Human genome build version.}
+\item{hg}{Human genome build version. By default set to "GRCh38".}
 
 \item{pval.sig}{p-value treshold to be used in the classification test. By default is set to 0.05.}
 

@@ -1,7 +1,7 @@
 Package: MADloy
 Type: Package
 Title: Package to detect mosaic LOY from SNP array data
-Version: 1.0.1
+Version: 1.0.2
 Date: 2019-03-04
 Author: Marcos Lopez-Sanchez and Juan R Gonzalez
 Maintainer: Juan R Gonzalez <juanr.gonzalez@isglobal.org>
@@ -32,4 +32,4 @@ Suggests:
     rmarkdown
 LazyData: FALSE
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.2.3

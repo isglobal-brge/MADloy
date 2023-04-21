@@ -4,8 +4,7 @@
 \alias{plotIndLRR}
 \title{Plots the SNP LRR data of an individual}
 \usage{
-plotIndLRR(x, sample, rsCol = 1, ChrCol = 2, PosCol = 3,
-  LRRCol = 4, ...)
+plotIndLRR(x, sample, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, ...)
 }
 \arguments{
 \item{x}{A MADloy object from the \code{MADloy} functions.}

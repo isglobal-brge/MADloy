@@ -21,7 +21,7 @@
 #'   is set to 1.
 #' @param quiet Should the function not inform about the status of the process. 
 #'   By default is FALSE.
-#' @param hg Human genome build version.
+#' @param hg Human genome build version. By default set to "GRCh38".
 #' @param pval.sig p-value treshold to be used in the classification test. By default is set to 0.05.
 #' @param bdev.threshold bdev threshold to determine if there is BAF split significant enough to call an altered region. By default is set to 0.05.
 #' @param ... Other parameters.
@@ -32,7 +32,7 @@
 #' \dontrun{
 #' checkBdev(filepath, mc.cores=2)}
 checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAFCol = 5, 
-    top = 0.85, bot = 0.15, trim = 0.1, mc.cores, quiet = FALSE, hg = "hg18", pval.sig = 0.05, 
+    top = 0.85, bot = 0.15, trim = 0.1, mc.cores, quiet = FALSE, hg = "GRCh38", pval.sig = 0.05, 
     bdev.threshold = 0.06, ...) {
     
     # two-sample t-test from
@@ -41,12 +41,10 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
       if (equal.variance == FALSE) {
         se <- sqrt((s1^2/n1) + (s2^2/n2))
         # welch-satterthwaite df
-        df <- ((s1^2/n1 + s2^2/n2)^2)/((s1^2/n1)^2/(n1 - 1) + (s2^2/n2)^2/(n2 - 
-                                                                             1))
+        df <- ((s1^2/n1 + s2^2/n2)^2)/((s1^2/n1)^2/(n1 - 1) + (s2^2/n2)^2/(n2 - 1))
       } else {
         # pooled standard deviation, scaled by the sample sizes
-        se <- sqrt((1/n1 + 1/n2) * ((n1 - 1) * s1^2 + (n2 - 1) * s2^2)/(n1 + 
-                                                                          n2 - 2))
+        se <- sqrt((1/n1 + 1/n2) * ((n1 - 1) * s1^2 + (n2 - 1) * s2^2)/(n1 + n2 - 2))
         df <- n1 + n2 - 2
       }
       t <- (m1 - m2 - m0)/se

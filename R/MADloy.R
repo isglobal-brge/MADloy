@@ -30,7 +30,7 @@
 #'   is set to 1.
 #' @param quiet Should the function not inform about the status of the process. 
 #'   By default is FALSE.
-#' @param hg Human genome build version. It can be 'hg18', 'hg19' or 'GRCh38'. Set by default to 'hg18'.
+#' @param hg Human genome build version. It can be 'hg18', 'hg19' or 'GRCh38'. Set by default to 'GRCh38'.
 #' @param ... Other parameters.
 #' @return A MADloy object that contains the LRR means for all the files 
 #'   analyzed.
@@ -42,7 +42,7 @@ madloy <- function(files, target.region,
                    ref.region="Autosomes", qc.sds=0.28,
                    rsCol = 1, ChrCol = 2, PosCol = 3, 
                    LRRCol = 4, trim=0.05, offset, 
-                   mc.cores, quiet = FALSE, hg="hg18", ...) {
+                   mc.cores, quiet = FALSE, hg="GRCh38", ...) {
   
   # Check hg version and name --------------------------------------------------
   
