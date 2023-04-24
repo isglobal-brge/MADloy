@@ -45,6 +45,8 @@ processBdevMAD <- function(file, regions, rsCol, ChrCol, PosCol, LRRCol, BAFCol,
       sel <- dat[which(dat$Chr %in% c("XY", "25") & 
                          dat$Position > regions[regions$chromosome == "X" & regions$type == "PAR2"]$start & 
                          dat$Position < regions[regions$chromosome == "X" & regions$type == "PAR2"]$end)]
+      if(nrow(sel) == 0) { 
+          stop("No data found in PAR2 region") }
       selhet <- sel$B.Allele.Freq >= bot & sel$B.Allele.Freq <= top & !is.na(sel$B.Allele.Freq)
       Bdevsummary$PAR2$Bdev <- mean(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)
       Bdevsummary$PAR2$Bdevsd <- stats::sd(abs(0.5 - sel$B.Allele.Freq[selhet]), na.rm = T)

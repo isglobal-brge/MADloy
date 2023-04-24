@@ -82,6 +82,8 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
     data <- do.call(rbind, res)
     rownames(data) <- basename(allfiles)
     data <- as.data.frame(apply(data, 2, unlist))
+    omitted <- data[which(!complete.cases(data)),]
+    data <- data[which(complete.cases(data)),]
     
     ## Clustering
     
@@ -112,6 +114,7 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
     par$offsetY <- offsetY
     par$offsetX <- offsetX
     par$path <- files
+    par$omitted <- rownames(omitted)
     par$files <- allfiles
     
     res <- list(data = data, class = class, par = par)

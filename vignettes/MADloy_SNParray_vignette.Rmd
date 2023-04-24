@@ -54,14 +54,14 @@ library(parallel)
 options(mc.cores=detectCores()-1)
 ```
 
-We have prepared a set of data files including 124 reported males and 2 females to be used as an illustrative example about how to get mLRR-Y data of each sample. Files and data have been anonymized and belong to individuals from general population. These files can be downloaded from this link [LOYdata](https://goo.gl/tZu2Pt) - https://goo.gl/tZu2Pt. 
+We have prepared a set of data files including 124 reported males and 2 females to be used as an illustrative example about how to get mLRR-Y data of each sample. Files and data have been anonymized and belong to individuals from general population. These files can be downloaded from this link [LOYdata - github repository](https://github.com/isglobal-brge/brge_data_large/tree/master/inst/extdata/rawData) - https://github.com/isglobal-brge/brge_data_large/tree/master/inst/extdata/rawData. 
 
 The zipped file includes one file per sample in the required format to be processed with `MADloy` package. This format is described in the next section. 
 
 In order to reproduce this vignette, decompress the .zip file in a folder and set this folder path in an R object (for instance `rawDataPath`). 
 
 ```{r, get_data_path}
-rawDataPath <- "C:/Juan/CREAL/MADloy/vignette/rawData"
+rawDataPath <- "C:/MADloy_RawData"
 rawDataPath
 files <- dir(rawDataPath)
 length(files)
@@ -82,7 +82,7 @@ LOY association studies are performed only using male samples. Obviously, clinic
 sex <- checkSex(rawDataPath)
 ```
 
-This function only requires the path containing the raw data in pennCNV format. By default the function is assuming that the LRR information is in column number 4. This can be changed through the argument `LRRCol`. Notice that this function speed up the process by changing the argument `mc.cores`.
+This function only requires the path containing the raw data in pennCNV format. By default the function is assuming that the LRR information is in column number 4. This can be changed through the argument `LRRCol`. If any of the samples lacks information on some of the chromosomes, the samples are omitted. Notice that this function speed up the process by changing the argument `mc.cores`.
 
 The function `checkSex` returns an object that can be plotted by using the generic function `plot`. The figure depicts the LRR in both X and Y chromosomes. 
 
@@ -128,7 +128,7 @@ Second, some of the existing algorithms used to get LRR information do not norma
 The `madloy` function is designed to process LRR files and only requires the path where those files are located. Let us illustrate how to get summarized data of our illustrative example available at `LOYdata` package (see Getting Started section). NOTE: if `checkSex` is not executed, `files.males` should be replaced by `rawDataPath`
 
 ```{r, madloy_example}
-ex <- madloy(files.males)
+ex <- madloy(files.males, hg="hg18")
 ```
 
 The function creates an object of class `MADloy` that can be inspected by using the generic `print` function.
@@ -173,19 +173,19 @@ This figure shows four samples that could have a LOY event (those in the -.2, -.
 We can visually inspect the information of mLRR-Y region (e.g., one by one sample) and decide whether a given individuals is having a LOY or not. This can be performed either by using  `plotIndSNP` or `plotIndLRR` functions. Let's create these plot of a given sample having a normalized mLRR-Y value around 0 (i.e SAMPLE_1) with the `plotIndLRR` function. The figure represents the expected values of normal LRR at 0 (red line). However, as previously mentioned, depending the algorithm used to get LRR in the mLRR-Y region these values can be centered around -0.46 indicating that only 1 chromosome is present in males. Orange line represents the median value of mLRR-Y in the subset of analyzed samples. This is the value that must be considered as the reference to indicate whether the mLRR-Y is a LOY event or not.  
 
 ```{r, plotSample1-LRR,  fig.cap="LRR in the mLRR-Y region (shaded) of SAMPLE_1 from EGCUT data"}
-plotIndLRR(ex, sample="SAMPLE_1")
+plotIndLRR(ex, sample="SAMPLE_2")
 ```
 
 With the `plotIndSNP` we can visually inspect both LRR and BAF values in the chromosome Y. For the same sample, the figure represents the PAR1 and PAR2 regions delimited between blue-dotted lines, the XTR region delimited between orange-dotted lines, and the msY region between green-dotted lines.
 
 ```{r, plotSample1,  fig.cap="LRR and BAF in the chromosome Y of SAMPLE_1 from illustrative example"}
-plotIndSNP(ex, sample="SAMPLE_1")
+plotIndSNP(ex, sample="SAMPLE_2")
 ```
 
 In addition to the chromosome Y, we can plot the chromosome X values with the `plotIndSNPX` function, with the shared PAR1, PAR2 and XTR regions seen in the chromosome Y
 
 ```{r, plotSample1X,  fig.cap="LRR and BAF in the chromosome X of SAMPLE_1 from illustrative example"}
-plotIndSNPX(ex, sample="SAMPLE_1")
+plotIndSNPX(ex, sample="SAMPLE_2")
 ```
 
 Now, let us create the plot of SAMPLE_21 and SAMPLE_4 that are having the lowest values of mLRR-Y. 
