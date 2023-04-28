@@ -129,8 +129,8 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
     # Get Bdev summary
     # ------------------------------------------------------------------
     
-    data <- parallel::mclapply(X = allfiles, FUN = processBdevMAD, rsCol = rsCol, 
-        ChrCol = ChrCol, PosCol = PosCol, LRRCol = LRRCol, BAFCol = BAFCol, regions = regions, 
+    data <- parallel::mclapply(X = allfiles, FUN = processBdevMAD, rsCol = rsCol,
+        ChrCol = ChrCol, PosCol = PosCol, LRRCol = LRRCol, BAFCol = BAFCol, regions = regions,
         mc.cores = mc.cores, top = top, bot = bot, trim = trim)
     names(data) <- basename(allfiles)
     par <- list(files = basename(allfiles), path = dirname(allfiles), cols = c(rsCol, 

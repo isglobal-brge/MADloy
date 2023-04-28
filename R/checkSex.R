@@ -76,7 +76,7 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
                 mc.cores))
     }
     
-    res <- parallel::mclapply(X = allfiles, FUN = getXY, rsCol = rsCol, ChrCol = ChrCol, 
+    res <- parallel::mclapply(X = allfiles, FUN = getXY, rsCol = rsCol, ChrCol = ChrCol,
         PosCol = PosCol, LRRCol = LRRCol, mc.cores = mc.cores, trim = trim)
     
     data <- do.call(rbind, res)
@@ -84,7 +84,7 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
     data <- as.data.frame(apply(data, 2, unlist))
     omitted <- data[which(!complete.cases(data)),]
     data <- data[which(complete.cases(data)),]
-    
+
     ## Clustering
     
     centers <- rbind(c(lrrploidy[3], lrrploidy[1]), c(lrrploidy[2], lrrploidy[2]))
@@ -97,6 +97,12 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
       tmp <- data
       tmp$X <- ploidy2lrr(lrr2ploidy(tmp$X) + (2 - lrr2ploidy(offsetX)))
       tmp$Y <- tmp$Y - offsetY
+      
+      if(sum(!complete.cases(tmp))>0){
+          omitted <- rbind(omitted, tmp[which(!complete.cases(tmp)),])
+          data <- data[which(complete.cases(tmp)),]
+          tmp <- tmp[which(complete.cases(tmp)),]
+      }
     
       kmeansres <- stats::kmeans(lrr2ploidy(tmp), centers = lrr2ploidy(centers))
       class <- as.factor(ifelse(kmeansres$cluster == 1, "FEMALE", "MALE"))
@@ -117,7 +123,8 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
     par$omitted <- rownames(omitted)
     par$files <- allfiles
     
-    res <- list(data = data, class = class, par = par)
+    res <- list(data = data,
+                class = class, par = par)
     class(res) <- "checkSex"
     return(res)
 }
