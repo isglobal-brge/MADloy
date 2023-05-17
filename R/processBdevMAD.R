@@ -21,14 +21,30 @@
 #' processBdevMAD(file=file.path, query=rangedDataROI, rsCol=1, chrCol=2, PosCol=3, LRRCol=4)}
 processBdevMAD <- function(file, regions, rsCol, ChrCol, PosCol, LRRCol, BAFCol, top, 
     bot, trim) {
+    
+
+    par1data <- FALSE
+    par2data <- FALSE
+    
     lrr2ploidy <- function(x) 2 * exp(3 * x/2)
     ploidy2lrr <- function(x) 2 * log(x/2)/3
     dat <- data.table::fread(file, showProgress = FALSE, sep = "\t")
     xy <- any(c("XY", "25") %in% unique(dat$Chr))
+    
+    if(xy) {
+        par2data <- nrow(dat[which(dat$Chr %in% c("XY", "25") & 
+                                       dat$Position > regions[regions$chromosome == "X" & regions$type == "PAR2"]$start & 
+                                       dat$Position < regions[regions$chromosome == "X" & regions$type == "PAR2"]$end)]) > 0
+        
+        par1data <- nrow( dat[which(dat$Chr %in% c("XY", "25") & dat$Position > regions[regions$chromosome == "X" & 
+                                regions$type == "PAR1"]$start & dat$Position < regions[regions$chromosome == "X" & 
+                                                                                           regions$type == "PAR1"]$end)] ) > 0
+    } 
+    
     data.table::setnames(dat, colnames(dat[, c(rsCol, ChrCol, PosCol, LRRCol, BAFCol), 
         with = F]), c("Name", "Chr", "Position", "Log.R.Ratio", "B.Allele.Freq"))
     Bdevsummary <- list()
-    if (xy){
+    if (xy & par1data & par2data){
       Bdevsummary$check <- "PAR"
       # PAR1
       sel <- dat[which(dat$Chr %in% c("XY", "25") & dat$Position > regions[regions$chromosome == "X" & 

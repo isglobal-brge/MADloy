@@ -129,12 +129,20 @@ checkBdev <- function(object, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, BAF
     # Get Bdev summary
     # ------------------------------------------------------------------
     
+    # comment - DEBUG ONLY
     data <- parallel::mclapply(X = allfiles, FUN = processBdevMAD, rsCol = rsCol,
         ChrCol = ChrCol, PosCol = PosCol, LRRCol = LRRCol, BAFCol = BAFCol, regions = regions,
         mc.cores = mc.cores, top = top, bot = bot, trim = trim)
+
+    
+    # Use only: DEBUG 
+    # data <- lapply(X = allfiles, FUN = processBdevMAD, rsCol = rsCol,
+    #                ChrCol = ChrCol, PosCol = PosCol, LRRCol = LRRCol, BAFCol = BAFCol, regions = regions,
+    #                top = top, bot = bot, trim = trim)
+    
     names(data) <- basename(allfiles)
     par <- list(files = basename(allfiles), path = dirname(allfiles), cols = c(rsCol, 
-        ChrCol, PosCol, LRRCol, BAFCol), top = top, bot = bot, hg = hg)
+        ChrCol, PosCol, LRRCol, BAFCol), top = top, bot = bot, hg = hg, regions = regions)
     
     if( any(sapply(data, "[[", "check") == "XTR")) {
       fsX <- data.frame(t(sapply(data, "[[", "fsX")), stringsAsFactors = FALSE)

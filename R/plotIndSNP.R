@@ -22,10 +22,10 @@ plotIndSNP <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, BAFCol=
   if (inherits(x, "MADloy") | inherits(x, "MADloyBdev")) {
     lrr2ploidy <- function(x) 2 * exp(3 * x/2)
     ploidy2lrr <- function(x) 2 * log(x/2)/3
-    samples <- x$par$files
+    samples <- x$Bdev$par$files
     samplenames <- tools::file_path_sans_ext(samples)
-    paths <- x$par$path
-    regions <- x$par$regions
+    paths <- x$Bdev$par$path
+    regions <- x$Bdev$par$regions
     if(is.numeric(sample)){
       ss <- samples[sample]
       pp <- paths[sample]
