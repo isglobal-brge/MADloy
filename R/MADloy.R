@@ -161,7 +161,11 @@ madloy <- function(files, target.region,
               offset = offset,
               QCremoved = ref.qc)
   
-  LRRsummary <- list(mLRRY = mLRRY,
+  mLRRY_df <- data.frame( autosomal = unlist(lapply(refLRR, "[[", "summary")), 
+                       chrY = unlist(lapply(targetLRR, "[[", "summary")), 
+                       mLRRY = mLRRY )
+  
+  LRRsummary <- list(mLRRY = mLRRY_df ,
                      target = targetLRR, 
                      reference = refLRR, 
                      par = par)
