@@ -12,8 +12,10 @@
 #' @export
 plot.MADloy <- function(x, labels, print.labels=FALSE, 
                         threshold = -0.6, cex.label=0.8, ...) {
-  ss <- 1:length(x$mLRRY)
-  d <- x$mLRRY
+  
+  mLRRY <- x$mLRRY$mLRRY
+  ss <- 1:length(mLRRY)
+  d <- mLRRY
   if (missing(labels))
     labels <- names(d)
   ref <- GenomeInfoDb::seqnames(x$par$ref.region)

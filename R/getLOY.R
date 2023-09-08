@@ -15,11 +15,12 @@ getLOY <- function (x, coef=3, ...)
   if (!inherits(x, "MADloy"))
     stop("x must be an object of class 'MADloy'")
   
-  xx <- getSummary(x)
-  target <- xx[,1]
-  reference <- xx[, 2]
+## Not necessary (fixed JRG: 08/09/2023 - Maria's email)
+#  xx <- getSummary(x)
+#  target <- xx[,1]
+#  reference <- xx[, 2]
   
-  norm.lrr <- x$mLRRY
+  norm.lrr <- x$mLRRY$mLRRY
 
   findOutliers <- function(x, coef=coef) {
     upperq <- stats::quantile(x, 0.75, na.rm=TRUE)
@@ -57,7 +58,7 @@ getLOY <- function (x, coef=3, ...)
   ans <- list()
   ans$res <- data.frame(MADloy = cl.f, Fosberg = fosb,
                     continous = norm.lrr)
-  ans$data <- x$mLRRY
+  ans$data <- norm.lrr
   ans$par <- x$par
   attr(ans$data, "type") <- "LRR"
   class(ans) <- "LOY"
