@@ -18,6 +18,7 @@ plotIndLRR <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, ...) {
   if (inherits(x, "MADloy")) {
    samples <- x$par$files
    paths <- x$par$path
+   
    if(is.numeric(sample)){
     ss <- samples[sample]
     pp <- paths[sample]
@@ -72,7 +73,8 @@ plotIndLRR <- function(x, sample, rsCol=1, ChrCol=2, PosCol=3, LRRCol=4, ...) {
                                         BiocGenerics::start(subsetA) & dat$Position < BiocGenerics::end(subsetA))]
   
   if (max(lrr.target, na.rm=TRUE)<1){
-    graphics::plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", ylim=c(min(lrr.target, na.rm=TRUE), 1), ...)
+    graphics::plot(pos.target, lrr.target, ylab="LRR", xlab="Position (Mb) - Chr Y", type="n", 
+                   ylim=c(min(lrr.target, na.rm=TRUE), 1), ...)
     uu <- graphics::par("usr")
   }  
   else {

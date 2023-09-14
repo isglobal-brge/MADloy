@@ -1,10 +1,7 @@
 ---
 title: "`MADloy`: Detecting mosaic loss of Y events using genotype-array-intensity data"
-subtitle: "Marcos Lopez-Sanchez and Juan R. Gonzalez"
+subtitle: "Juan R Gonzalez"
 author:
-  - name: Marcos Lopez-Sanchez
-    email: marcos.lopez-sanchez@upf.edu
-    affiliation: Department of Genetics, University Pompeu Fabra (UPF)
   - name: Juan R Gonzalez
     email: juanr.gonzalez@isglobal.org
     affiliation: Institute for Global Health (ISGlobal), Barcelona, Spain Bioinformatics Research Group in Epidemiolgy (BRGE)(http://brge.isglobal.org)
@@ -54,14 +51,14 @@ library(parallel)
 options(mc.cores=detectCores()-1)
 ```
 
-We have prepared a set of data files including 124 reported males and 2 females to be used as an illustrative example about how to get mLRR-Y data of each sample. Files and data have been anonymized and belong to individuals from general population. These files can be downloaded from this link [LOYdata - github repository](https://github.com/isglobal-brge/brge_data_large/tree/master/inst/extdata/rawData) - https://github.com/isglobal-brge/brge_data_large/tree/master/inst/extdata/rawData. 
+We have prepared a set of data files including 124 reported males and 2 females to be used as an illustrative example about how to get mLRR-Y data of each sample. Files and data have been anonymized and belong to individuals from general population. These files can be downloaded from this link [LOYdata - github repository](https://github.com/isglobal-brge/brge_data/tree/master/inst/extdata/rawData)
 
 The zipped file includes one file per sample in the required format to be processed with `MADloy` package. This format is described in the next section. 
 
 In order to reproduce this vignette, decompress the .zip file in a folder and set this folder path in an R object (for instance `rawDataPath`). 
 
 ```{r, get_data_path}
-rawDataPath <- "C:/MADloy_RawData"
+rawDataPath <- "c:/juan/CREAL/GitHub/brgedata/inst/extdata/rawData/"
 rawDataPath
 files <- dir(rawDataPath)
 length(files)
@@ -74,15 +71,29 @@ files[1:5]
 
 The function `madloy` processes individual SNP array data in [pennCNV format](http://penncnv.openbioinformatics.org/en/latest/user-guide/input/). Basically, different files of each sample must be created containing information about SNP, chromosome, position, LRR, BAF and genotype (although having only the first 4 columns is enough to summarized mLRR-Y). Different tools can be used to get the required information. Affymetrix data (.CEL files) can be processed by using [Birdseed v2 algorithm](http://archive.broadinstitute.org/mpg/birdsuite/birdseed.html). [Affymetrix power tools](https://www.affymetrix.com/support/developer/powertools/changelog/index.html) can also be used to process .CEL files as well as [affy2sv R package](https://bitbucket.org/brge/affy2sv/wiki/Home). Illumina data (.idat files) can be processed by using [Genome Studio software](https://www.illumina.com/techniques/microarrays/array-data-analysis-experimental-design/genomestudio.html). [crlmm Bioconductor package](crlmm -https://www.bioconductor.org/packages/release/bioc/html/crlmm.html) can also be used to get LRR and BAF.
 
+This is an example of an input data for one individual:  
+
+```
+Name       Chr Position   Log.R.Ratio B.Allele.Freq GType
+rs758676   7   12878632	  0.1401      0.4977        AB
+rs3916934  13  103143536  0.3934      0.4610        AA
+rs2711935  4   38838852	 -0.1091      0.0026        AA
+rs17126880 1   64922104	  0.0478      0.9910        AA
+rs12831433 12  4995220	 -0.1661      0.0000        AA
+```
+Notice that the SNP name is in the first column, the chromosome in the second and the log-r-ratio in the third. These are the columns that are assumed by default in the arguments of all functions in the package (arguments `rsCol = 1`, `ChrCol = 2`, `PosCol = 3`, `LRRCol = 4`). However, these can be changed by the user.
+
+\textcolor{red}{NOTE:} It is important to mention that all files of the analyzed individuals must belong to the same type of array (e.g. same number of probes) because the annotation data is obtained from one of these files. If samples have been analyzed using different platforms, the best option is to perform the analyses by batches and then merge the results.
+
 ## Filtering female samples
 
-LOY association studies are performed only using male samples. Obviously, clinical data can be used to filter such individuals. However, in some ocassions there are errors in those databases that can be detected by using genomic data. The function `checkSex` can be used to further verify that there are no female samples in our data. Let us perform this filtering using the test data. 
+LOY association studies are performed only using male samples. Obviously, phenotype (e.g. clinical/epidemiological/questionaire) data can be used to filter such individuals. However, in some occasions there are errors in those databases that can be detected by using genomic data. The function `checkSex` can be used to further verify that there are no female samples in our data. Let us perform this filtering using the test data. 
 
 ```{r, check_sex}
 sex <- checkSex(rawDataPath)
 ```
 
-This function only requires the path containing the raw data in pennCNV format. By default the function is assuming that the LRR information is in column number 4. This can be changed through the argument `LRRCol`. If any of the samples lacks information on some of the chromosomes, the samples are omitted. Notice that this function speed up the process by changing the argument `mc.cores`.
+This function only requires the path containing the raw data in pennCNV format. By default the function is assuming that the LRR information is in column number 4. As previously mentioned, this can be changed through the argument `LRRCol`. If any of the samples lacks information on some of the chromosomes, the samples are omitted. Notice that this function speed up the process by changing the argument `mc.cores`.
 
 The function `checkSex` returns an object that can be plotted by using the generic function `plot`. The figure depicts the LRR in both X and Y chromosomes. 
 
@@ -91,7 +102,7 @@ plot(sex)
 ```
 
 This figure shows that there are 4 female samples, although only 2 were identified as female in the 
-epidemiological data. This information can also be seen by typing
+phenotype data. This information can also be seen by typing
 
 ```{r, print_sex}
 sex
@@ -140,7 +151,7 @@ ex
 
 We observe that LRR data has been summarized in a target and a reference region. By default the target region corresponds to the mLRR-Y region and the reference region (the one used to normalized LRR in the target region) corresponds to autosomal chromosomes. The arguments `target.region` and `ref.region` can be used to change those values. This information has to be passed in UCSC format (e.g. "chr21" or "chr21:1000-10000"). 
 
-By default the human genome reference is `GRCh38` that can be changed in the argument `hg`. The package also contains files encoding the required information to retrieve summarized data in X and Y PAR regions, XTR region, p and q arms, and msY region that are used to better describe the characteristics of LOY samples.
+By default the human genome reference is `GRCh38` that can be changed in the argument `hg` as we did in this example (we use `hg18` in the argument `hg`). The package also contains files encoding the required information to retrieve summarized data in X and Y PAR regions, XTR region, p and q arms, and msY region that are used to better describe the characteristics of LOY samples.
 
 The LRR data of the reference is summarized by using the trimmed-mean. The argument `trim` of `madloy` function controls the fraction of probes (e.g. LRR values) that are removed from each end before the mean is computed (0 to 0.5). This is a robust summary of LRR in a given region since it takes into account possible regions in the genome having CNV alterations. By default 5% of probes are trimed. This values is recommended to be increased, for instance, when analyzing cancer data where a large number of alterations are expected. In case of being interested in summaryzing LRR data by using the median value, `trim` should be set equal to 0.5.  
 
@@ -161,7 +172,7 @@ ex$par$files[ex$par$QCremoved]
 Data can be visually inspected by using the generic `plot` function. This function depicts the mean difference between the LLR of Y chromosome and the reference region that is performed in order to control for possible technical artifacts. As previously mentioned, the reference is consider the autosomes and LRR is summarized by using the trimmed mean in order to remove the effect of having any gain or lose in the genome. Notice that this reference chromosome can be changed by the user. 
 
 ```{r, fig.show='hold',  fig.cap = "Plot of MADloy object of EGCUT males samples"}
-plot(ex, print.labels=TRUE, threshold=-0.3)
+plot(ex, print.labels = TRUE, threshold = -0.2)
 ```
 
 
@@ -170,32 +181,24 @@ This figure shows four samples that could have a LOY event (those in the -.2, -.
 
 # Visualizing mLRR-Y region of a single sample
 
-We can visually inspect the information of mLRR-Y region (e.g., one by one sample) and decide whether a given individuals is having a LOY or not. This can be performed either by using  `plotIndSNP` or `plotIndLRR` functions. Let's create these plot of a given sample having a normalized mLRR-Y value around 0 (i.e SAMPLE_1) with the `plotIndLRR` function. The figure represents the expected values of normal LRR at 0 (red line). However, as previously mentioned, depending the algorithm used to get LRR in the mLRR-Y region these values can be centered around -0.46 indicating that only 1 chromosome is present in males. Orange line represents the median value of mLRR-Y in the subset of analyzed samples. This is the value that must be considered as the reference to indicate whether the mLRR-Y is a LOY event or not.  
+We can visually inspect the information of mLRR-Y region (e.g., one by one sample) and decide whether a given individuals is having a LOY or not. This can be performed either by using  `plotIndSNP` or `plotIndLRR` functions. Let's create these plot of a given sample having a normalized mLRR-Y value around 0 (i.e SAMPLE_2) with the `plotIndLRR` function. The figure represents the expected values of normal LRR at 0 (red line). However, as previously mentioned, depending the algorithm used to get LRR in the mLRR-Y region these values can be centered around -0.46 indicating that only 1 chromosome is present in males. Orange line represents the median value of mLRR-Y in the subset of analyzed samples. This is the value that must be considered as the reference to indicate whether the mLRR-Y is a LOY event or not.  
 
-```{r, plotSample1-LRR,  fig.cap="LRR in the mLRR-Y region (shaded) of SAMPLE_1 from EGCUT data"}
+```{r, plotSample1-LRR,  fig.cap="LRR in the mLRR-Y region (shaded) of SAMPLE_2 from EGCUT data"}
 plotIndLRR(ex, sample="SAMPLE_2")
 ```
 
-With the `plotIndSNP` we can visually inspect both LRR and BAF values in the chromosome Y. For the same sample, the figure represents the PAR1 and PAR2 regions delimited between blue-dotted lines, the XTR region delimited between orange-dotted lines, and the msY region between green-dotted lines.
+Now, let us create the plot of SAMPLE_21 and SAMPLE_81 that are having the lowest values of mLRR-Y. 
 
-```{r, plotSample1,  fig.cap="LRR and BAF in the chromosome Y of SAMPLE_1 from illustrative example"}
-plotIndSNP(ex, sample="SAMPLE_2")
-```
-
-In addition to the chromosome Y, we can plot the chromosome X values with the `plotIndSNPX` function, with the shared PAR1, PAR2 and XTR regions seen in the chromosome Y
-
-```{r, plotSample1X,  fig.cap="LRR and BAF in the chromosome X of SAMPLE_1 from illustrative example"}
-plotIndSNPX(ex, sample="SAMPLE_2")
-```
-
-Now, let us create the plot of SAMPLE_21 and SAMPLE_4 that are having the lowest values of mLRR-Y. 
-
-```{r, plotSample2,  fig.cap="LRR in the mLRR-Y region (shaded) of SAMPLE_29 and SAMPLE_81 from the illustrative example"}
-plotIndLRR(ex, sample="SAMPLE_29")
+```{r, plotSample2,  fig.cap="LRR in the mLRR-Y region (shaded) of SAMPLE_21 and SAMPLE_81 from the illustrative example"}
+plotIndLRR(ex, sample="SAMPLE_21")
 plotIndLRR(ex, sample="SAMPLE_81")
 ```
 
-The plots indicate that both samples are probably carrying a LOY because the LRR (brown dots) in the mLRR-Y region (shaded area) is far below from the reference (orange line). The blue line represents the median LRR values in the mLRR-Y region. Notice that the example of SAMPLE_1 is having the blue line very close to the reference one (orange) indicating that it is a normal sample.
+The plots indicate that both samples are probably carrying a LOY because the LRR (brown dots) in the mLRR-Y region (shaded area) is far below from the reference (orange line). The blue line represents the median LRR values in the mLRR-Y region. Notice that the example of SAMPLE_2 is having the blue line very close to the reference one (orange) indicating that it is a normal sample.
+
+
+**NOTE:** Sometimes, double-checking that a sample carries a real LOY requires to plot the b-allele frequency (BAF). To do so, the function `plotIndSNP` can be used. In addition to the chromosome Y, we can plot the chromosome X values with the `plotIndSNPX` function, with the shared PAR1, PAR2 and XTR regions seen in the chromosome Y and the B-deviation should be computed. This is illustrated in the section **Checking BAF in X-Y shared regions for LOY calls** below. 
+
 
 # Calling LOY
 
@@ -251,14 +254,14 @@ can be visually inspect those samples (using `plotIndLRR`, `plotIndSNP` and `plo
 
 ```{r plotOther, fig.cap="OtherEvents", fig.width=14, fig.height=7}
 par(mfrow=c(1,2))
-plotIndSNPX(ex, "SAMPLE_47")
-plotIndSNP(ex, "SAMPLE_47")
+plotIndSNPX(ex.Bdev, "SAMPLE_47")
+plotIndSNP(ex.Bdev, "SAMPLE_47")
 
-plotIndSNPX(ex, "SAMPLE_89")
-plotIndSNP(ex, "SAMPLE_89")
+plotIndSNPX(ex.Bdev, "SAMPLE_89")
+plotIndSNP(ex.Bdev, "SAMPLE_89")
 
-plotIndSNPX(ex, "SAMPLE_98")
-plotIndSNP(ex, "SAMPLE_98")
+plotIndSNPX(ex.Bdev, "SAMPLE_98")
+plotIndSNP(ex.Bdev, "SAMPLE_98")
 ```
 
 "SAMPLE_47" belongs to an XY individual with a contamination of a non-related XX sample of 12\% aprox of the whole sample. This can be seen in non-shared regions of chromosome X by the presence of three-band clusters in bottom and top regions of B Allele Frequency values (red points). This contamination can generate a false LOY call due to reduction in expected probe intensity for msY specific probes.

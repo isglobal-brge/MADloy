@@ -17,16 +17,21 @@ plot.MADloy <- function(x, labels, print.labels=FALSE,
   ss <- 1:length(mLRRY)
   d <- mLRRY
   if (missing(labels))
-    labels <- names(d)
-  ref <- GenomeInfoDb::seqnames(x$par$ref.region)
-  ref <- ifelse( length(GenomeInfoDb::seqnames(x$par$ref.region)) == 22 , "Autosomes", paste(GenomeInfoDb::seqnames(x$par$ref.region), collapse="_"))
+    labels <- rownames(x$mLRRY)
+  
+  alt <- d <= threshold
+  alt[is.na(alt)] <- FALSE
+  
+#  ref <- GenomeInfoDb::seqnames(x$par$ref.region)
+#  ref <- ifelse( length(GenomeInfoDb::seqnames(x$par$ref.region)) == 22 , 
+#                 "Autosomes", paste(GenomeInfoDb::seqnames(x$par$ref.region), collapse="_"))
+  
   graphics::plot.default(ss, d, type = "n", xlab = "Individuals", 
                ylab = "Trimmed mean normalized mLRR-Y", ...)
   graphics::points(ss, d, pch = 16)
   graphics::abline(h=0, lty=2, col="red")
  
-  alt <- d <= threshold
-  alt[is.na(alt)] <- FALSE
+
   
   if (any(alt) & print.labels) {
     if (requireNamespace("wordcloud", quietly = TRUE) & sum(alt)>1) {
@@ -36,8 +41,10 @@ plot.MADloy <- function(x, labels, print.labels=FALSE,
                          new = FALSE, xlim=c(min(ss), max(ss)), 
                          ylim=c(min(d[alt]), max(d[alt])))
    } else {
-    graphics::text(ss[alt], jitter(d[alt]), tools::file_path_sans_ext(labels[alt]),
-         cex = cex.label, adj = 0)
+    graphics::text(ss[alt], jitter(d[alt]), 
+                   tools::file_path_sans_ext(labels[alt]),
+                   cex = cex.label, adj = 0)
    }
   }
 } 
+
