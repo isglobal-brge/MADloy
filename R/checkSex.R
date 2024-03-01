@@ -115,6 +115,18 @@ checkSex <- function(files, rsCol = 1, ChrCol = 2, PosCol = 3, LRRCol = 4, mc.co
       warning("All samples have the same gender status.")
     }
     
+    if(nrow(omitted)>0) {
+        # Add omitted samples to final results
+        data <- rbind(data, omitted)
+        class_omitted <- as.factor(rep(NaN, nrow(omitted)))
+        names(class_omitted) <- rownames(omitted)
+        class <- c(class, class_omitted)
+        
+        # Sort data
+        class <- class[order(factor(names(class), levels=allfiles))]
+        data <- data[ order(factor(row.names(data)), levels = allfiles), ]
+    }
+    
     par <- list()
     par$trim <- trim
     par$offsetY <- offsetY

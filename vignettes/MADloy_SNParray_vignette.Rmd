@@ -111,13 +111,13 @@ sex
 These samples can be identified 
 
 ```{r, sample_females}
-sex$par$files[sex$class=="FEMALE"]
+sex$par$files[na.omit(sex$class=="FEMALE")]
 ```
 
 as we can observe, there two reported female samples are classified as "FEMALE" and we also detect some discrepancies in other two samples that were reported as "MALE" while their genetic data indicates the contrary. Those samples are removed from downstream analysis since this is a normal QC step in genetic studies:
 
 ```{r, remove_females}
-files.males <- sex$par$files[sex$class!="FEMALE"]
+files.males <- sex$par$files[na.omit(sex$class!="FEMALE")]
 ```
 
  

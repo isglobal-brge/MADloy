@@ -6,6 +6,8 @@
 vignettes/.Rhistory
 MADloy.Rproj
 
+*tmp
 */*cache
 
 */*vignette_files
+vignettes/MADloy_SNParray_vignette.R
