@@ -58,9 +58,9 @@ The zipped file includes one file per sample in the required format to be proces
 In order to reproduce this vignette, decompress the .zip file in a folder and set this folder path in an R object (for instance `rawDataPath`). 
 
 ```{r, get_data_path}
-rawDataPath <- "c:/juan/CREAL/GitHub/brgedata/inst/extdata/rawData/"
+rawDataPath <- "C:/rawData"
 rawDataPath
-files <- dir(rawDataPath)
+files <- dir(rawDataPath, pattern = "*.txt")
 length(files)
 files[1:5]
 ```
